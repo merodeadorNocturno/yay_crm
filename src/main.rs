@@ -12,7 +12,13 @@ mod utils;
 
 use crate::constants::connection::set_environment_variable;
 use crate::db::config::Database;
-use crate::{controllers::clinical_api_controller::clinical_api_controllers, utils::env::get_cwd};
+use crate::{
+    controllers::{
+        clinical_api_controller::clinical_api_controllers,
+        users_api_controller::users_api_controllers,
+    },
+    utils::env::get_cwd,
+};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -42,6 +48,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(db_data.clone())
             .configure(clinical_api_controllers)
+            .configure(users_api_controllers)
     })
     .bind(server_address)
     .expect("FAILED TO BIND TO PORT")

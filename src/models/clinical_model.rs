@@ -44,8 +44,8 @@ pub struct ClinicalHandlebarsError {
     pub error: String,
 }
 
-impl ClinicalHandlebarsError {
-    pub fn new(error: String) -> ClinicalHandlebarsError {
-        ClinicalHandlebarsError { error }
-    }
-}
+// impl ClinicalHandlebarsError {
+//     pub fn new(error: String) -> ClinicalHandlebarsError {
+//         ClinicalHandlebarsError { error }
+//     }
+// }

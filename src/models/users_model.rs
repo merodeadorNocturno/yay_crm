@@ -25,7 +25,7 @@ impl User {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub enum Roles {
     ADMIN,
     EDITOR,

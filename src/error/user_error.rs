@@ -6,13 +6,13 @@ use actix_web::{
 use derive_more::Display;
 
 #[derive(Debug, Display)]
-pub enum ClinicalError {
-    NoClinicalsFound = 0,
-    ClinicalCreationFailure = 1,
+pub enum UserError {
+    NoUsersFound,
+    UserCreationFailure,
 }
 
-impl ResponseError for ClinicalError {
-    fn error_response(&self) -> actix_web::HttpResponse<actix_web::body::BoxBody> {
+impl ResponseError for UserError {
+    fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
         HttpResponse::build(self.status_code())
             .insert_header(ContentType::json())
             .body(self.to_string())
@@ -20,8 +20,8 @@ impl ResponseError for ClinicalError {
 
     fn status_code(&self) -> StatusCode {
         match self {
-            ClinicalError::NoClinicalsFound => StatusCode::NOT_FOUND,
-            ClinicalError::ClinicalCreationFailure => StatusCode::INTERNAL_SERVER_ERROR,
+            UserError::NoUsersFound => StatusCode::NOT_FOUND,
+            UserError::UserCreationFailure => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }

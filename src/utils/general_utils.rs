@@ -1,9 +1,8 @@
 use handlebars::{Handlebars, RenderError};
 use log::info;
-use regex::Regex;
+
 use serde::Serialize;
 use uuid::Uuid;
-use validator::ValidationError;
 
 pub fn render_container<T: Serialize>(
     template_path: &str,

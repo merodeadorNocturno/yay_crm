@@ -3,7 +3,7 @@ use actix_web::{
     web::{Data, Json, Path, ServiceConfig},
 };
 
-use log::{error, warn};
+use log::error;
 use validator::Validate;
 
 use crate::db::{clinical_db::ClinicalDB, config::Database};
@@ -63,7 +63,7 @@ async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<Json<Clinica
             }
         }
         Err(e) => {
-            error!("Error clinicla.find_all {:?}", e);
+            error!("Error clinical.create {:?}", e);
             Err(ClinicalError::ClinicalCreationFailure)
         }
     }

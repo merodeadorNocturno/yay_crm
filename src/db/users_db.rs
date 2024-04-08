@@ -1,8 +1,5 @@
 use actix_web::web::Data;
 use async_trait::async_trait;
-use log::error;
-
-use surrealdb::Error;
 
 use crate::db::config::Database;
 use crate::models::users_model::User;

@@ -1,12 +1,11 @@
-use actix_web::cookie::time::util;
 use actix_web::web::Data;
 use async_trait::async_trait;
-use log::{error, warn};
-use surrealdb::Error;
 
 use crate::db::config::Database;
 use crate::models::clinical_model::Clinical;
 use crate::utils::crud::*;
+
+const CLINICAL_TABLE: &str = "clinical";
 
 #[async_trait]
 pub trait ClinicalDB {
@@ -15,8 +14,6 @@ pub trait ClinicalDB {
     async fn add_one(db: &Data<Database>, new_clinical: Clinical) -> Option<Clinical>;
     async fn update_one(db: &Data<Database>, clinical: Clinical) -> Option<Clinical>;
 }
-
-const CLINICAL_TABLE: &str = "clinical";
 
 #[async_trait]
 impl ClinicalDB for Database {
