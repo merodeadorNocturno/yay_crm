@@ -121,6 +121,14 @@ async fn update_one(
                     None => Some(Local::now()),
                 },
                 date_modified: Some(date_modified),
+                created_by: match Some(&body.created_by) {
+                    Some(created_by) => created_by.clone(),
+                    None => None,
+                },
+                modified_by: match Some(&body.modified_by) {
+                    Some(modified_by) => modified_by.clone(),
+                    None => None,
+                },
             };
 
             let updated_clinical = Database::update_one(&db, my_clinical).await;

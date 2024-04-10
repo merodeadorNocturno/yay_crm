@@ -34,8 +34,8 @@ pub struct Clinical {
     pub resolution: Option<String>,
     pub date_created: Option<DateTime<Local>>,
     pub date_modified: Option<DateTime<Local>>,
-    // pub created_by: Option<String>,
-    // pub modified_by: Option<String>,
+    pub created_by: Option<String>,
+    pub modified_by: Option<String>,
 }
 
 impl Clinical {
