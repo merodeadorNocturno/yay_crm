@@ -19,7 +19,7 @@ pub trait ClinicalDB {
 #[async_trait]
 impl ClinicalDB for Database {
     async fn find_all(db: &Data<Database>) -> Option<Vec<Clinical>> {
-        util_find_all(db, "clinical").await
+        util_find_all(db, CLINICAL_TABLE).await
     }
 
     async fn find_one(db: &Data<Database>, uuid: String) -> Option<Clinical> {

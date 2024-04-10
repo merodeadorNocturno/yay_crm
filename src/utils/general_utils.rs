@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 use handlebars::{Handlebars, RenderError};
 use log::info;
 
@@ -24,9 +22,9 @@ pub fn get_uuid() -> String {
     String::from(new_id)
 }
 
-pub fn create_select_query(table_name: &str, search_by: &str, where_item_equals: &str) -> String {
-    format!(
-        "SELECT {0} FROM {1} WHERE {0} = '{2}'",
-        search_by, table_name, where_item_equals
-    )
-}
+// pub fn create_select_query(table_name: &str, search_by: &str, where_item_equals: &str) -> String {
+//     format!(
+//         "SELECT {0} FROM {1} WHERE {0} = '{2}'",
+//         search_by, table_name, where_item_equals
+//     )
+// }

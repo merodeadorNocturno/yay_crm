@@ -15,6 +15,7 @@ use crate::db::config::Database;
 use crate::{
     controllers::{
         clinical_api_controller::clinical_api_controllers,
+        enterprise_api_controller::enterprise_api_controllers,
         users_api_controller::users_api_controllers,
     },
     utils::env::get_cwd,
@@ -49,6 +50,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(db_data.clone())
             .configure(clinical_api_controllers)
             .configure(users_api_controllers)
+            .configure(enterprise_api_controllers)
     })
     .bind(server_address)
     .expect("FAILED TO BIND TO PORT")

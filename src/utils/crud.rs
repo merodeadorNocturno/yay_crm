@@ -2,7 +2,7 @@ use actix_web::web::Data;
 use log::error;
 
 use serde::{de::DeserializeOwned, Serialize};
-use surrealdb::{sql, Error};
+use surrealdb::Error;
 
 use crate::db::config::Database;
 
