@@ -18,7 +18,7 @@ pub struct User {
     pub email: String,
     pub role: Roles,
     pub deleted: bool,
-    pub date_created: DateTime<Local>,
+    pub date_created: Option<DateTime<Local>>,
     pub date_modified: Option<DateTime<Local>>,
 }
 
@@ -39,7 +39,7 @@ impl User {
         User {
             uuid,
             deleted: false,
-            date_created,
+            date_created: Some(date_created),
             date_modified: Some(date_created),
             name: user.name.clone(),
             last_name: user.last_name.clone(),

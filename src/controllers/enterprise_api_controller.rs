@@ -50,7 +50,10 @@ async fn create(
     body: Json<Enterprise>,
 ) -> Result<Json<Enterprise>, EnterpriseError> {
     let is_valid = body.validate();
-    let new_enterprise = body.into_inner();
+    let date_created = Local::now();
+    let mut new_enterprise = body.into_inner();
+    new_enterprise.date_created = Some(date_created.clone());
+    new_enterprise.date_modified = Some(date_created.clone());
 
     match is_valid {
         Ok(_) => {
@@ -83,7 +86,24 @@ async fn update_one(
 
     match is_valid {
         Ok(_) => {
+            let uuid_id_db = match body.uuid.clone() {
+                Some(c_id) => c_id,
+                None => String::from("forbidden"),
+            };
+
+            let stored_enterprise = Database::find_one(&db, uuid_id_db).await;
             let date_modified = Local::now();
+
+            let e_cloned = stored_enterprise.clone();
+
+            let date_created = match stored_enterprise {
+                Some(enterprise) => enterprise.date_created,
+                None => {
+                    error!("No date found for UUID:: {:?}", body.uuid.clone());
+                    Some(Local::now())
+                }
+            };
+
             let my_enterprise = Enterprise {
                 uuid: body.uuid.clone(),
                 name: body.name.clone(),
@@ -102,9 +122,12 @@ async fn update_one(
                 notes: body.notes.clone(),
                 services_offered: body.services_offered.clone(),
                 resolution: body.resolution.clone(),
-                date_created: body.date_created.clone(),
+                date_created,
                 date_modified: Some(date_modified),
-                created_by: body.created_by.clone(),
+                created_by: match e_cloned {
+                    Some(my_enterprise) => my_enterprise.created_by,
+                    None => Some(String::from("n/a")),
+                },
                 modified_by: body.modified_by.clone(),
             };
 

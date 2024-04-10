@@ -9,7 +9,7 @@ pub struct ClinicalUuid {
     pub uuid: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Validate)]
+#[derive(Clone, Debug, Deserialize, Serialize, Validate)]
 pub struct Clinical {
     pub uuid: Option<String>,
     #[validate(length(min = 2, message = "Name does not match valid length"))]

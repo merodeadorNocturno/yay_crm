@@ -47,7 +47,10 @@ async fn find_one(
 #[post("/clinical")]
 async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<Json<Clinical>, ClinicalError> {
     let is_valid = body.validate();
-    let new_clinical = body.into_inner();
+    let date_created = Local::now();
+    let mut new_clinical = body.into_inner();
+    new_clinical.date_created = Some(date_created.clone());
+    new_clinical.date_modified = Some(date_created.clone());
 
     match is_valid {
         Ok(_) => {
@@ -79,7 +82,23 @@ async fn update_one(
 
     match is_valid {
         Ok(_) => {
+            let uuid_id_db = match body.uuid.clone() {
+                Some(c_id) => c_id,
+                None => String::from(""),
+            };
+            let stored_clinical = Database::find_one(&db, uuid_id_db).await;
             let date_modified = Local::now();
+
+            let c_cloned = stored_clinical.clone();
+
+            let date_created = match stored_clinical {
+                Some(clinical) => clinical.date_created,
+                None => {
+                    error!("No date found for UUID:: {:?}", body.uuid.clone());
+                    Some(Local::now())
+                }
+            };
+
             let my_clinical = Clinical {
                 uuid: body.uuid.clone(),
                 name: body.name.clone(),
@@ -116,18 +135,15 @@ async fn update_one(
                     Some(resolution_req) => resolution_req.clone(),
                     None => None,
                 },
-                date_created: match Some(&body.date_created.clone()) {
-                    Some(date_created) => date_created.clone(),
-                    None => Some(Local::now()),
-                },
+                date_created,
                 date_modified: Some(date_modified),
-                created_by: match Some(&body.created_by) {
-                    Some(created_by) => created_by.clone(),
+                created_by: match c_cloned {
+                    Some(c) => c.created_by,
                     None => None,
                 },
                 modified_by: match Some(&body.modified_by) {
                     Some(modified_by) => modified_by.clone(),
-                    None => None,
+                    None => Some(String::from("n/a")),
                 },
             };
 
