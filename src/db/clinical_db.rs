@@ -4,6 +4,7 @@ use async_trait::async_trait;
 use crate::db::config::Database;
 use crate::models::clinical_model::Clinical;
 use crate::utils::crud::*;
+use crate::utils::general_utils::get_uuid;
 
 const CLINICAL_TABLE: &str = "clinical";
 
@@ -27,12 +28,19 @@ impl ClinicalDB for Database {
 
     async fn add_one(db: &Data<Database>, new_clinical: Clinical) -> Option<Clinical> {
         let uuid = new_clinical.uuid.clone();
-        util_add_one(db, new_clinical, uuid, CLINICAL_TABLE).await
+        let my_id = match uuid {
+            Some(this_uuid) => this_uuid,
+            None => get_uuid(),
+        };
+        util_add_one(db, new_clinical, my_id, CLINICAL_TABLE).await
     }
 
     async fn update_one(db: &Data<Database>, clinical: Clinical) -> Option<Clinical> {
         let clinical_id = clinical.uuid.clone();
-
-        util_update_one(db, clinical, clinical_id, CLINICAL_TABLE).await
+        let my_id = match clinical_id {
+            Some(this_uuid) => this_uuid,
+            None => get_uuid(),
+        };
+        util_update_one(db, clinical, my_id, CLINICAL_TABLE).await
     }
 }

@@ -1,3 +1,4 @@
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -10,10 +11,10 @@ pub struct ClinicalUuid {
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct Clinical {
-    pub uuid: String,
+    pub uuid: Option<String>,
     #[validate(length(min = 2, message = "Name does not match valid length"))]
     pub name: String,
-    #[validate(length(min = 2, message = "Name does not match valid length"))]
+    #[validate(length(min = 2, message = "Lastname does not match valid length"))]
     pub last_name: String,
     pub is_company: bool,
     pub specialty: String,
@@ -31,10 +32,15 @@ pub struct Clinical {
     pub notes: String,
     pub services_offered: Vec<ServicesOffered>,
     pub resolution: Option<String>,
+    pub date_created: Option<DateTime<Local>>,
+    pub date_modified: Option<DateTime<Local>>,
+    // pub created_by: Option<String>,
+    // pub modified_by: Option<String>,
 }
 
 impl Clinical {
-    pub fn new(uuid: String, clinical: Clinical) -> Clinical {
+    pub fn new(c_uuid: String, clinical: Clinical) -> Clinical {
+        let uuid = Some(c_uuid);
         Clinical { uuid, ..clinical }
     }
 }

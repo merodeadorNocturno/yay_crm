@@ -1,6 +1,8 @@
-use surrealdb::engine::remote::ws::{Client, Ws};
-use surrealdb::opt::auth::Root;
-use surrealdb::{Error, Surreal};
+use surrealdb::{
+    engine::remote::ws::{Client, Ws},
+    opt::auth::Root,
+    Error, Surreal,
+};
 
 use crate::constants::connection::set_environment_variable;
 
@@ -27,6 +29,7 @@ impl Database {
             .await?;
 
         client.use_ns(&db_ns).use_db(&db_name).await.unwrap();
+
         Ok(Database {
             client,
             name_space: String::from(&db_ns),

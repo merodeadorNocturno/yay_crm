@@ -3,12 +3,14 @@ use actix_web::{
     web::{Data, Json, Path, ServiceConfig},
 };
 
+use chrono::Local;
 use log::error;
 use validator::Validate;
 
 use crate::{
     db::{config::Database, users_db::UsersDB},
     error::user_error::UserError,
+    models::users_model::UserFromJson,
 };
 
 use crate::{
@@ -44,14 +46,23 @@ async fn find_one(db: Data<Database>, user_id: Path<UserUuid>) -> Result<Json<Us
 }
 
 #[post("/users")]
-async fn create(db: Data<Database>, user: Json<User>) -> Result<Json<User>, UserError> {
+async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<Json<User>, UserError> {
     let is_valid = user.validate();
     let new_user = user.into_inner();
 
     match is_valid {
         Ok(_) => {
             let new_uuid = get_uuid();
-            let my_user = Database::add_one(&db, User::new(String::from(new_uuid), new_user)).await;
+
+            let user_from_json = UserFromJson {
+                name: new_user.name.clone(),
+                last_name: new_user.last_name.clone(),
+                email: new_user.email.clone(),
+                role: new_user.role.clone(),
+            };
+
+            let my_user =
+                Database::add_one(&db, User::new(String::from(new_uuid), user_from_json)).await;
 
             match my_user {
                 Some(user_result) => Ok(Json(user_result)),
@@ -74,6 +85,18 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, 
 
     match is_valid {
         Ok(_) => {
+            let uuid_in_db = user.uuid.clone();
+            let stored_user = Database::find_one(&db, uuid_in_db).await;
+            let date_modified = Local::now();
+
+            let date_created = match stored_user {
+                Some(user) => user.date_created,
+                None => {
+                    error!("No date found for UUID:: {:?}", &user.uuid);
+                    user.date_created.clone()
+                }
+            };
+
             let my_user = User {
                 uuid: user.uuid.clone(),
                 name: user.name.clone(),
@@ -81,6 +104,8 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, 
                 email: user.email.clone(),
                 role: user.role.clone(),
                 deleted: user.deleted.clone(),
+                date_created,
+                date_modified: Some(date_modified),
             };
 
             let updated_user = Database::update_one(&db, my_user).await;

@@ -3,6 +3,7 @@ use actix_web::{
     web::{Data, Json, Path, ServiceConfig},
 };
 
+use chrono::Local;
 use log::error;
 use validator::Validate;
 
@@ -78,6 +79,7 @@ async fn update_one(
 
     match is_valid {
         Ok(_) => {
+            let date_modified = Local::now();
             let my_clinical = Clinical {
                 uuid: body.uuid.clone(),
                 name: body.name.clone(),
@@ -114,6 +116,11 @@ async fn update_one(
                     Some(resolution_req) => resolution_req.clone(),
                     None => None,
                 },
+                date_created: match Some(&body.date_created.clone()) {
+                    Some(date_created) => date_created.clone(),
+                    None => Some(Local::now()),
+                },
+                date_modified: Some(date_modified),
             };
 
             let updated_clinical = Database::update_one(&db, my_clinical).await;

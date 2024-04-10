@@ -2,9 +2,11 @@ use actix_web::web::Data;
 use log::error;
 
 use serde::{de::DeserializeOwned, Serialize};
-use surrealdb::Error;
+use surrealdb::{sql, Error};
 
 use crate::db::config::Database;
+
+// use super::general_utils::create_select_query;
 
 pub async fn util_find_all<T: DeserializeOwned>(
     db: &Data<Database>,
@@ -85,3 +87,14 @@ pub async fn util_update_one<T: DeserializeOwned + Serialize>(
         }
     }
 }
+
+// pub async fn util_query_table<T: DeserializeOwned + Serialize>(
+//     db: &Database,
+//     table_name: &str,
+//     search_by: &str,
+//     where_item_equals: &str,
+// ) -> Option<T> {
+//     let mut res = db.client.query("SELECT * FROM users").await?;
+//     let query_result: Option<T> = res.take(0)?;
+//     query_result
+// }
