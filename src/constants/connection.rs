@@ -10,7 +10,7 @@ pub fn set_environment_variable(env_var: &str, default_value: &str) -> String {
             var_in_env_file
         }
         Err(e) => {
-            warn!("Error reading variable {}: {}", &env_var, e);
+            warn!("Error reading variable {}: {}. Using default.", &env_var, e);
             default_value.to_string()
         }
     }

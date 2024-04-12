@@ -4215,6 +4215,7 @@ dependencies = [
  "actix-cors",
  "actix-files",
  "actix-web",
+ "argon2",
  "async-trait",
  "chrono",
  "derive_more",

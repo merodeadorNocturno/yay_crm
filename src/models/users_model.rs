@@ -18,8 +18,10 @@ pub struct User {
     pub email: String,
     pub role: Roles,
     pub deleted: bool,
+    pub password: Option<String>,
     pub date_created: Option<DateTime<Local>>,
     pub date_modified: Option<DateTime<Local>>,
+    pub notes: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
@@ -31,6 +33,8 @@ pub struct UserFromJson {
     #[validate(email)]
     pub email: String,
     pub role: Roles,
+    pub notes: Option<String>,
+    pub password: Option<String>,
 }
 
 impl User {
@@ -45,6 +49,8 @@ impl User {
             last_name: user.last_name.clone(),
             email: user.email.clone(),
             role: user.role.clone(),
+            notes: user.notes.clone(),
+            password: user.password.clone(),
         }
     }
 }
@@ -53,4 +59,21 @@ impl User {
 pub enum Roles {
     ADMIN,
     EDITOR,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UserHandlebarsError {
+    pub error: String,
+}
+
+impl UserHandlebarsError {
+    pub fn new(error: String) -> UserHandlebarsError {
+        UserHandlebarsError { error }
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UserPartials {
+    pub date_created: Option<DateTime<Local>>,
+    pub password: String,
 }

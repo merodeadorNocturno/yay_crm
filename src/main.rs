@@ -3,6 +3,9 @@ use actix_web::{web::Data, App, HttpServer};
 use env_logger::{Builder, WriteStyle};
 use log::{info, warn, LevelFilter};
 
+#[macro_use]
+extern crate handlebars;
+
 mod constants;
 mod controllers;
 mod db;
@@ -16,7 +19,7 @@ use crate::{
     controllers::{
         clinical_api_controller::clinical_api_controllers,
         enterprise_api_controller::enterprise_api_controllers,
-        users_api_controller::users_api_controllers,
+        users_api_controller::users_api_controllers, users_html_controller::user_html_controllers,
     },
     utils::env::get_cwd,
 };
@@ -51,6 +54,7 @@ async fn main() -> std::io::Result<()> {
             .configure(clinical_api_controllers)
             .configure(users_api_controllers)
             .configure(enterprise_api_controllers)
+            .configure(user_html_controllers)
     })
     .bind(server_address)
     .expect("FAILED TO BIND TO PORT")

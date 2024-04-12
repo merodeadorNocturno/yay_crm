@@ -4,18 +4,14 @@ use actix_web::{
 };
 
 use chrono::Local;
-use log::error;
+use log::{error, info};
 use validator::Validate;
 
 use crate::{
     db::{config::Database, users_db::UsersDB},
     error::user_error::UserError,
-    models::users_model::UserFromJson,
-};
-
-use crate::{
-    models::users_model::{User, UserUuid},
-    utils::general_utils::get_uuid,
+    models::users_model::{User, UserFromJson, UserUuid},
+    utils::{general_utils::get_uuid, pwd::pwd_hasher},
 };
 
 #[get("/users")]
@@ -59,6 +55,11 @@ async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<Json<Use
                 last_name: new_user.last_name.clone(),
                 email: new_user.email.clone(),
                 role: new_user.role.clone(),
+                password: new_user.password.clone(),
+                notes: match new_user.notes {
+                    Some(notes) => Some(notes),
+                    None => None,
+                },
             };
 
             let my_user =
@@ -89,8 +90,36 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, 
             let stored_user = Database::find_one(&db, uuid_in_db).await;
             let date_modified = Local::now();
 
+            let mut mutable_pwd = "".to_string();
+            info!("{}", &mutable_pwd);
+
+            match user.password.clone() {
+                Some(new_pwd) => match pwd_hasher(new_pwd) {
+                    Ok(my_pwd) => {
+                        info!("Users OK");
+                        mutable_pwd = my_pwd.clone();
+                    }
+                    Err(_) => {
+                        mutable_pwd = format!("default_passwd_for_user{}", &user.uuid);
+                    }
+                },
+                None => match &stored_user {
+                    Some(su) => match &su.password {
+                        Some(new_pwd) => {
+                            mutable_pwd = new_pwd.to_string();
+                        }
+                        None => {
+                            mutable_pwd = format!("default_passwd_for_user{}", &user.uuid);
+                        }
+                    },
+                    None => {
+                        mutable_pwd = format!("default_passwd_for_user{}", &user.uuid);
+                    }
+                },
+            };
+
             let date_created = match stored_user {
-                Some(user) => user.date_created,
+                Some(this_user) => this_user.date_created,
                 None => {
                     error!("No date found for UUID:: {:?}", &user.uuid);
                     user.date_created.clone()
@@ -106,6 +135,11 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, 
                 deleted: user.deleted.clone(),
                 date_created,
                 date_modified: Some(date_modified),
+                password: Some(mutable_pwd),
+                notes: match &user.notes {
+                    Some(notes) => Some(String::from(notes)),
+                    None => None,
+                },
             };
 
             let updated_user = Database::update_one(&db, my_user).await;
