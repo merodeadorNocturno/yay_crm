@@ -140,6 +140,7 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, 
                     Some(notes) => Some(String::from(notes)),
                     None => None,
                 },
+                role_string: Some(user.role.to_string()),
             };
 
             let updated_user = Database::update_one(&db, my_user).await;

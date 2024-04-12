@@ -1,5 +1,6 @@
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 use validator::Validate;
 
 #[derive(Debug, Deserialize)]
@@ -22,6 +23,7 @@ pub struct User {
     pub date_created: Option<DateTime<Local>>,
     pub date_modified: Option<DateTime<Local>>,
     pub notes: Option<String>,
+    pub role_string: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
@@ -51,6 +53,7 @@ impl User {
             role: user.role.clone(),
             notes: user.notes.clone(),
             password: user.password.clone(),
+            role_string: Some(user.role.to_string()),
         }
     }
 }
@@ -59,6 +62,15 @@ impl User {
 pub enum Roles {
     ADMIN,
     EDITOR,
+}
+
+impl fmt::Display for Roles {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Roles::EDITOR => write!(f, "EDITOR"),
+            Roles::ADMIN => write!(f, "ADMIN"),
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]

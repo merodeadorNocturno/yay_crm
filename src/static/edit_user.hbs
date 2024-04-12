@@ -65,12 +65,14 @@
               <select name="role">
                 <option
                   value="EDITOR"
-                  {{#if (str_equal role "EDITOR")}} selected {{/if}}>
+                  {{#if (str_equal role_string "EDITOR")}} selected {{/if}}
+                >
                       Editor
                   </option>
                 <option
                   value="ADMIN"
-                  {{#if (str_equal role "ADMIN")}} selected {{/if}}>
+                  {{#if (str_equal role_string "ADMIN")}} selected {{/if}}
+                >
                     Admin
                 </option>
               </select>
