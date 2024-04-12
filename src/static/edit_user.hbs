@@ -4,13 +4,12 @@
       <form
         class="box"
         id="edit-user"
-        hx-post="http://127.0.0.1:8080/users_htmx/{{uuid}}"
+        hx-patch="http://127.0.0.1:8080/users"
         hx-swap="innerHTML"
         hx-headers='{"Content-Type": "application/json"}'
         hx-ext="json-enc"
-        hx-vals='{"deleted": false}'
-      >
-        <div class="field">
+        >
+        <div class="field"> <!-- name -->
           <label class="label">Nombre</label>
           <div class="control has-icons-left">
             <input
@@ -26,8 +25,8 @@
           </div>
         </div>
 
-        <div class="field">
-          <label class="label">Username</label>
+        <div class="field"> <!-- last_name -->
+          <label class="label">Apellido</label>
           <div class="control has-icons-left">
             <input
               class="input"
@@ -42,7 +41,7 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field"> <!-- email -->
           <label class="label">Email</label>
           <div class="control has-icons-left">
             <input
@@ -58,7 +57,24 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field"> <!-- email -->
+          <label class="label">Password</label>
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="password"
+              hx-on:keyup="pwd_null_or_string()"
+              placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;"
+              id="my-passwd"
+              hx-vals="js:{deleted: false, password:null}"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-key"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="field"> <!-- role -->
           <label class="label">Rol</label>
           <div class="control">
             <div class="select">
@@ -80,7 +96,7 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field"> <!-- notes -->
           <label class="label">Message</label>
           <div class="control">
             <textarea
@@ -91,6 +107,8 @@
           </div>
         </div>
 
+        <!-- hidden_fields -->
+        <input type="hidden" name="uuid" value="{{uuid}}" />
         <div class="field is-grouped">
           <div class="control">
             <button class="button is-link">Submit</button>
@@ -103,3 +121,13 @@
     </div>
   </div>
 </div>
+<script>
+function pwd_null_or_string() {
+  const { value } = document.getElementById('my-passwd');
+  const my_form = document.getElementById('edit-user');
+
+  const hx_vals = value.length < 10 ? null : `'${value}'`;
+
+  my_form.setAttribute("hx-vals", `js:{deleted: false, password: ${hx_vals}}`);
+}
+</script>

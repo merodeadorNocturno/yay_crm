@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use validator::Validate;
 
+use crate::constants::validation::*;
+
 #[derive(Debug, Deserialize)]
 pub struct UserUuid {
     pub uuid: String,
@@ -11,14 +13,27 @@ pub struct UserUuid {
 #[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct User {
     pub uuid: String,
-    #[validate(length(min = 2, message = "Name does not match valid length"))]
+    #[validate(length(
+        min = MINIMUM_NAMES_LENGTH,
+        max = MAXIMUM_NAMES_LENGTH,
+        message = "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Name does not match valid length (2-35 characters)</span>"
+    ))]
     pub name: String,
-    #[validate(length(min = 2, message = "Last Name does not match valid length"))]
+    #[validate(length(
+        min = MINIMUM_NAMES_LENGTH,
+        max = MAXIMUM_NAMES_LENGTH,
+        message = "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Last Name does not match valid length (2-35 characters)</span>"
+    ))]
     pub last_name: String,
     #[validate(email)]
     pub email: String,
     pub role: Roles,
     pub deleted: bool,
+    #[validate(length(
+        min = MINIMUM_PASSWORD_LENGTH,
+        max = MAXIMUM_PASSWORD_LENGTH,
+        message = "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Minimum size of password is 10 characters. Max is 255</span>"
+    ))]
     pub password: Option<String>,
     pub date_created: Option<DateTime<Local>>,
     pub date_modified: Option<DateTime<Local>>,
@@ -28,14 +43,27 @@ pub struct User {
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct UserFromJson {
-    #[validate(length(min = 2, message = "Name does not match valid length"))]
+    #[validate(length(
+      min = MINIMUM_NAMES_LENGTH,
+      max = MAXIMUM_NAMES_LENGTH,
+      message = "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Name does not match valid length (2-35 characters)</span>"
+  ))]
     pub name: String,
-    #[validate(length(min = 2, message = "Last Name does not match valid length"))]
+    #[validate(length(
+        min = MINIMUM_NAMES_LENGTH,
+        max = MAXIMUM_NAMES_LENGTH,
+        message = "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Last Name does not match valid length (2-35 characters)</span>"
+    ))]
     pub last_name: String,
     #[validate(email)]
     pub email: String,
     pub role: Roles,
     pub notes: Option<String>,
+    #[validate(length(
+        min = MINIMUM_PASSWORD_LENGTH,
+        max = MAXIMUM_PASSWORD_LENGTH,
+        message = "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Minimum size of password is 10 characters. Max is 255</span>"
+    ))]
     pub password: Option<String>,
 }
 

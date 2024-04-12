@@ -16,6 +16,8 @@
       <td>
         <span
           hx-post="http://127.0.0.1:8080/user_htmx/{{uuid}}"
+          hx-swap="innerHTML"
+          hx-target="#edit-user-dynamic-content"
           class="icon is-small is-left"
         >
           <i class="fas fa-pencil-alt"></i>

@@ -67,7 +67,7 @@ async fn users_table(db: Data<Database>) -> Result<String, RenderError> {
     let template_path = "user_table";
     let handlebars = Handlebars::new();
     let users_from_db = Database::find_all(&db).await;
-    debug!(">>>>>>>>>>> USERS >>>>>>>>> {:?}", &users_from_db);
+
     let template_contents = match read_hbs_template(&template_path) {
         Ok(contents) => contents,
         Err(e) => {
@@ -104,7 +104,12 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
                     Ok(ue) => HttpResponse::Ok().content_type("text/html").body(ue),
                     Err(e) => HttpResponse::Ok()
                         .content_type("text/html")
-                        .body(format!("User not found. Error:: {}", e.to_string())),
+                        .body(
+                          format!(
+                            "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load user: {}</span>",
+                            e.to_string()
+                          )
+                        ),
                 }
             },
         ),

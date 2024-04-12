@@ -96,7 +96,6 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, 
             match user.password.clone() {
                 Some(new_pwd) => match pwd_hasher(new_pwd) {
                     Ok(my_pwd) => {
-                        info!("Users OK");
                         mutable_pwd = my_pwd.clone();
                     }
                     Err(_) => {
