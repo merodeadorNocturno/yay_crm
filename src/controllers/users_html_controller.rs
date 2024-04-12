@@ -16,12 +16,10 @@ handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
 
 async fn edit_user(hbs_path: Path<String>, db: Data<Database>) -> Result<String, RenderError> {
     let uuid = hbs_path.into_inner();
-    debug!(">>>>>>>>>>>>>>>>>> {:?}", &uuid);
     let my_error = format!("Unable to find uuid {}", &uuid).to_string();
     info!("Edit user screen for uuuid:: {}", &uuid);
 
     let mut template_path = "edit_user";
-    debug!("my template path {}", &template_path);
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("str_equal", Box::new(str_equal));
 
@@ -56,7 +54,6 @@ async fn edit_user(hbs_path: Path<String>, db: Data<Database>) -> Result<String,
             Ok(render_good)
         }
         Err(e) => {
-            debug!("This is an error in render_container: {:?}", e);
             let render_error = handlebars.render_template(&template_contents, &e)?;
             Ok(render_error)
         }
@@ -72,7 +69,7 @@ async fn users_table(db: Data<Database>) -> Result<String, RenderError> {
         Ok(contents) => contents,
         Err(e) => {
             error!(
-                "Failed to render contents for users table, {:?}",
+                "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load user: {}</span>",
                 e.to_string()
             );
             UserHandlebarsError::new(e.to_string()).error
