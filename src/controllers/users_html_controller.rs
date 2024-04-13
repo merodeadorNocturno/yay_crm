@@ -83,7 +83,6 @@ async fn users_table(db: Data<Database>) -> Result<String, RenderError> {
             Ok(render_good)
         }
         None => {
-            debug!("This is an error in render_container:");
             let render_error =
                 handlebars.render_template(&template_contents, &"Couldn't get users")?;
             Ok(render_error)

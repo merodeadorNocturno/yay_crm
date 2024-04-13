@@ -44,3 +44,14 @@ impl Enterprise {
         Enterprise { uuid, ..enterprise }
     }
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EnterpriseHandlebarsError {
+    pub error: String,
+}
+
+impl EnterpriseHandlebarsError {
+    pub fn new(error: String) -> EnterpriseHandlebarsError {
+        EnterpriseHandlebarsError { error }
+    }
+}
