@@ -26,7 +26,7 @@ async fn edit_enterprise(
 
     let enterprise_from_db: Result<Enterprise, EnterpriseHandlebarsError> =
         match Database::find_one(&db, uuid).await {
-            Some(mut enterprise) => Ok(enterprise),
+            Some(enterprise) => Ok(enterprise),
             None => {
                 error!("Not enterprise found in db");
                 template_path = "edit_user";

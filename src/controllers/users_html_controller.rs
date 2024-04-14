@@ -3,7 +3,7 @@ use actix_web::{
     HttpRequest, HttpResponse,
 };
 use handlebars::{Handlebars, RenderError};
-use log::{debug, error, info};
+use log::{error, info};
 use serde_json::json;
 
 use crate::{
@@ -20,6 +20,8 @@ async fn edit_user(hbs_path: Path<String>, db: Data<Database>) -> Result<String,
     info!("Edit user screen for uuuid:: {}", &uuid);
 
     let mut template_path = "edit_user";
+    println!("{:?}", &template_path);
+
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("str_equal", Box::new(str_equal));
 
