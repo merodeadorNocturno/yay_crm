@@ -117,9 +117,12 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
       "/user_htmx",
       post().to(
         |db: Data<Database>| async move {
-          let users_table = users_table(db).await;
-          match users_table {
-            Ok(ut) => HttpResponse::Ok().content_type("text/html").body(ut),
+          let my_users_table = users_table(db).await;
+          match my_users_table {
+            Ok(ut) => HttpResponse::Ok()
+              .content_type("text/html")
+              .append_header(("HX-Trigger", "user_table"))
+              .body(ut),
             Err(e) => HttpResponse::Ok()
               .content_type("text/html")
               .body(

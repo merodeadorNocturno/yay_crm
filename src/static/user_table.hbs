@@ -1,34 +1,39 @@
-<table class="table is-bordered is-striped is-hoverable">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Role</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each users}}
-    <tr>
-      <td>{{name}} {{last_name}}</td>
-      <td>{{email}}</td>
-      <td>{{role}}</td>
-      <td>
-        <span
-          hx-post="http://127.0.0.1:8080/user_htmx/{{uuid}}"
-          hx-swap="innerHTML"
-          hx-target="#edit-user-dynamic-content"
-          class="icon is-small is-left"
-        >
-          <i class="fas fa-pencil-alt"></i>
-        </span>
-        &nbsp;
-        <span class="icon is-small is-left" hx-trigger="delete-user">
-          <i class="fas fa-trash"></i>
-        </span>
-      </td>
-    </tr>
-    {{/each}}
-    <!-- Add more rows for other users -->
-  </tbody>
-</table>
+<div class="columns">
+  <div class="column" id="user-table-dynamic-content">
+    <table class="table is-bordered is-striped is-hoverable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each users}}
+        <tr>
+          <td>{{name}} {{last_name}}</td>
+          <td>{{email}}</td>
+          <td>{{role}}</td>
+          <td>
+            <span
+              hx-post="http://127.0.0.1:8080/user_htmx/{{uuid}}"
+              hx-swap="innerHTML"
+              hx-target="#edit-user-dynamic-content"
+              class="icon is-small is-left"
+            >
+              <i class="fas fa-pencil-alt"></i>
+            </span>
+            &nbsp;
+            <span class="icon is-small is-left" hx-trigger="delete-user">
+              <i class="fas fa-trash"></i>
+            </span>
+          </td>
+        </tr>
+        {{/each}}
+        <!-- Add more rows for other users -->
+      </tbody>
+    </table>
+  </div>
+  <div class="column" id="edit-user-dynamic-content"></div>
+</div>

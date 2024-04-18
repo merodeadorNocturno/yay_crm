@@ -109,7 +109,12 @@ async fn update_one(
                 name: body.name.clone(),
                 last_name: body.last_name.clone(),
                 is_company: body.is_company.clone(),
+                company_name: body.company_name.clone(),
                 line_of_business: body.line_of_business.clone(),
+                phone: match body.phone.clone() {
+                    Some(my_phone) => Some(my_phone),
+                    None => None,
+                },
                 email: body.email.clone(),
                 deleted: body.deleted.clone(),
                 fb: body.fb.clone(),

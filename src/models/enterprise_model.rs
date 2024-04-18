@@ -17,7 +17,10 @@ pub struct Enterprise {
     #[validate(length(min = 2, message = "Lastname does not match valid length"))]
     pub last_name: String,
     pub is_company: bool,
+    #[validate(length(min = 2, message = "Lastname does not match valid length"))]
+    pub company_name: Option<String>,
     pub line_of_business: Option<String>,
+    pub phone: Option<String>,
     #[validate(email)]
     pub email: String,
     pub deleted: bool,

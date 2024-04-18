@@ -1,0 +1,218 @@
+<div class="columns is-1">
+  <div class="column is-3">
+    <p class="notification is-info has-text-centered">Nombre</p>
+  </div>
+  <div class="column is-2">
+    <p class="notification is-info has-text-centered">Contacto</p>
+  </div>
+  <div class="column is-1">
+    <div class="notification is-info has-text-centered">
+      <p class="has-text-centered">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-calendar-alt"></i>
+          <span class="tooltiptext">Fecha de Contacto</span>
+        </span>
+      </p>
+    </div>
+  </div>
+  <div class="column is-1">
+    <div class="notification is-info has-text-centered">Avance</div>
+  </div>
+  <div class="column is-1">
+    <div class="notification is-info has-text-centered">Notas</div>
+  </div>
+  <div class="column is-2">
+    <div class="notification is-info has-text-centered">Ofrecimos</div>
+  </div>
+  <div class="column is-1">
+    <div class="notification is-info has-text-centered">Término</div>
+  </div>
+  <div class="column is-1">
+    <div class="notification is-info has-text-centered">Editar</div>
+  </div>
+</div>
+<!-- #enterprise-container .columns:nth-child(even) p -->
+<div class="container" id="enterprise-container">
+  {{#each enterprises}}
+  <div class="columns is-0">
+    <div class="column is-3">
+      <p class="notification has-text-centered">
+        <span class="icon is-small is-left tooltip">
+          <i
+            class="fas {{#if is_company}}fa-industry{{else}}fa-user-tie{{/if}}"
+          ></i>
+          <span class="tooltiptext">{{line_of_business}}</span>
+        </span>
+        {{#if is_company}} {{company_name}} {{else}} {{name}} {{last_name}}
+        {{/if}}
+      </p>
+    </div>
+
+    <div class="column is-2">
+      <p class="notification has-text-centered">
+        {{#if email}}
+        <span class="icon is-small is-left tooltip">
+          <a href="mailto:{{email}}" title="email {{name}} {{last_name}}"
+            ><i class="fas fa-envelope"></i
+          ></a>
+          <span class="tooltiptext">email: {{email}}</span>
+        </span>
+        {{/if}} {{#if instagram}}
+        <span class="icon is-small is-left tooltip">
+          <a
+            href="{{instagram}}"
+            target="_blank"
+            title="Instagram {{name}} {{last_name}}"
+            ><i class="fab fa-instagram"></i
+          ></a>
+          <span class="tooltiptext">instagram: {{instagram}}</span>
+        </span>
+        {{/if}} {{#if facebook}}
+        <span class="icon is-small is-left tooltip">
+          <a
+            href="{{facebook}}"
+            target="_blank"
+            title="facebook {{name}} {{last_name}}"
+            ><i class="fab fa-facebook"></i
+          ></a>
+          <span class="tooltiptext">facebook: {{facebook}}</span>
+        </span>
+        {{/if}} {{#if phone}}
+        <span class="icon is-small is-left tooltip">
+          <a
+            href="{{phone}}"
+            target="_blank"
+            title="Phone {{name}} {{last_name}}"
+            ><i class="fas fa-phone"></i
+          ></a>
+          <span class="tooltiptext">{{name}} {{last_name}}: {{phone}}</span>
+        </span>
+        {{/if}} {{#if linked_in}}
+        <span class="icon is-small is-left tooltip">
+          <a
+            href="{{linked_in}}"
+            target="_blank"
+            title="linkedin: {{linked_in}}"
+            ><i class="fab fa-linkedin"></i
+          ></a>
+          <span class="tooltiptext">LinkedIn: {{linked_in}}</span>
+        </span>
+        {{/if}}
+      </p>
+    </div>
+
+    <div class="column is-1">
+      <p class="notification is-small has-text-centered">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-calendar-alt"></i>
+          <span class="tooltiptext">{{first_contact_date}}</span>
+        </span>
+      </p>
+    </div>
+
+    <div class="column is-1">
+      {{#if (str_equal sales_funnel "LOST")}}
+      <div class="notification is-small has-text-centered is-lost">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-trash"></i>
+          <span class="tooltiptext">Lost</span>
+        </span>
+      </div>
+      {{/if}} {{#if (str_equal sales_funnel "NEGOTIATION")}}
+      <div class="notification is-small has-text-centered is-negotiation">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-user-tie"></i>
+          <span class="tooltiptext">Negociación</span>
+        </span>
+      </div>
+      {{/if}} {{#if (str_equal sales_funnel "PROSPECT")}}
+      <div class="notification is-small has-text-centered is-prospect">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-binoculars"></i>
+          <span class="tooltiptext">Prospect</span>
+        </span>
+      </div>
+      {{/if}} {{#if (str_equal sales_funnel "QUOTE")}}
+      <div class="notification is-small has-text-centered is-quote">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-trash"></i>
+          <span class="tooltiptext">Quote</span>
+        </span>
+      </div>
+      {{/if}} {{#if (str_equal sales_funnel "RESEARCH")}}
+      <div class="notification is-small has-text-centered is-research">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-user-secret"></i>
+          <span class="tooltiptext">Research</span>
+        </span>
+      </div>
+      {{/if}} {{#if (str_equal sales_funnel "WIN")}}
+      <div class="notification is-small has-text-centered is-win">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-handshake"></i>
+          <span class="tooltiptext">Win</span>
+        </span>
+      </div>
+      {{/if}}
+    </div>
+
+    <div class="column is-1">
+      <p class="notification is-small has-text-centered">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-clipboard"></i>
+          <span class="tooltiptext">{{notes}}</span>
+        </span>
+      </p>
+    </div>
+
+    <div class="column is-2">
+      <p class="notification is-small has-text-centered">
+        {{#each services_offered}} {{#if (str_equal this "BRANDING")}}
+        <span class="icon is-small is-left tooltip"
+          ><i class="fas fa-copyright"></i
+          ><span class="tooltiptext">Branding</span></span
+        >
+        {{/if}} {{#if (str_equal this "WEBSERVICES")}}
+        <span class="icon is-small is-left tooltip"
+          ><i class="fas fa-globe-americas"></i
+          ><span class="tooltiptext">Web Services</span></span
+        >
+        {{/if}} {{#if (str_equal this "DIGITALSTRATEGY")}}
+        <span class="icon is-small is-left tooltip"
+          ><i class="fas fa-robot"></i
+          ><span class="tooltiptext">Digital Strategy</span></span
+        >
+        {{/if}} {{#if (str_equal this "ATTRACTIONOFNEWCLIENTS")}}
+        <span class="icon is-small is-left tooltip"
+          ><i class="fas fa-magnet"></i
+          ><span class="tooltiptext">Attract new clients</span></span
+        >
+        {{/if}} {{#if (str_equal this "SALESMANAGEMENT")}}
+        <span class="icon is-small is-left tooltip"
+          ><i class="far fa-money-bill-alt"></i
+          ><span class="tooltiptext">Sales Management</span></span
+        >
+        {{/if}} {{/each}}
+      </p>
+    </div>
+
+    <div class="column is-1">
+      <p class="notification is-small has-text-centered">
+        <span class="icon is-small is-left tooltip">
+          <i class="fas fa-gavel"></i>
+          <span class="tooltiptext">{{resolution}}</span>
+        </span>
+      </p>
+    </div>
+
+    <div class="column is-1">
+      <p class="notification has-text-centered">
+        <span class="icon is-small tooltip">
+          <i class="fas fa-pencil-alt"></i>
+          <span class="tooltiptext">Edit</span>
+        </span>
+      </p>
+    </div>
+  </div>
+  {{/each}}
+</div>

@@ -4,6 +4,7 @@ use actix_web::{
 };
 use handlebars::{Handlebars, RenderError};
 use log::{error, info};
+use serde_json::json;
 
 use crate::db::{config::Database, enterprise_db::EnterpriseDB};
 use crate::models::enterprise_model::*;
@@ -57,6 +58,39 @@ async fn edit_enterprise(
     }
 }
 
+async fn enterprise_table(db: Data<Database>) -> Result<String, RenderError> {
+    let template_path = "enterprise_table";
+    let mut handlebars = Handlebars::new();
+    handlebars.register_helper("str_equal", Box::new(str_equal));
+
+    let enterprises_from_db = Database::find_all(&db).await;
+
+    let template_contents = match read_hbs_template(&template_path) {
+        Ok(contents) => contents,
+        Err(e) => {
+            error!(
+          "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load user: {}</span>",
+          e.to_string()
+        );
+
+            EnterpriseHandlebarsError::new(e.to_string()).error
+        }
+    };
+
+    match enterprises_from_db {
+        Some(enterprises) => {
+            let render = handlebars
+                .render_template(&template_contents, &json!({ "enterprises": enterprises }))?;
+            Ok(render)
+        }
+        None => {
+            let render_error =
+                handlebars.render_template(&template_contents, &"Couldn't get enterprises")?;
+            Ok(render_error)
+        }
+    }
+}
+
 pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
     cfg.route(
       "/enterprise_htmx/{uuid}",
@@ -76,5 +110,27 @@ pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
               }
           },
       ),
+  );
+
+    cfg.route(
+    "/enterprise_table",
+    post().to(
+      |db: Data<Database>| async move {
+        let my_enterprise_table = enterprise_table(db).await;
+
+        match my_enterprise_table {
+          Ok(et) => HttpResponse::Ok()
+            .content_type("text/html")
+            .append_header(("HX-Trigger", "enterprise_table"))
+            .body(et),
+          Err(e) => HttpResponse::Ok()
+            .content_type("text/html")
+            .body(
+              format!("<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load Enterprise: {}</span>",
+              e.to_string())
+            )
+        }
+      }
+    ),
   );
 }

@@ -19,7 +19,9 @@ use crate::{
     controllers::{
         clinical_api_controller::clinical_api_controllers,
         enterprise_api_controller::enterprise_api_controllers,
-        users_api_controller::users_api_controllers, users_html_controller::user_html_controllers,
+        enterprise_html_controller::enterprise_html_controllers,
+        help_html_controller::help_html_controllers, users_api_controller::users_api_controllers,
+        users_html_controller::user_html_controllers,
     },
     utils::env::get_cwd,
 };
@@ -55,6 +57,8 @@ async fn main() -> std::io::Result<()> {
             .configure(users_api_controllers)
             .configure(enterprise_api_controllers)
             .configure(user_html_controllers)
+            .configure(enterprise_html_controllers)
+            .configure(help_html_controllers)
     })
     .bind(server_address)
     .expect("FAILED TO BIND TO PORT")
