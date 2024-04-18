@@ -1,0 +1,56 @@
+<nav class="panel is-link">
+  <p class="panel-heading">Avance en el trato</p>
+  <p class="panel-tabs">
+    <a
+      hx-get="http://127.0.0.1:8080/help_enterprise"
+      hx-swap="innerHTML"
+      hx-target="#enterprise-help"
+      >Contacto</a
+    >
+    <a class="is-active">Avance</a>
+    <a
+      hx-get="http://127.0.0.1:8080/help_enterprise_servicios"
+      hx-swap="innerHTML"
+      hx-target="#enterprise-help"
+      >Servicios Ofecidos</a
+    >
+    <a>Sources</a>
+    <a>Forks</a>
+  </p>
+  <a class="panel-block is-lost">
+    <span class="panel-icon is-lost">
+      <i class="fas fa-trash" aria-hidden="true"></i>
+    </span>
+    Indica que el deal no avanzó más y se perdió.
+  </a>
+  <a class="panel-block is-negotiation">
+    <span class="panel-icon">
+      <i class="fas fa-people-arrows" aria-hidden="true"></i>
+    </span>
+    Existe una negociación.
+  </a>
+  <a class="panel-block">
+    <span class="panel-icon">
+      <i class="fas fa-binoculars" aria-hidden="true"></i>
+    </span>
+    Es prospecto
+  </a>
+  <a class="panel-block">
+    <span class="panel-icon">
+      <i class="fas fa-money-check-alt" aria-hidden="true"></i>
+    </span>
+    En cotización
+  </a>
+  <a class="panel-block">
+    <span class="panel-icon">
+      <i class="fas fa-user-secret" aria-hidden="true"></i>
+    </span>
+    Investigación de la cuenta
+  </a>
+  <a class="panel-block">
+    <span class="panel-icon">
+      <i class="fas fa-handshake" aria-hidden="true"></i>
+    </span>
+    Trato cerrado
+  </a>
+</nav>
