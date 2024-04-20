@@ -1,133 +1,351 @@
-<div class="fixed-grid has-2-cols">
-  <div class="grid">
-    <div class="cell">
-      <form
-        class="box"
-        id="edit-user"
-        hx-patch="http://127.0.0.1:8080/users"
-        hx-swap="innerHTML"
-        hx-headers='{"Content-Type": "application/json"}'
-        hx-ext="json-enc"
-        >
-        <div class="field"> <!-- name -->
-          <label class="label">Nombre</label>
-          <div class="control has-icons-left">
+<div class="cell">
+  <form
+    class="box"
+    id="edit-enterprise"
+    hx-patch="http://192.168.68.106:8080/enterprise"
+    hx-swap="innerHTML"
+    hx-headers='{"Content-Type": "application/json"}'
+    hx-ext="json-enc"
+    hx-vals='{"is_company": false, "deleted": false, "company_name": null}'
+  >
+    <div class="field is-horizontal">
+      <!-- name last name 1-->
+      <div class="field-label is-normal"> <!-- 2 -->
+        <label class="label">Nombre</label>
+      </div>
+      <!-- /2 -->
+      <div class="field-body">
+        <!-- 3 -->
+        <div class="field"> <!-- 4 -->
+          <p class="control is-expanded has-icons-left"> <!-- 5 -->
             <input
               class="input"
               type="text"
               name="name"
               placeholder="Nombre"
-              value="{{name}}"
+              value="{{e.name}}"
             />
             <span class="icon is-small is-left">
               <i class="fas fa-user"></i>
             </span>
-          </div>
-        </div>
-
-        <div class="field"> <!-- last_name -->
-          <label class="label">Apellido</label>
-          <div class="control has-icons-left">
+          </p> <!-- /5 -->
+        </div> <!-- /4 -->
+        <div class="field"> <!-- last_name 6 -->
+          <p class="control is-expanded has-icons-left">
+            <!-- 7 -->
             <input
               class="input"
               type="text"
               name="last_name"
               placeholder="Apellido"
-              value="{{last_name}}"
+              value="{{e.last_name}}"
             />
             <span class="icon is-small is-left">
               <i class="fas fa-user"></i>
             </span>
+          </p>
+          <!-- /7 -->
+        </div> <!-- /6 -->
+
+      </div>
+      <!-- /3 -->
+    </div>
+    <!-- /1 -->
+
+    <div class="field is-horizontal"> <!-- is_company - company_name -->
+      <div class="field-label is-normal">
+        <label class="label">&iquest;Es una empresa?</label>
+      </div>
+
+      <div class="field-body">
+
+        <div class="field is-narrow"> <!-- Is Company -->
+          <div class="control has-icons-left">
+              <input
+                type="checkbox"
+                name="is_company"
+                id="is_company"
+                hx-on:change="is_company_bool()"
+                {{#if e.is_company}} checked {{/if}}
+              />
+              Sí / No
           </div>
         </div>
 
+        <div class="field"> <!-- company_name -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              name="company_name"
+              placeholder="Nombre compañía"
+              value="{{e.company_name}}"
+              hx-on:change="is_company_bool()"
+              id="company_name"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-industry"></i>
+            </span>
+          </div>
+        </div>
+
+
+        <div class="field"> <!-- line_of_business -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              name="line_of_business"
+              placeholder="Giro de la empresa"
+              value="{{e.line_of_business}}"
+              hx-on:keyup="is_company_bool()"
+              id="line_of_business"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-sync-alt"></i>
+            </span>
+          </div>
+        </div>
+
+
+      </div>
+    </div> <!-- /is_company.field.is-horizontal -->
+
+    <div class="field is-horizontal"> <!-- datos de contacto -->
+      <div class="field-label is-normal">
+        <label class="label">Datos de Contacto</label>
+      </div>
+
+      <div class="field-body">
         <div class="field"> <!-- email -->
-          <label class="label">Email</label>
           <div class="control has-icons-left">
             <input
               class="input"
               type="email"
               placeholder="Enter your email"
               name="email"
-              value="{{email}}"
+              value="{{e.email}}"
             />
             <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
             </span>
           </div>
         </div>
-
-        <div class="field"> <!-- email -->
-          <label class="label">Password</label>
+        <div class="field"> <!-- phone -->
           <div class="control has-icons-left">
             <input
               class="input"
-              type="password"
-              hx-on:keyup="pwd_null_or_string()"
-              placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;"
-              id="my-passwd"
-              hx-vals="js:{deleted: false, password:null}"
+              type="text"
+              placeholder="Teléfono de contacto"
+              name="phone"
+              value="{{e.phone}}"
             />
             <span class="icon is-small is-left">
-              <i class="fas fa-key"></i>
+              <i class="fas fa-phone"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal"> <!-- fb - instagram -->
+      <div class="field-label is-normal">
+        <label class="label">Instagram - FB</label>
+      </div>
+      <div class="field-body">
+
+        <div class="field"> <!-- instagram -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter the company instagram"
+              name="instagram"
+              value="{{e.instagram}}"
+            />
+            <span class="icon is-small is-left">
+              <i class="fab fa-instagram"></i>
             </span>
           </div>
         </div>
 
-        <div class="field"> <!-- role -->
-          <label class="label">Rol</label>
+        <div class="field"> <!-- fb -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter the facebook address"
+              name="fb"
+              value="{{e.fb}}"
+            />
+            <span class="icon is-small is-left">
+              <i class="fab fa-facebook"></i>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="field is-horizontal"> <!-- twitter - tiktok -->
+      <div class="field-label is-normal">
+        <label class="label">Twitter - TikTok</label>
+      </div>
+      <div class="field-body">
+
+        <div class="field"> <!-- twitter -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter the company twitter"
+              name="twitter"
+              value="{{e.twitter}}"
+            />
+            <span class="icon is-small is-left">
+              <i class="fab fa-twitter"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="field"> <!-- fb -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter the company tiktok"
+              name="tik_tok"
+              value="{{e.tik_tok}}"
+            />
+            <span class="icon is-small is-left">
+              <i class="fab fa-tiktok"></i>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">LinkedIn</label>
+      </div>
+      <div class="field-body">
+
+        <div class="field"> <!-- linked_in -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter linkedIn address or handle"
+              name="linked_in"
+              value="{{e.linked_in}}"
+            />
+            <span class="icon is-small is-left">
+              <i class="fab fa-linkedin"></i>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Funnel</label>
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
           <div class="control">
-            <div class="select">
-              <select name="role">
-                <option
-                  value="EDITOR"
-                  {{#if (str_equal role_string "EDITOR")}} selected {{/if}}
-                >
-                      Editor
-                  </option>
-                <option
-                  value="ADMIN"
-                  {{#if (str_equal role_string "ADMIN")}} selected {{/if}}
-                >
-                    Admin
-                </option>
+            <div class="select is-fullwidth">
+              <select name="sales_funnel">
+                <option {{#if (str_equal e.sales_funnel "LOST")}} selected {{/if}} value="LOST">Lost</option>
+                <option {{#if (str_equal e.sales_funnel "NEGOTIATION")}} selected {{/if}} value="NEGOTIATION">Negociación</option>
+                <option {{#if (str_equal e.sales_funnel "PROSPECT")}} selected {{/if}} value="PROSPECT">Prospección</option>
+                <option {{#if (str_equal e.sales_funnel "QUOTE")}} selected {{/if}} value="QUOTE">Cotización</option>
+                <option {{#if (str_equal e.sales_funnel "RESEARCH")}} selected {{/if}} value="RESEARCH">Investigación</option>
+                <option {{#if (str_equal e.sales_funnel "WIN")}} selected {{/if}} value="WIN">Win</option>
               </select>
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div class="field"> <!-- notes -->
-          <label class="label">Message</label>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Servicios Ofrecidos</label>
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
           <div class="control">
+            <div class="select is-multiple">
+              <select name="services_offered" size="5" multiple>
+                {{#each options}}
+                    <option {{#if selected}}selected{{/if}} value="{{value}}">{{text}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Notas</label>
+      </div>
+      <div class="field-body">
+        <div class="field"> <!-- notes -->
+          <div class="control is-expanded">
             <textarea
               class="textarea"
               name="notes"
-              placeholder="Enter your message"
-            >{{notes}}</textarea>
+              placeholder="Enter your message">{{e.notes}}</textarea
+            >
           </div>
         </div>
-
-        <!-- hidden_fields -->
-        <input type="hidden" name="uuid" value="{{uuid}}" />
-        <div class="field is-grouped">
-          <div class="control">
-            <button class="button is-link">Submit</button>
-          </div>
-          <div class="control">
-            <button class="button is-link is-light">Cancel</button>
-          </div>
-        </div>
-      </form>
+      </div>
     </div>
-  </div>
+
+
+
+    <!-- hidden_fields -->
+    <input type="hidden" name="uuid" value="{{e.uuid}}" />
+    <input type="hidden" name="first_contact_date" value="{{e.first_contact_date}}" />
+    <div class="field is-grouped">
+      <div class="control">
+        <button class="button is-link">Submit</button>
+      </div>
+      <div class="control">
+        <button class="button is-link is-light"
+          hx-post="http://192.168.68.106:8080/enterprise_table" hx-swap="innerHTML"
+                        hx-target="#dynamic-content"
+        >Cancel</button>
+      </div>
+    </div>
+  </form>
 </div>
+
+
 <script>
-function pwd_null_or_string() {
-  const { value } = document.getElementById('my-passwd');
-  const my_form = document.getElementById('edit-user');
+  function is_company_bool() {
+    const { checked } = document.getElementById("is_company");
+    const my_form = document.getElementById("edit-enterprise");
 
-  const hx_vals = value.length < 10 ? null : `'${value}'`;
+    let { value: line_of_business = null } = document.getElementById("line_of_business");
+    let { value: company_name = null } = document.getElementById("company_name");
 
-  my_form.setAttribute("hx-vals", `js:{deleted: false, password: ${hx_vals}}`);
-}
+    line_of_business = line_of_business ? `"${line_of_business}"` : null;
+    company_name = company_name ? `"${company_name}"` : null;
+
+    my_form.setAttribute(
+      "hx-vals",
+      `js:{deleted: false, is_company: ${checked}, line_of_business: ${line_of_business}, company_name: ${company_name}}`,
+    );
+  }
+
+  (() => is_company_bool())();
 </script>

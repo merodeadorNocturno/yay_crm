@@ -7,7 +7,10 @@ use log::{error, info};
 use serde_json::json;
 
 use crate::db::{config::Database, enterprise_db::EnterpriseDB};
-use crate::models::enterprise_model::*;
+use crate::models::{
+    enterprise_model::*,
+    sales_model::{OptionTag, ServicesOffered},
+};
 use crate::utils::fs_utils::read_hbs_template;
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
@@ -46,9 +49,48 @@ async fn edit_enterprise(
         }
     };
 
+    let mut options: Vec<OptionTag> = vec![
+        OptionTag {
+            value: ServicesOffered::BRANDING,
+            text: ServicesOffered::BRANDING.to_string(),
+            selected: false,
+        },
+        OptionTag {
+            value: ServicesOffered::WEBSERVICES,
+            text: ServicesOffered::WEBSERVICES.to_string(),
+            selected: false,
+        },
+        OptionTag {
+            value: ServicesOffered::DIGITALSTRATEGY,
+            text: ServicesOffered::DIGITALSTRATEGY.to_string(),
+            selected: false,
+        },
+        OptionTag {
+            value: ServicesOffered::ATTRACTIONOFNEWCLIENTS,
+            text: ServicesOffered::ATTRACTIONOFNEWCLIENTS.to_string(),
+            selected: false,
+        },
+        OptionTag {
+            value: ServicesOffered::SALESMANAGEMENT,
+            text: ServicesOffered::SALESMANAGEMENT.to_string(),
+            selected: false,
+        },
+    ];
+
     match enterprise_from_db {
-        Ok(user) => {
-            let render_good = handlebars.render_template(&template_contents, &user)?;
+        Ok(enterprise) => {
+            let services_offered = enterprise.services_offered.clone();
+
+            for option in &mut options {
+                if services_offered.contains(&option.value) {
+                    option.selected = true;
+                }
+            }
+
+            let render_good = handlebars.render_template(
+                &template_contents,
+                &json!({"options": options, "e": enterprise}),
+            )?;
             Ok(render_good)
         }
         Err(e) => {

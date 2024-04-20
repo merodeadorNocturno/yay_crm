@@ -1,48 +1,53 @@
 <div class="box">
   <form
     id="edit-user"
-    hx-patch="http://127.0.0.1:8080/users"
+    hx-patch="http://192.168.68.106:8080/users"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
     hx-vals='{"deleted": false}'
   >
-    <div class="field"> <!-- name -->
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
         <label class="label">Nombre</label>
+      </div> <!-- /field-label -->
+      <div class="field-body">
+        <div class="field"> <!-- name .field -->
 
-      <div class="control has-icons-left">
-        <input
-          class="input"
-          type="text"
-          name="name"
-          placeholder="Nombre"
-          value="{{name}}"
-          autocomplete="given-name"
-        />
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              name="name"
+              placeholder="Nombre"
+              value="{{name}}"
+              autocomplete="given-name"
+            />
 
-        <span class="icon is-small is-left">
-          <i class="fas fa-user"></i>
-        </span>
-      </div>
-    </div>
+            <span class="icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+          </div> <!-- /name .control -->
+        </div> <!-- /name .field -->
 
-    <div class="field"> <!-- last_name -->
-        <label class="label">Apellido</label>
-      <div class="control has-icons-left">
-          <input
-          class="input"
-          type="text"
-          name="last_name"
-          placeholder="Apellido"
-          value="{{last_name}}"
-          autocomplete="family-name"
-        />
-        <span class="icon is-small is-left">
-          <i class="fas fa-user"></i>
-        </span>
+        <div class="field"> <!-- last_name -->
+          <p class="control is-expanded has-icons-left has-icons-right">
+              <input
+              class="input"
+              type="text"
+              name="last_name"
+              placeholder="Apellido"
+              value="{{last_name}}"
+              autocomplete="family-name"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+          </p> <!-- /last_name control -->
+        </div> <!-- last_name -->
+      </div> <!-- field-body -->
+    </div> <!-- /is-horizonal -->
 
-      </div>
-    </div>
 
     <div class="field"> <!-- email -->
 
@@ -123,7 +128,10 @@
         <button class="button is-link">Submit</button>
       </div>
       <div class="control">
-        <button class="button is-link is-light">Cancel</button>
+        <button class="button is-link is-light"
+          hx-post="http://192.168.68.106:8080/user_htmx" hx-swap="innerHTML"
+          hx-target="#dynamic-content"
+        >Cancel</button>
       </div>
     </div>
   </form>

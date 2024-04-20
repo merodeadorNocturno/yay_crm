@@ -24,7 +24,7 @@ impl fmt::Display for SalesFunnel {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum ServicesOffered {
     BRANDING,
     WEBSERVICES,
@@ -33,14 +33,26 @@ pub enum ServicesOffered {
     SALESMANAGEMENT,
 }
 
-// impl fmt::Display for ServicesOffered {
-//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//         match self {
-//             ServicesOffered::BRANDING => write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-copyright\"></i><span class=\"tooltiptext\">Branding</span></span>"),
-//             ServicesOffered::WEBSERVICES => write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-globe-americas\"></i><span class=\"tooltiptext\">Web Services</span></span>"),
-//             ServicesOffered::DIGITALSTRATEGY => write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-robot\"></i><span class=\"tooltiptext\">Digital Strategy</span></span>"),
-//             ServicesOffered::ATTRACTIONOFNEWCLIENTS => write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-magnet\"></i><span class=\"tooltiptext\">Attract new clients</span></span>"),
-//             ServicesOffered::SALESMANAGEMENT => write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"far fa-money-bill-alt\"></i><span class=\"tooltiptext\">Sales Management</span></span>"),
-//         }
-//     }
-// }
+#[derive(Debug, Deserialize, Serialize)]
+pub struct OptionTag {
+    pub value: ServicesOffered,
+    pub text: String,
+    pub selected: bool,
+}
+
+impl fmt::Display for ServicesOffered {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ServicesOffered::BRANDING => write!(f, "BRANDING"),
+            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-copyright\"></i><span class=\"tooltiptext\">Branding</span></span>"),
+            ServicesOffered::WEBSERVICES => write!(f, "WEB SERVICES"),
+            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-globe-americas\"></i><span class=\"tooltiptext\">Web Services</span></span>"),
+            ServicesOffered::DIGITALSTRATEGY => write!(f, "DIGITAL STRATEGY"),
+            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-robot\"></i><span class=\"tooltiptext\">Digital Strategy</span></span>"),
+            ServicesOffered::ATTRACTIONOFNEWCLIENTS => write!(f, "ATTRACTION OF NEW CLIENTS"),
+            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-magnet\"></i><span class=\"tooltiptext\">Attract new clients</span></span>"),
+            ServicesOffered::SALESMANAGEMENT => write!(f, "SALES MANAGEMENT"),
+            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"far fa-money-bill-alt\"></i><span class=\"tooltiptext\">Sales Management</span></span>"),
+        }
+    }
+}
