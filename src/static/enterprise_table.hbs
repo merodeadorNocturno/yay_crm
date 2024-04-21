@@ -9,7 +9,14 @@
   <div class="level-right control has-icons-left">
     <div class="level-item">
       <!-- <p class="level-item"> -->
-      <a class="button is-success">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Empresa</a>
+      <a
+        class="button is-success"
+        hx-post="http://192.168.68.106:8080/new_enterprise"
+        hx-swap="innerHTML"
+        hx-target="#dynamic-content"
+      >
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Empresa</a
+      >
       <span class="icon is-small is-left">
         <i class="fas fa-plus-circle"></i>
       </span>

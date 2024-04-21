@@ -114,3 +114,27 @@ pub fn get_options_and_services() -> (Vec<ServicesOfferedTag>, Vec<SalesFunnelTa
 
     (services_tag, funnel_tag)
 }
+
+pub fn create_option_tags_info_for_services_and_funnel(
+    enterprise_services_offered: Vec<ServicesOffered>,
+    enterprise_sales_funnel: SalesFunnel,
+) -> (Vec<ServicesOfferedTag>, Vec<SalesFunnelTag>) {
+    let (mut services_tag, mut funnel_tag) = get_options_and_services();
+
+    let services_offered = enterprise_services_offered;
+    let sales_funnel = enterprise_sales_funnel;
+
+    for service in &mut services_tag {
+        if services_offered.contains(&service.value) {
+            service.selected = true;
+        }
+    }
+
+    for funnel in &mut funnel_tag {
+        if sales_funnel == funnel.value {
+            funnel.selected = true;
+        }
+    }
+
+    (services_tag, funnel_tag)
+}

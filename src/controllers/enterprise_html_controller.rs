@@ -7,11 +7,11 @@ use log::{error, info};
 use serde_json::json;
 
 use crate::db::{config::Database, enterprise_db::EnterpriseDB};
-use crate::models::{
-    enterprise_model::*,
-    sales_model::{ServicesOffered, ServicesOfferedTag},
+use crate::models::enterprise_model::*;
+use crate::utils::{
+    fs_utils::read_hbs_template,
+    general_utils::{create_option_tags_info_for_services_and_funnel, get_options_and_services},
 };
-use crate::utils::{fs_utils::read_hbs_template, general_utils::get_options_and_services};
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
 
@@ -49,47 +49,16 @@ async fn edit_enterprise(
         }
     };
 
-    let mut options: Vec<ServicesOfferedTag> = vec![
-        ServicesOfferedTag {
-            value: ServicesOffered::BRANDING,
-            text: ServicesOffered::BRANDING.to_string(),
-            selected: false,
-        },
-        ServicesOfferedTag {
-            value: ServicesOffered::WEBSERVICES,
-            text: ServicesOffered::WEBSERVICES.to_string(),
-            selected: false,
-        },
-        ServicesOfferedTag {
-            value: ServicesOffered::DIGITALSTRATEGY,
-            text: ServicesOffered::DIGITALSTRATEGY.to_string(),
-            selected: false,
-        },
-        ServicesOfferedTag {
-            value: ServicesOffered::ATTRACTIONOFNEWCLIENTS,
-            text: ServicesOffered::ATTRACTIONOFNEWCLIENTS.to_string(),
-            selected: false,
-        },
-        ServicesOfferedTag {
-            value: ServicesOffered::SALESMANAGEMENT,
-            text: ServicesOffered::SALESMANAGEMENT.to_string(),
-            selected: false,
-        },
-    ];
-
     match enterprise_from_db {
         Ok(enterprise) => {
-            let services_offered = enterprise.services_offered.clone();
-
-            for option in &mut options {
-                if services_offered.contains(&option.value) {
-                    option.selected = true;
-                }
-            }
+            let (services_tag, funnel_tag) = create_option_tags_info_for_services_and_funnel(
+                enterprise.services_offered.clone(),
+                enterprise.sales_funnel.clone(),
+            );
 
             let render_good = handlebars.render_template(
                 &template_contents,
-                &json!({"options": options, "e": enterprise}),
+                &json!({"services_tag": services_tag, "sales_funnel": funnel_tag, "e": enterprise}),
             )?;
             Ok(render_good)
         }
@@ -98,6 +67,32 @@ async fn edit_enterprise(
             Ok(render_error)
         }
     }
+}
+
+async fn new_enterprise() -> Result<String, RenderError> {
+    let mut handlebars = Handlebars::new();
+    handlebars.register_helper("str_equal", Box::new(str_equal));
+
+    let template_path = "new_enterprise";
+
+    let template_contents = match read_hbs_template(&template_path) {
+        Ok(contents) => contents,
+        Err(e) => {
+            error!(
+                "Couldn't render file for new enterprise:: {}",
+                e.to_string()
+            );
+            EnterpriseHandlebarsError::new(e.to_string()).error
+        }
+    };
+
+    let (services_tag, funnel_tag) = get_options_and_services();
+    let handlebars_render = handlebars.render_template(
+        &template_contents,
+        &json!({"services_tag": services_tag, "sales_funnel": funnel_tag}),
+    )?;
+
+    Ok(handlebars_render)
 }
 
 async fn enterprise_table(db: Data<Database>) -> Result<String, RenderError> {
@@ -178,4 +173,24 @@ pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
       }
     ),
   );
+
+    cfg.route(
+        "/new_enterprise",
+        post().to(|| async move {
+            let new_enterprise_editor = new_enterprise().await;
+
+            match new_enterprise_editor {
+              Ok(new_enterprise) => HttpResponse::Ok()
+                .content_type("text/html")
+                .body(new_enterprise),
+              Err(e) => HttpResponse::Ok()
+                .content_type("text/html")
+                .append_header(("HX-Trigger", "error_enterprise_table"))
+                .body(
+                  format!("<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load Enterprise: {}</span>",
+                  e.to_string())
+                )
+            }
+        }),
+    );
 }

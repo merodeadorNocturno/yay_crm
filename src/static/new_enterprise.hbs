@@ -2,7 +2,7 @@
   <form
     class="box"
     id="edit-enterprise"
-    hx-patch="http://192.168.68.106:8080/enterprise"
+    hx-post="http://192.168.68.106:8080/enterprise"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
@@ -66,7 +66,6 @@
                 name="is_company"
                 id="is_company"
                 hx-on:change="is_company_bool()"
-                {{#if e.is_company}} checked {{/if}}
               />
               Sí / No
           </div>
@@ -253,12 +252,9 @@
           <div class="control">
             <div class="select is-fullwidth">
               <select name="sales_funnel">
-                <option {{#if (str_equal e.sales_funnel "LOST")}} selected {{/if}} value="LOST">Lost</option>
-                <option {{#if (str_equal e.sales_funnel "NEGOTIATION")}} selected {{/if}} value="NEGOTIATION">Negociación</option>
-                <option {{#if (str_equal e.sales_funnel "PROSPECT")}} selected {{/if}} value="PROSPECT">Prospección</option>
-                <option {{#if (str_equal e.sales_funnel "QUOTE")}} selected {{/if}} value="QUOTE">Cotización</option>
-                <option {{#if (str_equal e.sales_funnel "RESEARCH")}} selected {{/if}} value="RESEARCH">Investigación</option>
-                <option {{#if (str_equal e.sales_funnel "WIN")}} selected {{/if}} value="WIN">Win</option>
+                {{#each sales_funnel}}
+                  <option {{#if selected}} selected {{/if}} value="{{value}}">{{text}}</option>
+                {{/each}}
               </select>
             </div>
           </div>
@@ -275,7 +271,7 @@
           <div class="control">
             <div class="select is-multiple">
               <select name="services_offered" size="5" multiple>
-                {{#each options}}
+                {{#each services_tag}}
                     <option {{#if selected}}selected{{/if}} value="{{value}}">{{text}}</option>
                 {{/each}}
               </select>
