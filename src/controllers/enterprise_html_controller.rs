@@ -9,9 +9,9 @@ use serde_json::json;
 use crate::db::{config::Database, enterprise_db::EnterpriseDB};
 use crate::models::{
     enterprise_model::*,
-    sales_model::{OptionTag, ServicesOffered},
+    sales_model::{ServicesOffered, ServicesOfferedTag},
 };
-use crate::utils::fs_utils::read_hbs_template;
+use crate::utils::{fs_utils::read_hbs_template, general_utils::get_options_and_services};
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
 
@@ -49,28 +49,28 @@ async fn edit_enterprise(
         }
     };
 
-    let mut options: Vec<OptionTag> = vec![
-        OptionTag {
+    let mut options: Vec<ServicesOfferedTag> = vec![
+        ServicesOfferedTag {
             value: ServicesOffered::BRANDING,
             text: ServicesOffered::BRANDING.to_string(),
             selected: false,
         },
-        OptionTag {
+        ServicesOfferedTag {
             value: ServicesOffered::WEBSERVICES,
             text: ServicesOffered::WEBSERVICES.to_string(),
             selected: false,
         },
-        OptionTag {
+        ServicesOfferedTag {
             value: ServicesOffered::DIGITALSTRATEGY,
             text: ServicesOffered::DIGITALSTRATEGY.to_string(),
             selected: false,
         },
-        OptionTag {
+        ServicesOfferedTag {
             value: ServicesOffered::ATTRACTIONOFNEWCLIENTS,
             text: ServicesOffered::ATTRACTIONOFNEWCLIENTS.to_string(),
             selected: false,
         },
-        OptionTag {
+        ServicesOfferedTag {
             value: ServicesOffered::SALESMANAGEMENT,
             text: ServicesOffered::SALESMANAGEMENT.to_string(),
             selected: false,
@@ -140,9 +140,11 @@ pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
           |_req: HttpRequest, hbs_path, db: Data<Database>| async move {
               let user_editor = edit_enterprise(hbs_path, db).await;
               match user_editor {
-                  Ok(ue) => HttpResponse::Ok().content_type("text/html").body(ue),
+                  Ok(ue) => HttpResponse::Ok().content_type("text/html")
+                    .body(ue),
                   Err(e) => HttpResponse::Ok()
                       .content_type("text/html")
+                      .append_header(("HX-Trigger", "error_enterprise_table"))
                       .body(
                         format!(
                           "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load enterprise: {}</span>",
@@ -167,6 +169,7 @@ pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
             .body(et),
           Err(e) => HttpResponse::Ok()
             .content_type("text/html")
+            .append_header(("HX-Trigger", "error_enterprise_table"))
             .body(
               format!("<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load Enterprise: {}</span>",
               e.to_string())

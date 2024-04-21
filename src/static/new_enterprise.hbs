@@ -23,7 +23,7 @@
               type="text"
               name="name"
               placeholder="Nombre"
-              value="{{e.name}}"
+              value=""
             />
             <span class="icon is-small is-left">
               <i class="fas fa-user"></i>
@@ -38,7 +38,7 @@
               type="text"
               name="last_name"
               placeholder="Apellido"
-              value="{{e.last_name}}"
+              value=""
             />
             <span class="icon is-small is-left">
               <i class="fas fa-user"></i>
@@ -79,7 +79,7 @@
               type="text"
               name="company_name"
               placeholder="Nombre compañía"
-              value="{{e.company_name}}"
+              value=""
               hx-on:change="is_company_bool()"
               id="company_name"
             />
@@ -97,7 +97,7 @@
               type="text"
               name="line_of_business"
               placeholder="Giro de la empresa"
-              value="{{e.line_of_business}}"
+              value=""
               hx-on:keyup="is_company_bool()"
               id="line_of_business"
             />
@@ -122,7 +122,7 @@
               type="email"
               placeholder="Enter your email"
               name="email"
-              value="{{e.email}}"
+              value=""
             />
             <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
@@ -136,7 +136,7 @@
               type="text"
               placeholder="Teléfono de contacto"
               name="phone"
-              value="{{e.phone}}"
+              value=""
             />
             <span class="icon is-small is-left">
               <i class="fas fa-phone"></i>
@@ -159,7 +159,7 @@
               type="text"
               placeholder="Enter the company instagram"
               name="instagram"
-              value="{{e.instagram}}"
+              value=""
             />
             <span class="icon is-small is-left">
               <i class="fab fa-instagram"></i>
@@ -174,7 +174,7 @@
               type="text"
               placeholder="Enter the facebook address"
               name="fb"
-              value="{{e.fb}}"
+              value=""
             />
             <span class="icon is-small is-left">
               <i class="fab fa-facebook"></i>
@@ -196,7 +196,7 @@
               type="text"
               placeholder="Enter the company twitter"
               name="twitter"
-              value="{{e.twitter}}"
+              value=""
             />
             <span class="icon is-small is-left">
               <i class="fab fa-twitter"></i>
@@ -211,7 +211,7 @@
               type="text"
               placeholder="Enter the company tiktok"
               name="tik_tok"
-              value="{{e.tik_tok}}"
+              value=""
             />
             <span class="icon is-small is-left">
               <i class="fab fa-tiktok"></i>
@@ -233,7 +233,7 @@
               type="text"
               placeholder="Enter linkedIn address or handle"
               name="linked_in"
-              value="{{e.linked_in}}"
+              value=""
             />
             <span class="icon is-small is-left">
               <i class="fab fa-linkedin"></i>
@@ -296,7 +296,7 @@
             <textarea
               class="textarea"
               name="notes"
-              placeholder="Enter your message">{{e.notes}}</textarea
+              placeholder="Enter your message"></textarea
             >
           </div>
         </div>
@@ -306,8 +306,8 @@
 
 
     <!-- hidden_fields -->
-    <input type="hidden" name="uuid" value="{{e.uuid}}" />
-    <input type="hidden" name="first_contact_date" value="{{e.first_contact_date}}" />
+    <input type="hidden" name="uuid" value="" />
+    <input type="hidden" name="first_contact_date" value="" />
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-link">Submit</button>
