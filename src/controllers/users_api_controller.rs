@@ -49,13 +49,29 @@ async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<Json<Use
     match is_valid {
         Ok(_) => {
             let new_uuid = get_uuid();
+            let mut hashed_passwd = "".to_string();
+            info!("{}", &hashed_passwd);
+
+            match new_user.password.clone() {
+                Some(u_pwd) => match pwd_hasher(u_pwd) {
+                    Ok(h_pwd) => {
+                        hashed_passwd = h_pwd.clone();
+                    }
+                    Err(_) => {
+                        hashed_passwd = format!("default_passwd_for_user{}", &new_uuid);
+                    }
+                },
+                None => {
+                    hashed_passwd = format!("default_passwd_for_user{}", &new_uuid);
+                }
+            };
 
             let user_from_json = UserFromJson {
                 name: new_user.name.clone(),
                 last_name: new_user.last_name.clone(),
                 email: new_user.email.clone(),
                 role: new_user.role.clone(),
-                password: new_user.password.clone(),
+                password: Some(hashed_passwd),
                 notes: match new_user.notes {
                     Some(notes) => Some(notes),
                     None => None,

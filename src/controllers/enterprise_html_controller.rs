@@ -10,7 +10,9 @@ use crate::db::{config::Database, enterprise_db::EnterpriseDB};
 use crate::models::enterprise_model::*;
 use crate::utils::{
     fs_utils::read_hbs_template,
-    general_utils::{create_option_tags_info_for_services_and_funnel, get_options_and_services},
+    general_utils::{
+        create_option_tags_info_for_services_and_funnel, get_options_and_services, get_roles_tag,
+    },
 };
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);

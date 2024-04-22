@@ -86,7 +86,7 @@ impl User {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum Roles {
     ADMIN,
     EDITOR,
@@ -99,6 +99,13 @@ impl fmt::Display for Roles {
             Roles::ADMIN => write!(f, "ADMIN"),
         }
     }
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct RolesTag {
+    pub value: Roles,
+    pub text: String,
+    pub selected: bool,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

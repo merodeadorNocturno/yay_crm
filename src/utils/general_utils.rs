@@ -4,8 +4,9 @@
 // use log::{debug, info};
 
 // use serde::Serialize;
-use crate::models::sales_model::{
-    SalesFunnel, SalesFunnelTag, ServicesOffered, ServicesOfferedTag,
+use crate::models::{
+    sales_model::{SalesFunnel, SalesFunnelTag, ServicesOffered, ServicesOfferedTag},
+    users_model::{Roles, RolesTag},
 };
 use uuid::Uuid;
 
@@ -49,6 +50,23 @@ pub fn get_uuid() -> String {
 //         search_by, table_name, where_item_equals
 //     )
 // }
+
+pub fn get_roles_tag() -> Vec<RolesTag> {
+    let roles_tag: Vec<RolesTag> = vec![
+        RolesTag {
+            value: Roles::EDITOR,
+            text: Roles::EDITOR.to_string(),
+            selected: false,
+        },
+        RolesTag {
+            value: Roles::ADMIN,
+            text: Roles::ADMIN.to_string(),
+            selected: false,
+        },
+    ];
+
+    roles_tag
+}
 
 pub fn get_options_and_services() -> (Vec<ServicesOfferedTag>, Vec<SalesFunnelTag>) {
     let services_tag: Vec<ServicesOfferedTag> = vec![
@@ -137,4 +155,18 @@ pub fn create_option_tags_info_for_services_and_funnel(
     }
 
     (services_tag, funnel_tag)
+}
+
+pub fn create_role_tags_for_users(user_role: Roles) -> Vec<RolesTag> {
+    let mut roles_tag = get_roles_tag();
+
+    // let my_roles = user_role;
+
+    for role in &mut roles_tag {
+        if user_role == role.value {
+            role.selected = true;
+        }
+    }
+
+    roles_tag
 }

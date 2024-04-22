@@ -1,13 +1,13 @@
 <div class="box">
   <form
     id="edit-user"
-    hx-patch="http://192.168.68.106:8080/users"
+    hx-post="http://192.168.68.106:8080/users"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
     hx-vals='{"deleted": false}'
   >
-    <div class="field is-horizontal"> <!-- name and last_name -->
+    <div class="field is-horizontal">
       <div class="field-label is-normal">
         <label class="label">Nombre</label>
       </div> <!-- /field-label -->
@@ -20,7 +20,7 @@
               type="text"
               name="name"
               placeholder="Nombre"
-              value="{{u.name}}"
+              value=""
               autocomplete="given-name"
             />
 
@@ -37,7 +37,7 @@
               type="text"
               name="last_name"
               placeholder="Apellido"
-              value="{{u.last_name}}"
+              value=""
               autocomplete="family-name"
             />
             <span class="icon is-small is-left">
@@ -60,7 +60,7 @@
 
           <p class="control has-icons-left is-expanded">
 
-            <input type="email" class="input" placeholder="Enter user's e-mail" name="email" autocomplete="email" value="{{u.email}}"/>
+            <input type="email" class="input" placeholder="Enter user's e-mail" name="email" autocomplete="email" value=""/>
             <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
             </span>
@@ -72,7 +72,7 @@
     </div>
 
 
-    <div class="field is-horizontal"> <!-- password and roles -->
+    <div class="field is-horizontal">
       <div class="field-label is-normal">
         <label class="label">
           Password
@@ -86,8 +86,8 @@
               type="password"
               placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;"
               class="input"
-              hx-on:keyup="pwd_null_or_string()"
               id="my-passwd"
+              name="password"
             >
             <span class="icon is-small is-left">
               <i class="fas fa-key"></i>
@@ -109,7 +109,7 @@
     </div>
 
 
-    <div class="field is-horizontal"> <!-- notes -->
+    <div class="field is-horizontal">
       <div class="field-label is-normal">
         <label class="label">Notas</label>
       </div>
@@ -117,7 +117,7 @@
         <div class="field">
           <p class="control is-expanded">
 
-            <textarea name="notes" class="textarea is-expanded" placeholder="Escriba notas para este usuario">{{u.notes}}</textarea>
+            <textarea name="notes" class="textarea is-expanded" placeholder="Escriba notas para este usuario">{{notes}}</textarea>
 
           </p>
         </div>
@@ -128,7 +128,7 @@
 
 
     <!-- hidden_fields -->
-    <input type="hidden" name="uuid" value="{{u.uuid}}" />
+    <input type="hidden" name="uuid" value="" />
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-link">Submit</button>
