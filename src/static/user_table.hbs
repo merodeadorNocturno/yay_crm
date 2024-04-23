@@ -50,7 +50,11 @@
               <i class="fas fa-pencil-alt"></i>
             </span>
             &nbsp;
-            <span class="icon is-small is-left" hx-trigger="delete-user">
+            <span
+              class="icon is-small is-left"
+              onclick="trigger_delete(this)"
+              data="{{uuid}}"
+            >
               <i class="fas fa-trash"></i>
             </span>
           </td>

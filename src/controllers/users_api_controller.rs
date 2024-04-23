@@ -1,5 +1,5 @@
 use actix_web::{
-    get, patch, post,
+    delete, get, patch, post,
     web::{Data, Json, Path, ServiceConfig},
 };
 
@@ -16,7 +16,21 @@ use crate::{
 
 #[get("/users")]
 async fn find_all(db: Data<Database>) -> Result<Json<Vec<User>>, UserError> {
-    let user = Database::find_all(&db).await;
+    // let user = Database::find_all(&db).await;
+    let user = Database::find_all_non_deleted(&db).await;
+
+    match user {
+        Some(found_users) => Ok(Json(found_users)),
+        None => {
+            error!("Didn't find any User data");
+            Err(UserError::NoUsersFound)
+        }
+    }
+}
+
+#[get("/users/deleted")]
+async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<User>>, UserError> {
+    let user = Database::find_all_deleted(&db).await;
 
     match user {
         Some(found_users) => Ok(Json(found_users)),
@@ -175,9 +189,37 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, 
     }
 }
 
+#[delete("/users/{uuid}")]
+async fn delete_user(
+    db: Data<Database>,
+    user_uuid: Path<UserUuid>,
+) -> Result<Json<User>, UserError> {
+    let uuid = user_uuid.into_inner().uuid;
+    let user_from_db = Database::delete_one(&db, uuid.clone()).await;
+
+    match user_from_db {
+        Some(mut user) => {
+            user.deleted = true;
+            match Database::update_one(&db, user).await {
+                Some(deleted_user) => Ok(Json(deleted_user)),
+                None => {
+                    error!("Unable to update user:: {:?}", &uuid);
+                    Err(UserError::UserCreationFailure)
+                }
+            }
+        }
+        None => {
+            error!("No user found for id:: {:?}", &uuid);
+            Err(UserError::NoUsersFound)
+        }
+    }
+}
+
 pub fn users_api_controllers(cfg: &mut ServiceConfig) {
     cfg.service(find_all);
+    cfg.service(find_all_deleted);
     cfg.service(find_one);
     cfg.service(update_one);
     cfg.service(create);
+    cfg.service(delete_user);
 }

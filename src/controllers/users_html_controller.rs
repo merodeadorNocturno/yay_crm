@@ -90,7 +90,8 @@ async fn new_user() -> Result<String, RenderError> {
 async fn users_table(db: Data<Database>) -> Result<String, RenderError> {
     let template_path = "user_table";
     let handlebars = Handlebars::new();
-    let users_from_db = Database::find_all(&db).await;
+    let users_from_db = Database::find_all_non_deleted(&db).await;
+    // find_all(&db).await;
 
     let template_contents = match read_hbs_template(&template_path) {
         Ok(contents) => contents,

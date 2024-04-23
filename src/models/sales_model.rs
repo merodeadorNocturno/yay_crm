@@ -69,3 +69,8 @@ impl fmt::Display for ServicesOffered {
         }
     }
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct IsDeleted {
+    pub deleted: bool,
+}
