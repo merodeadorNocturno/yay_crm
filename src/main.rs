@@ -1,5 +1,5 @@
 use actix_cors::Cors;
-use actix_web::{web::Data, App, HttpServer};
+use actix_web::{middleware, web::Data, App, HttpServer};
 use env_logger::{Builder, WriteStyle};
 use log::{info, warn, LevelFilter};
 
@@ -51,6 +51,7 @@ async fn main() -> std::io::Result<()> {
         let cors = Cors::permissive().max_age(3600);
 
         App::new()
+            .wrap(middleware::NormalizePath::trim())
             .wrap(cors)
             .app_data(db_data.clone())
             .configure(clinical_api_controllers)

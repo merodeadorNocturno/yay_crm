@@ -88,6 +88,35 @@ pub async fn util_update_one<T: DeserializeOwned + Serialize>(
     }
 }
 
+pub async fn util_find_all_deleted<T: DeserializeOwned + Serialize>(
+    db: &Data<Database>,
+    table_name: &str,
+) -> Option<Vec<T>> {
+    let surreal_query = format!("SELECT * FROM {} WHERE deleted = false", table_name);
+
+    let query_t_result = db.client.query(surreal_query).await;
+
+    match query_t_result {
+        Ok(mut response) => match response.take(0) {
+            Ok(deleted_t_records) => Some(deleted_t_records),
+            Err(e) => {
+                error!(
+                    "Failed to retrieve active records from {}:: {}",
+                    table_name, e
+                );
+                None
+            }
+        },
+        Err(e) => {
+            error!(
+                "Failed to retrieve active records from {}:: {}",
+                table_name, e
+            );
+            None
+        }
+    }
+}
+
 // pub async fn util_query_table<T: DeserializeOwned + Serialize>(
 //     db: &Database,
 //     table_name: &str,
