@@ -47,15 +47,15 @@
               hx-target="#edit-user-dynamic-content"
               class="icon is-small is-left"
             >
-              <i class="fas fa-pencil-alt"></i>
+              <i class="fas fa-pencil-alt" style="cursor: pointer"></i>
             </span>
             &nbsp;
             <span
               class="icon is-small is-left"
-              onclick="trigger_delete(this)"
-              data="{{uuid}}"
+              hx-post="http://192.168.68.106:8080/users/delete/{{uuid}}"
+              hx-swap="#modal-container"
             >
-              <i class="fas fa-trash"></i>
+              <i class="fas fa-trash" style="cursor: pointer"></i>
             </span>
           </td>
         </tr>

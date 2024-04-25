@@ -1,0 +1,34 @@
+<div class="modal is-active" id="delete-user-alert">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">Delete User {{error}}</p>
+      </header>
+      <div class="card-content">
+        <div class="content" id="delete-user-message">
+          &iquest; Desea eliminar al usuario {{u.name}} {{u.last_name}}
+          permanentemente? Esta acción es definitiva.
+          <br />
+          <time datetime="{{date}}">{{date}}</time>
+        </div>
+      </div>
+      <footer class="card-footer">
+        <a class="card-footer-item" onclick="remove_class_delete_user()"
+          >Cancel</a
+        >
+        <a href="#" class="card-footer-item">&nbsp;</a>
+        <a
+          href="#"
+          class="card-footer-item"
+          id="delete-user-button-modal"
+          data="{{u.uuid}}"
+          hx-trigger="trigger-delete-user-event"
+          >Delete User</a
+        >
+      </footer>
+    </div>
+  </div>
+  <input type="hidden" id="rnd" value="" />
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>

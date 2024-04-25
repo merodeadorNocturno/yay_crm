@@ -5,7 +5,7 @@
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
-    hx-vals='{"deleted": false}'
+    hx-vals='{"deleted": false, "password": null}'
   >
     <div class="field is-horizontal"> <!-- name and last_name -->
       <div class="field-label is-normal">
@@ -144,11 +144,11 @@
 </div>
 
 <script>
-function pwd_null_or_string() {
-  const { value } = document.getElementById('my-passwd');
-  const my_form = document.getElementById('edit-user');
+// function pwd_null_or_string() {
+//   const { value } = document.getElementById('my-passwd');
+//   const my_form = document.getElementById('edit-user');
 
-  const hx_vals = value.length < 10 ? `{"hx-vals": false}` : `js:{deleted: false, password: "${value}"}`;
-  my_form.setAttribute("hx-vals", hx_vals);
-}
+//   const hx_vals = value.length < 10 ? `{"hx-vals": false}` : `js:{deleted: false, password: "${value}"}`;
+//   my_form.setAttribute("hx-vals", hx_vals);
+// }
 </script>

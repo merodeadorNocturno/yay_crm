@@ -5,7 +5,7 @@
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
-    hx-vals='{"deleted": false}'
+    hx-vals='{"deleted": false, "password": null}'
   >
     <div class="field is-horizontal">
       <div class="field-label is-normal">
@@ -86,6 +86,7 @@
               type="password"
               placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;"
               class="input"
+              hx-on:keyup="pwd_null_or_string()"
               id="my-passwd"
               name="password"
             >
@@ -117,7 +118,7 @@
         <div class="field">
           <p class="control is-expanded">
 
-            <textarea name="notes" class="textarea is-expanded" placeholder="Escriba notas para este usuario">{{notes}}</textarea>
+            <textarea name="notes" class="textarea is-expanded" placeholder="Escriba notas para este usuario"></textarea>
 
           </p>
         </div>
@@ -145,10 +146,15 @@
 
 <script>
 function pwd_null_or_string() {
-  const { value } = document.getElementById('my-passwd');
+  console.log('key  >>> ');
+  let { value } = document.getElementById('my-passwd');
   const my_form = document.getElementById('edit-user');
-
-  const hx_vals = value.length < 10 ? `{"hx-vals": false}` : `js:{deleted: false, password: "${value}"}`;
+  if (value.length >= 10) {
+    value = null;
+  } else {
+    value = `"${value}"`;
+  }
+  const hx_vals = `js:{deleted: false, password: ${value}}`;
   my_form.setAttribute("hx-vals", hx_vals);
 }
 </script>

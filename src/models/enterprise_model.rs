@@ -4,7 +4,7 @@ use validator::Validate;
 
 use crate::models::sales_model::{SalesFunnel, ServicesOffered};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct EnterpriseUuid {
     pub uuid: String,
 }
@@ -30,7 +30,7 @@ pub struct Enterprise {
     pub linked_in: Option<String>,
     pub tik_tok: Option<String>,
     pub twitter: Option<String>,
-    pub first_contact_date: String,
+    pub first_contact_date: Option<DateTime<Local>>,
     pub sales_funnel: SalesFunnel,
     pub notes: String,
     pub services_offered: Vec<ServicesOffered>,

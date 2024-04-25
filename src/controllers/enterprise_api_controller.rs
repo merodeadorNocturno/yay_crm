@@ -48,12 +48,13 @@ async fn find_one(
 async fn create(
     db: Data<Database>,
     body: Json<Enterprise>,
-) -> Result<Json<Enterprise>, EnterpriseError> {
+) -> Result<Json<EnterpriseUuid>, EnterpriseError> {
     let is_valid = body.validate();
     let date_created = Local::now();
     let mut new_enterprise = body.into_inner();
     new_enterprise.date_created = Some(date_created.clone());
     new_enterprise.date_modified = Some(date_created.clone());
+    new_enterprise.first_contact_date = Some(date_created.clone());
 
     match is_valid {
         Ok(_) => {
@@ -63,7 +64,16 @@ async fn create(
                     .await;
 
             match my_enterprise {
-                Some(enterprise_result) => Ok(Json(enterprise_result)),
+                Some(enterprise_result) => {
+                    let my_uuid = match enterprise_result.uuid {
+                        Some(this_uuid) => EnterpriseUuid { uuid: this_uuid },
+                        None => EnterpriseUuid {
+                            uuid: "".to_string(),
+                        },
+                    };
+
+                    Ok(Json(my_uuid))
+                }
                 None => {
                     error!("Error [POST] /enterprise");
                     Err(EnterpriseError::EnterpriseCreationFailure)

@@ -2,6 +2,7 @@ use actix_web::{
     web::{post, Data, Path, ServiceConfig},
     HttpRequest, HttpResponse,
 };
+use chrono::Local;
 use handlebars::{Handlebars, RenderError};
 use log::{error, info};
 use serde_json::json;
@@ -118,6 +119,50 @@ async fn users_table(db: Data<Database>) -> Result<String, RenderError> {
     }
 }
 
+async fn users_delete_modal(
+    hbs_path: Path<String>,
+    db: Data<Database>,
+) -> Result<String, RenderError> {
+    let uuid = hbs_path.into_inner();
+    let handlebars = Handlebars::new();
+    let template_path = "user_delete_modal";
+    let date_now = Local::now();
+    let my_error = format!("Unable to find uuid {}", &uuid).to_string();
+
+    let user_from_db: Result<User, UserHandlebarsError> =
+        match Database::find_one(&db, uuid.clone()).await {
+            Some(mut user) => {
+                user.role_string = Some(user.role.to_string());
+                Ok(user)
+            }
+            None => {
+                error!("Not user found in db");
+                Err(UserHandlebarsError::new(my_error))
+            }
+        };
+
+    let template_contents = match read_hbs_template(&template_path) {
+        Ok(contents) => contents,
+        Err(e) => {
+            error!("Couldn't render file for new user:: {}", e.to_string(),);
+            UserHandlebarsError::new(e.to_string()).error
+        }
+    };
+
+    match user_from_db {
+        Ok(user) => {
+            let render_good = handlebars
+                .render_template(&template_contents, &json!({"u": user, "date": date_now}))?;
+            Ok(render_good)
+        }
+        Err(e) => {
+            let render_error =
+                handlebars.render_template(&template_contents, &json!({"error": &e}))?;
+            Ok(render_error)
+        }
+    }
+}
+
 pub fn user_html_controllers(cfg: &mut ServiceConfig) {
     cfg.route(
         "/user_htmx/{uuid}",
@@ -184,5 +229,17 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
           }
         }
       ),
+    );
+
+    cfg.route(
+        "/users/delete/{uuid}",
+        post().to(|hbs_path, db: Data<Database>| async move {
+            let users_delete = users_delete_modal(hbs_path, db).await;
+            match users_delete {
+              Ok(ud) => HttpResponse::Ok().content_type("text/html").body(ud),
+              Err(e) => HttpResponse::Ok().content_type("text/html").body(format!("<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load user: {}</span>",
+              e.to_string())),
+            }
+        }),
     );
 }
