@@ -1,0 +1,8 @@
+├── index
+    ├── head
+    ├── body
+    │   ├── container
+    │       ├── navbar
+    │       ├── main
+    │       └── modals
+    ├── footer

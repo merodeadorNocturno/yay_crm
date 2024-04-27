@@ -11,6 +11,7 @@ use crate::{
     db::{config::Database, users_db::UsersDB},
     models::users_model::*,
     utils::{
+        env::{set_env_vars, ConfVars},
         fs_utils::read_hbs_template,
         general_utils::{create_role_tags_for_users, get_roles_tag},
     },
@@ -18,12 +19,12 @@ use crate::{
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
 
-async fn edit_user(hbs_path: Path<String>, db: Data<Database>) -> Result<String, RenderError> {
+async fn user_edit(hbs_path: Path<String>, db: Data<Database>) -> Result<String, RenderError> {
     let uuid = hbs_path.into_inner();
     let my_error = format!("Unable to find uuid {}", &uuid).to_string();
     info!("Edit user screen for uuuid:: {}", &uuid);
 
-    let mut template_path = "edit_user";
+    let mut template_path = "user_edit";
     println!("{:?}", &template_path);
 
     let mut handlebars = Handlebars::new();
@@ -32,13 +33,13 @@ async fn edit_user(hbs_path: Path<String>, db: Data<Database>) -> Result<String,
     let user_from_db: Result<User, UserHandlebarsError> = match Database::find_one(&db, uuid).await
     {
         Some(mut user) => {
-            template_path = "edit_user";
+            template_path = "user_edit";
             user.role_string = Some(user.role.to_string());
             Ok(user)
         }
         None => {
             error!("Not user found in db");
-            template_path = "edit_user";
+            template_path = "user_edit";
             Err(UserHandlebarsError::new(my_error))
         }
     };
@@ -57,10 +58,10 @@ async fn edit_user(hbs_path: Path<String>, db: Data<Database>) -> Result<String,
     match user_from_db {
         Ok(user) => {
             let user_role_tags = create_role_tags_for_users(user.role.clone());
-            let render_good = handlebars.render_template(
-                &template_contents,
-                &json!({"u": user, "roles": user_role_tags}),
-            )?;
+            let cf: ConfVars = set_env_vars();
+
+            let data = json!({"conf": cf, "u": user, "roles": user_role_tags});
+            let render_good = handlebars.render_template(&template_contents, &data)?;
             Ok(render_good)
         }
         Err(e) => {
@@ -92,7 +93,6 @@ async fn users_table(db: Data<Database>) -> Result<String, RenderError> {
     let template_path = "user_table";
     let handlebars = Handlebars::new();
     let users_from_db = Database::find_all_non_deleted(&db).await;
-    // find_all(&db).await;
 
     let template_contents = match read_hbs_template(&template_path) {
         Ok(contents) => contents,
@@ -107,8 +107,11 @@ async fn users_table(db: Data<Database>) -> Result<String, RenderError> {
 
     match users_from_db {
         Some(users) => {
-            let render_good =
-                handlebars.render_template(&template_contents, &json!({ "users": users }))?;
+            let cf: ConfVars = set_env_vars();
+
+            let data = json!({"conf": cf, "users": users});
+            let render_good = handlebars.render_template(&template_contents, &data)?;
+
             Ok(render_good)
         }
         None => {
@@ -168,7 +171,7 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
         "/user_htmx/{uuid}",
         post().to(
             |_req: HttpRequest, hbs_path, db: Data<Database>| async move {
-                let user_editor = edit_user(hbs_path, db).await;
+                let user_editor = user_edit(hbs_path, db).await;
                 match user_editor {
                     Ok(ue) => HttpResponse::Ok().content_type("text/html").body(ue),
                     Err(e) => HttpResponse::Ok()

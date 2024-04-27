@@ -145,16 +145,16 @@
 </div>
 
 <script>
-function pwd_null_or_string() {
-  console.log('key  >>> ');
-  let { value } = document.getElementById('my-passwd');
-  const my_form = document.getElementById('edit-user');
-  if (value.length >= 10) {
-    value = null;
-  } else {
-    value = `"${value}"`;
-  }
-  const hx_vals = `js:{deleted: false, password: ${value}}`;
-  my_form.setAttribute("hx-vals", hx_vals);
-}
+// function pwd_null_or_string() {
+//   console.log('key  >>> ');
+//   let { value } = document.getElementById('my-passwd');
+//   const my_form = document.getElementById('edit-user');
+//   if (value.length >= 10) {
+//     value = null;
+//   } else {
+//     value = `"${value}"`;
+//   }
+//   const hx_vals = `js:{deleted: false, password: ${value}}`;
+//   my_form.setAttribute("hx-vals", hx_vals);
+// }
 </script>

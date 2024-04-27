@@ -235,7 +235,7 @@
       <p class="notification has-text-centered">
         <span
           class="icon is-small tooltip"
-          hx-post="http://192.168.68.106:8080/enterprise_htmx/{{uuid}}"
+          hx-post="{{../conf.server_protocol}}://{{../conf.server_address}}:{{../conf.server_port}}/enterprise_htmx/{{uuid}}"
           hx-swap="innerHTML"
           hx-target="#dynamic-content"
         >
@@ -247,3 +247,5 @@
   </div>
   {{/each}}
 </div>
+{{#each conf}}{{server_protocol}}{{/each}}{{#each
+conf}}{{server_address}}{{/each}}

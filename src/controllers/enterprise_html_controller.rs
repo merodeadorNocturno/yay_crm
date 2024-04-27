@@ -9,13 +9,14 @@ use serde_json::json;
 use crate::db::{config::Database, enterprise_db::EnterpriseDB};
 use crate::models::enterprise_model::*;
 use crate::utils::{
+    env::{set_env_vars, ConfVars},
     fs_utils::read_hbs_template,
     general_utils::{create_option_tags_info_for_services_and_funnel, get_options_and_services},
 };
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
 
-async fn edit_enterprise(
+async fn enterprise_edit(
     hbs_path: Path<String>,
     db: Data<Database>,
 ) -> Result<String, RenderError> {
@@ -26,7 +27,7 @@ async fn edit_enterprise(
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("str_equal", Box::new(str_equal));
 
-    let mut template_path = "edit_enterprise";
+    let mut template_path = "enterprise_edit";
 
     let enterprise_from_db: Result<Enterprise, EnterpriseHandlebarsError> =
         match Database::find_one(&db, uuid).await {
@@ -69,7 +70,7 @@ async fn edit_enterprise(
     }
 }
 
-async fn new_enterprise() -> Result<String, RenderError> {
+async fn enterprise_new() -> Result<String, RenderError> {
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("str_equal", Box::new(str_equal));
 
@@ -116,8 +117,10 @@ async fn enterprise_table(db: Data<Database>) -> Result<String, RenderError> {
 
     match enterprises_from_db {
         Some(enterprises) => {
-            let render = handlebars
-                .render_template(&template_contents, &json!({ "enterprises": enterprises }))?;
+            let cf: ConfVars = set_env_vars();
+            let data = json!({ "conf": cf, "enterprises": enterprises });
+
+            let render = handlebars.render_template(&template_contents, &data)?;
             Ok(render)
         }
         None => {
@@ -133,7 +136,7 @@ pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
       "/enterprise_htmx/{uuid}",
       post().to(
           |_req: HttpRequest, hbs_path, db: Data<Database>| async move {
-              let user_editor = edit_enterprise(hbs_path, db).await;
+              let user_editor = enterprise_edit(hbs_path, db).await;
               match user_editor {
                   Ok(ue) => HttpResponse::Ok().content_type("text/html")
                     .body(ue),
@@ -177,7 +180,7 @@ pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
     cfg.route(
         "/new_enterprise",
         post().to(|| async move {
-            let new_enterprise_editor = new_enterprise().await;
+            let new_enterprise_editor = enterprise_new().await;
 
             match new_enterprise_editor {
               Ok(new_enterprise) => HttpResponse::Ok()

@@ -9,7 +9,7 @@
     <div class="level-item">
       <a
         class="button is-success"
-        hx-post="http://192.168.68.106:8080/new_user"
+        hx-post="{{conf.server_protocol}}://{{conf.server_address}}:{{conf.server_port}}/new_user"
         hx-swap="innerHTML"
         hx-target="#edit-user-dynamic-content"
       >
@@ -42,7 +42,7 @@
           <td>{{role}}</td>
           <td>
             <span
-              hx-post="http://192.168.68.106:8080/user_htmx/{{uuid}}"
+              hx-post="{{../conf.server_protocol}}://{{../conf.server_address}}:{{../conf.server_port}}/user_htmx/{{uuid}}"
               hx-swap="innerHTML"
               hx-target="#edit-user-dynamic-content"
               class="icon is-small is-left"
@@ -52,8 +52,7 @@
             &nbsp;
             <span
               class="icon is-small is-left"
-              hx-post="http://192.168.68.106:8080/users/delete/{{uuid}}"
-              hx-swap="#modal-container"
+              hx-on:click="press_trash({{uuid}})"
             >
               <i class="fas fa-trash" style="cursor: pointer"></i>
             </span>
