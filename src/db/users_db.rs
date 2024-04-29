@@ -53,27 +53,37 @@ impl UsersDB for Database {
 
     async fn delete_one(db: &Data<Database>, uuid: String) -> Option<User> {
         let users_table = format!("{}", USERS_TABLE.clone());
-        let user: Result<Option<User>, Error> = db
+        let user_uuid = format!("users:{}", &uuid);
+        let user_exists: Result<Option<User>, Error> = db
             .client
-            .update((users_table, uuid))
-            .patch(PatchOp::replace("/deleted", true))
-            .patch(PatchOp::replace("/date_modified", Local::now()))
+            .select((users_table.clone(), user_uuid.clone()))
             .await;
 
-        match user {
-            Ok(d_user) => match d_user {
-                Some(deleted_user) => Some(deleted_user),
-                None => None,
-            },
-            Err(e) => {
-                error!("Failed to update user {}", e);
-                None
+        if let Ok(Some(_)) = user_exists {
+            let user: Result<Option<User>, Error> = db
+                .client
+                .update((users_table, user_uuid))
+                .patch(PatchOp::replace("/deleted", true))
+                .patch(PatchOp::replace("/date_modified", Local::now()))
+                .await;
+
+            match user {
+                Ok(d_user) => match d_user {
+                    Some(deleted_user) => Some(deleted_user),
+                    None => None,
+                },
+                Err(e) => {
+                    error!("Failed to update user {}", e);
+                    None
+                }
             }
+        } else {
+            None
         }
     }
 
     async fn find_all_non_deleted(db: &Data<Database>) -> Option<Vec<User>> {
-        util_find_all_deleted(&db, &USERS_TABLE).await
+        util_find_all_non_deleted(&db, &USERS_TABLE).await
     }
 
     async fn find_all_deleted(db: &Data<Database>) -> Option<Vec<User>> {

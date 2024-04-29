@@ -1,4 +1,4 @@
-<nav class="level">
+<nav class="level" id="user-table">
   <!-- Left side -->
   <div class="level-left">
     <div class="level-item"></div>
@@ -51,8 +51,9 @@
             </span>
             &nbsp;
             <span
-              class="icon is-small is-left"
-              hx-on:click="press_trash({{uuid}})"
+              class="icon is-small is-left press-trash"
+              data-id="{{uuid}}"
+              data-name="{{name}} {{last_name}}"
             >
               <i class="fas fa-trash" style="cursor: pointer"></i>
             </span>
@@ -65,3 +66,5 @@
   </div>
   <div class="column" id="edit-user-dynamic-content"></div>
 </div>
+
+<script src="/static/scripts/fsm.js" defer></script>

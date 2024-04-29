@@ -1,7 +1,7 @@
 <div class="box">
   <form
     id="edit-user"
-    hx-post="http://192.168.68.106:8080/users"
+    hx-post="{{conf.server_protocol}}://{{conf.server_address}}:{{conf.server_port}}/users"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
@@ -136,25 +136,10 @@
       </div>
       <div class="control">
         <button class="button is-link is-light"
-          hx-post="http://192.168.68.106:8080/user_htmx" hx-swap="innerHTML"
+          hx-post="{{conf.server_protocol}}://{{conf.server_address}}:{{conf.server_port}}/user_htmx" hx-swap="innerHTML"
           hx-target="#dynamic-content"
         >Cancel</button>
       </div>
     </div>
   </form>
 </div>
-
-<script>
-// function pwd_null_or_string() {
-//   console.log('key  >>> ');
-//   let { value } = document.getElementById('my-passwd');
-//   const my_form = document.getElementById('edit-user');
-//   if (value.length >= 10) {
-//     value = null;
-//   } else {
-//     value = `"${value}"`;
-//   }
-//   const hx_vals = `js:{deleted: false, password: ${value}}`;
-//   my_form.setAttribute("hx-vals", hx_vals);
-// }
-</script>

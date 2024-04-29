@@ -57,10 +57,10 @@ async fn enterprise_edit(
                 enterprise.sales_funnel.clone(),
             );
 
-            let render_good = handlebars.render_template(
-                &template_contents,
-                &json!({"services_tag": services_tag, "sales_funnel": funnel_tag, "e": enterprise}),
-            )?;
+            let cf: ConfVars = set_env_vars();
+            let data = json!({ "conf": cf, "services_tag": services_tag, "sales_funnel": funnel_tag, "e": enterprise});
+
+            let render_good = handlebars.render_template(&template_contents, &data)?;
             Ok(render_good)
         }
         Err(e) => {
@@ -74,7 +74,7 @@ async fn enterprise_new() -> Result<String, RenderError> {
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("str_equal", Box::new(str_equal));
 
-    let template_path = "new_enterprise";
+    let template_path = "enterprise_new";
 
     let template_contents = match read_hbs_template(&template_path) {
         Ok(contents) => contents,
@@ -88,10 +88,10 @@ async fn enterprise_new() -> Result<String, RenderError> {
     };
 
     let (services_tag, funnel_tag) = get_options_and_services();
-    let handlebars_render = handlebars.render_template(
-        &template_contents,
-        &json!({"services_tag": services_tag, "sales_funnel": funnel_tag}),
-    )?;
+    let cf: ConfVars = set_env_vars();
+    let data = json!({ "conf": cf, "services_tag": services_tag, "sales_funnel": funnel_tag});
+
+    let handlebars_render = handlebars.render_template(&template_contents, &data)?;
 
     Ok(handlebars_render)
 }

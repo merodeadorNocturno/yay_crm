@@ -71,9 +71,9 @@ async fn user_edit(hbs_path: Path<String>, db: Data<Database>) -> Result<String,
     }
 }
 
-async fn new_user() -> Result<String, RenderError> {
+async fn user_new() -> Result<String, RenderError> {
     let handlebars = Handlebars::new();
-    let template_path = "new_user";
+    let template_path = "user_new";
 
     let template_contents = match read_hbs_template(&template_path) {
         Ok(contents) => contents,
@@ -84,7 +84,9 @@ async fn new_user() -> Result<String, RenderError> {
     };
 
     let role_tags = get_roles_tag();
-    let hb_render = handlebars.render_template(&template_contents, &json!({"roles": role_tags}))?;
+    let cf: ConfVars = set_env_vars();
+    let data = json!({"conf": cf, "roles": role_tags});
+    let hb_render = handlebars.render_template(&template_contents, &data)?;
 
     Ok(hb_render)
 }
@@ -166,6 +168,38 @@ async fn users_delete_modal(
     }
 }
 
+async fn user_delete(
+    value_from_path: Path<UserUuid>,
+    db: Data<Database>,
+) -> Result<String, RenderError> {
+    let handlebars = Handlebars::new();
+    let uuid = value_from_path.into_inner().uuid;
+    let user_from_db = Database::delete_one(&db, uuid.clone()).await;
+    let template_path = "uuid_only";
+
+    let template_contents = match read_hbs_template(&template_path) {
+        Ok(contents) => contents,
+        Err(e) => {
+            error!("Couldn't render file for new user:: {}", e.to_string(),);
+            UserHandlebarsError::new(e.to_string()).error
+        }
+    };
+
+    match user_from_db {
+        Some(mut user) => {
+            user.deleted = true;
+            match Database::update_one(&db, user).await {
+                Some(deleted_user) => {
+                    let updated_uuid = deleted_user.uuid;
+                    handlebars.render_template(&template_contents, &json!({"uuid": &updated_uuid}))
+                }
+                None => handlebars.render_template(&template_contents, &json!({"error": &uuid})),
+            }
+        }
+        None => handlebars.render_template(&template_contents, &json!({"error": &uuid})),
+    }
+}
+
 pub fn user_html_controllers(cfg: &mut ServiceConfig) {
     cfg.route(
         "/user_htmx/{uuid}",
@@ -214,7 +248,7 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
       "/new_user",
       post().to(
         || async move {
-          let new_user_form = new_user().await;
+          let new_user_form = user_new().await;
           match new_user_form {
             Ok(uf) => HttpResponse::Ok()
               .content_type("text/html")
@@ -222,7 +256,7 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
               .body(uf),
             Err(e) => HttpResponse::Ok()
               .content_type("text/html")
-            .append_header(("HX-Trigger", "user-error"))
+              .append_header(("HX-Trigger", "user-error"))
               .body(
                 format!(
                   "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load users: {}</span>",
@@ -242,6 +276,28 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
               Ok(ud) => HttpResponse::Ok().content_type("text/html").body(ud),
               Err(e) => HttpResponse::Ok().content_type("text/html").body(format!("<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load user: {}</span>",
               e.to_string())),
+            }
+        }),
+    );
+
+    cfg.route(
+        "/user/delete/{uuid}",
+        post().to(|hbs_path, db: Data<Database>| async move {
+            let deleted_user = user_delete(hbs_path, db).await;
+            match deleted_user {
+                Ok(du) => HttpResponse::Ok()
+                    .content_type("text/html")
+                    .append_header(("HX-Trigger", "user-delete-confirmation"))
+                    .body(du),
+                Err(e) => HttpResponse::Ok()
+                  .content_type("text/html")
+                  .append_header(("HX-Trigger", "user-delete-error"))
+                  .body(
+                    format!(
+                      "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load users: {}</span>",
+                      e.to_string()
+                    )
+                  )
             }
         }),
     );

@@ -88,7 +88,7 @@ pub async fn util_update_one<T: DeserializeOwned + Serialize>(
     }
 }
 
-pub async fn util_find_all_deleted<T: DeserializeOwned + Serialize>(
+pub async fn util_find_all_non_deleted<T: DeserializeOwned + Serialize>(
     db: &Data<Database>,
     table_name: &str,
 ) -> Option<Vec<T>> {
