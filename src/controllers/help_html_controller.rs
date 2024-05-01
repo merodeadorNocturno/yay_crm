@@ -2,8 +2,12 @@ use actix_web::{
     web::{get, ServiceConfig},
     HttpResponse,
 };
+use serde_json::json;
 
-use crate::utils::fs_utils::read_hbs_template;
+use crate::utils::{
+    env::{set_env_vars, ConfVars},
+    fs_utils::read_hbs_template,
+};
 use handlebars::{Handlebars, RenderError};
 use log::{debug, error};
 use serde::{Deserialize, Serialize};
@@ -33,6 +37,8 @@ async fn help_html() -> Result<String, RenderError> {
         help: "".to_string(),
     };
 
+    let cf: ConfVars = set_env_vars();
+
     let template_contents = match read_hbs_template(&template_path) {
         Ok(contents) => contents,
         Err(e) => {
@@ -44,7 +50,9 @@ async fn help_html() -> Result<String, RenderError> {
         }
     };
 
-    let yay_help = handlebars.render_template(&template_contents, &help_data)?;
+    let data = json!({"h": help_data, "conf": cf});
+
+    let yay_help = handlebars.render_template(&template_contents, &data)?;
     Ok(yay_help)
 }
 
@@ -57,6 +65,8 @@ async fn help_enterprise() -> Result<String, RenderError> {
         help: "".to_string(),
     };
 
+    let cf: ConfVars = set_env_vars();
+
     let template_contents = match read_hbs_template(&template_path) {
         Ok(contents) => contents,
         Err(e) => {
@@ -68,7 +78,9 @@ async fn help_enterprise() -> Result<String, RenderError> {
         }
     };
 
-    let yay_help = handlebars.render_template(&template_contents, &help_data)?;
+    let data = json!({"h": help_data, "conf": cf});
+
+    let yay_help = handlebars.render_template(&template_contents, &data)?;
     Ok(yay_help)
 }
 
@@ -92,7 +104,9 @@ async fn enterprise_avance_panel() -> Result<String, RenderError> {
         }
     };
 
-    let yay_help = handlebars.render_template(&template_contents, &help_data)?;
+    let cf: ConfVars = set_env_vars();
+    let data = json!({"h": help_data, "conf": cf});
+    let yay_help = handlebars.render_template(&template_contents, &data)?;
     Ok(yay_help)
 }
 
@@ -116,7 +130,10 @@ async fn enterprise_services_panel() -> Result<String, RenderError> {
         }
     };
 
-    let yay_help = handlebars.render_template(&template_contents, &help_data)?;
+    let cf: ConfVars = set_env_vars();
+    let data = json!({"h": help_data, "conf": cf});
+
+    let yay_help = handlebars.render_template(&template_contents, &data)?;
     Ok(yay_help)
 }
 

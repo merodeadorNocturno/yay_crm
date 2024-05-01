@@ -5,10 +5,8 @@ use lazy_static::lazy_static;
 use log::error;
 use surrealdb::{opt::PatchOp, Error};
 
-use crate::db::config::Database;
-// use crate::error::user_error::UserError;
-// use crate::models::sales_model::IsDeleted;
 use crate::constants::connection::set_environment_variable;
+use crate::db::config::Database;
 use crate::models::users_model::User;
 use crate::utils::crud::*;
 
@@ -53,16 +51,13 @@ impl UsersDB for Database {
 
     async fn delete_one(db: &Data<Database>, uuid: String) -> Option<User> {
         let users_table = format!("{}", USERS_TABLE.clone());
-        let user_uuid = format!("users:{}", &uuid);
-        let user_exists: Result<Option<User>, Error> = db
-            .client
-            .select((users_table.clone(), user_uuid.clone()))
-            .await;
+        let user_exists: Result<Option<User>, Error> =
+            db.client.select((users_table.clone(), uuid.clone())).await;
 
         if let Ok(Some(_)) = user_exists {
             let user: Result<Option<User>, Error> = db
                 .client
-                .update((users_table, user_uuid))
+                .update((users_table, uuid))
                 .patch(PatchOp::replace("/deleted", true))
                 .patch(PatchOp::replace("/date_modified", Local::now()))
                 .await;

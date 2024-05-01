@@ -180,22 +180,16 @@ async fn user_delete(
     let template_contents = match read_hbs_template(&template_path) {
         Ok(contents) => contents,
         Err(e) => {
-            error!("Couldn't render file for new user:: {}", e.to_string(),);
+            error!("Couldn't render file for deleted user:: {}", e.to_string(),);
             UserHandlebarsError::new(e.to_string()).error
         }
     };
 
     match user_from_db {
-        Some(mut user) => {
-            user.deleted = true;
-            match Database::update_one(&db, user).await {
-                Some(deleted_user) => {
-                    let updated_uuid = deleted_user.uuid;
-                    handlebars.render_template(&template_contents, &json!({"uuid": &updated_uuid}))
-                }
-                None => handlebars.render_template(&template_contents, &json!({"error": &uuid})),
-            }
-        }
+        Some(_) => match Database::delete_one(&db, uuid.clone()).await {
+            Some(_) => handlebars.render_template(&template_contents, &json!({"uuid": &uuid})),
+            None => handlebars.render_template(&template_contents, &json!({"error": &uuid})),
+        },
         None => handlebars.render_template(&template_contents, &json!({"error": &uuid})),
     }
 }
@@ -287,7 +281,7 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
             match deleted_user {
                 Ok(du) => HttpResponse::Ok()
                     .content_type("text/html")
-                    .append_header(("HX-Trigger", "user-delete-confirmation"))
+                    .append_header(("HX-Trigger", "user_delete_confirmation"))
                     .body(du),
                 Err(e) => HttpResponse::Ok()
                   .content_type("text/html")
