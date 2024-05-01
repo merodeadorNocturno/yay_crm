@@ -59,7 +59,7 @@ async fn help_html() -> Result<String, RenderError> {
 async fn help_enterprise() -> Result<String, RenderError> {
     let handlebars = Handlebars::new();
 
-    let template_path = "help_enterprise_html";
+    let template_path = "enterprise_help_html";
 
     let help_data = HelpData {
         help: "".to_string(),
@@ -87,7 +87,7 @@ async fn help_enterprise() -> Result<String, RenderError> {
 async fn enterprise_avance_panel() -> Result<String, RenderError> {
     let handlebars = Handlebars::new();
 
-    let template_path = "help_enterprise_avance_html";
+    let template_path = "enterprise_help_avance_html";
 
     let help_data = HelpData {
         help: "".to_string(),
@@ -113,7 +113,7 @@ async fn enterprise_avance_panel() -> Result<String, RenderError> {
 async fn enterprise_services_panel() -> Result<String, RenderError> {
     let handlebars = Handlebars::new();
 
-    let template_path = "help_enterprise_services_html";
+    let template_path = "enterprise_help_services_html";
     debug!("template path: {}", template_path);
     let help_data = HelpData {
         help: "".to_string(),
