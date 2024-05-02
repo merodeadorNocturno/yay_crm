@@ -51,6 +51,7 @@ async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<Json<Clinica
     let mut new_clinical = body.into_inner();
     new_clinical.date_created = Some(date_created.clone());
     new_clinical.date_modified = Some(date_created.clone());
+    new_clinical.first_contact_date = Some(date_created.clone());
 
     match is_valid {
         Ok(_) => {
@@ -104,8 +105,13 @@ async fn update_one(
                 name: body.name.clone(),
                 is_company: body.is_company.clone(),
                 last_name: body.last_name.clone(),
+                clinic_name: match Some(&body.clinic_name) {
+                    Some(clinic_name) => clinic_name.clone(),
+                    None => None,
+                },
                 specialty: body.specialty.clone(),
                 email: body.email.clone(),
+                phone: body.phone.clone(),
                 deleted: body.deleted.clone(),
                 fb: match Some(&body.fb) {
                     Some(fb_req) => fb_req.clone(),

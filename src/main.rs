@@ -16,7 +16,8 @@ mod utils;
 use crate::db::config::Database;
 use crate::{
     controllers::{
-        clinical_api_controller::clinical_api_controllers,
+        clinics_api_controller::clinical_api_controllers,
+        clinics_html_controller::clinical_html_controllers,
         enterprise_api_controller::enterprise_api_controllers,
         enterprise_html_controller::enterprise_html_controllers,
         help_html_controller::help_html_controllers, users_api_controller::users_api_controllers,
@@ -64,6 +65,7 @@ async fn main() -> std::io::Result<()> {
             .configure(user_html_controllers)
             .configure(enterprise_html_controllers)
             .configure(help_html_controllers)
+            .configure(clinical_html_controllers)
     })
     .bind(server_address_conf)
     .expect("FAILED TO BIND TO PORT")

@@ -17,9 +17,12 @@ pub struct Clinical {
     #[validate(length(min = 2, message = "Lastname does not match valid length"))]
     pub last_name: String,
     pub is_company: bool,
+    #[validate(length(min = 2, message = "Clinic/Hospital name does not match valid length"))]
+    pub clinic_name: Option<String>,
     pub specialty: String,
     #[validate(email)]
     pub email: String,
+    pub phone: String,
     pub deleted: bool,
     #[validate(url)]
     pub fb: Option<String>,
@@ -27,7 +30,7 @@ pub struct Clinical {
     pub linked_in: Option<String>,
     pub tik_tok: Option<String>,
     pub twitter: Option<String>,
-    pub first_contact_date: String,
+    pub first_contact_date: Option<DateTime<Local>>,
     pub sales_funnel: SalesFunnel,
     pub notes: String,
     pub services_offered: Vec<ServicesOffered>,
@@ -50,8 +53,8 @@ pub struct ClinicalHandlebarsError {
     pub error: String,
 }
 
-// impl ClinicalHandlebarsError {
-//     pub fn new(error: String) -> ClinicalHandlebarsError {
-//         ClinicalHandlebarsError { error }
-//     }
-// }
+impl ClinicalHandlebarsError {
+    pub fn new(error: String) -> ClinicalHandlebarsError {
+        ClinicalHandlebarsError { error }
+    }
+}

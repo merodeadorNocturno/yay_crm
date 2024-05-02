@@ -1,9 +1,11 @@
-use actix_web::web::Data;
-use async_trait::async_trait;
-
 use crate::db::config::Database;
 use crate::models::enterprise_model::Enterprise;
 use crate::utils::{crud::*, general_utils::get_uuid};
+use actix_web::web::Data;
+use async_trait::async_trait;
+// use surrealdb::opt::Resource;
+// use surrealdb::Notification;
+// use surrealdb::{engine::remote::ws::Client, method::Stream, Error, Notification};
 
 const ENTERPRISE_TABLE: &str = "enterprise";
 
