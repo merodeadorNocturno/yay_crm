@@ -223,7 +223,7 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
           match my_users_table {
             Ok(ut) => HttpResponse::Ok()
               .content_type("text/html")
-              .append_header(("HX-Trigger", "user_table"))
+              .append_header(("HX-Trigger", "activate_navbar_element"))
               .body(ut),
             Err(e) => HttpResponse::Ok()
               .content_type("text/html")

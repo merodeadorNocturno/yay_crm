@@ -5,7 +5,7 @@
       <ul class="menu-list">
         <li>
           <a
-            hx-get="{{conf.server_protocol}}://{{conf.server_address}}:{{conf.server_port}}/help_enterprise"
+            hx-get="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/help_enterprise"
             hx-swap="innerHTML"
             hx-target="#enterprise-help"
           >

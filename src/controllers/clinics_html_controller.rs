@@ -19,7 +19,7 @@ handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
 async fn clinical_edit(hbs_path: Path<String>, db: Data<Database>) -> Result<String, RenderError> {
     let uuid = hbs_path.into_inner();
     let my_error = format!("Unable to find uuid {}", &uuid).to_string();
-    info!("Edit user screen for uuuid:: {}", &uuid);
+    info!("Edit user screen for uuid:: {}", &uuid);
 
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("str_equal", Box::new(str_equal));
@@ -55,7 +55,12 @@ async fn clinical_edit(hbs_path: Path<String>, db: Data<Database>) -> Result<Str
             );
 
             let cf: ConfVars = set_env_vars();
-            let data = json!({ "conf": cf, "services_tag": services_tag, "sales_funnel": funnel_tag, "c": this_clinic});
+            let data = json!({
+              "conf": cf,
+              "services_tag": services_tag,
+              "sales_funnel": funnel_tag,
+              "c": this_clinic
+            });
 
             let render_good = handlebars.render_template(&template_contents, &data)?;
             Ok(render_good)
@@ -133,10 +138,10 @@ pub fn clinical_html_controllers(cfg: &mut ServiceConfig) {
       "/clinics/edit/{uuid}",
       post().to(
           |_req: HttpRequest, hbs_path, db: Data<Database>| async move {
-              let user_editor = clinical_edit(hbs_path, db).await;
-              match user_editor {
-                  Ok(ue) => HttpResponse::Ok().content_type("text/html")
-                    .body(ue),
+              let clinic_editor_screen = clinical_edit(hbs_path, db).await;
+              match clinic_editor_screen {
+                  Ok(ces) => HttpResponse::Ok().content_type("text/html")
+                    .body(ces),
                   Err(e) => HttpResponse::Ok()
                       .content_type("text/html")
                       .append_header(("HX-Trigger", "error_enterprise_table"))
@@ -160,7 +165,7 @@ pub fn clinical_html_controllers(cfg: &mut ServiceConfig) {
         match my_enterprise_table {
           Ok(et) => HttpResponse::Ok()
             .content_type("text/html")
-            .append_header(("HX-Trigger", "enterprise_table"))
+            .append_header(("HX-Trigger", "activate_navbar_element"))
             .body(et),
           Err(e) => HttpResponse::Ok()
             .content_type("text/html")

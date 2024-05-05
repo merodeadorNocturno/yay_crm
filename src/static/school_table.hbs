@@ -10,11 +10,11 @@
     <div class="level-item">
       <a
         class="button is-success"
-        hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/new_enterprise"
+        hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/htmx/schools/new"
         hx-swap="innerHTML"
         hx-target="#dynamic-content"
       >
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Empresa</a
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Escuela</a
       >
       <span class="icon is-small is-left">
         <i class="fas fa-plus-circle"></i>
@@ -56,17 +56,18 @@
 </div>
 <!-- #enterprise-container .columns:nth-child(even) p -->
 <div class="container" id="enterprise-container">
-  {{#each enterprises}}
+  {{#each schools}}
   <div class="columns is-0">
     <div class="column is-3">
       <p class="notification has-text-centered">
         <span class="icon is-small is-left tooltip">
-          <i
-            class="fas {{#if is_company}}fa-industry{{else}}fa-user-tie{{/if}}"
-          ></i>
-          <span class="tooltiptext">{{line_of_business}}</span>
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span class="tooltiptext">
+            {{#each (levels school_level)}} {{#if selected}}{{value}}, {{/if}}
+            {{/each}}
+          </span>
         </span>
-        {{#if is_company}} {{company_name}} {{else}} {{name}} {{last_name}}
+        {{#if is_company}} {{school_name}} {{else}} {{name}} {{last_name}}
         {{/if}}
       </p>
     </div>
@@ -90,15 +91,15 @@
           ></a>
           <span class="tooltiptext">instagram: {{instagram}}</span>
         </span>
-        {{/if}} {{#if facebook}}
+        {{/if}} {{#if fb}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{facebook}}"
+            href="{{fb}}"
             target="_blank"
             title="facebook {{name}} {{last_name}}"
             ><i class="fab fa-facebook"></i
           ></a>
-          <span class="tooltiptext">facebook: {{facebook}}</span>
+          <span class="tooltiptext">facebook: {{fb}}</span>
         </span>
         {{/if}} {{#if phone}}
         <span class="icon is-small is-left tooltip">
@@ -223,7 +224,7 @@
       <p class="notification has-text-centered">
         <span
           class="icon is-small tooltip"
-          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}:{{../conf.server_port}}/enterprise_htmx/{{uuid}}"
+          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}:{{../conf.server_port}}/htmx/schools/edit/{{uuid}}"
           hx-swap="innerHTML"
           hx-target="#dynamic-content"
         >

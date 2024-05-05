@@ -2,24 +2,23 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::models::sales_model::{SalesFunnel, ServicesOffered};
+use crate::models::sales_model::{SalesFunnel, SchoolLevel, ServicesOffered};
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct ClinicalUuid {
+pub struct SchoolUuid {
     pub uuid: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Validate)]
-pub struct Clinical {
+pub struct School {
     pub uuid: Option<String>,
     #[validate(length(min = 2, message = "Name does not match valid length"))]
     pub name: String,
     #[validate(length(min = 2, message = "Lastname does not match valid length"))]
     pub last_name: String,
-    pub is_company: bool,
     #[validate(length(min = 2, message = "Clinic/Hospital name does not match valid length"))]
-    pub clinic_name: Option<String>,
-    pub specialty: String,
+    pub school_name: String,
+    pub school_level: Vec<SchoolLevel>,
     #[validate(email)]
     pub email: String,
     pub phone: String,
@@ -40,20 +39,20 @@ pub struct Clinical {
     pub modified_by: Option<String>,
 }
 
-impl Clinical {
-    pub fn new(c_uuid: String, clinical: Clinical) -> Clinical {
-        let uuid = Some(c_uuid);
-        Clinical { uuid, ..clinical }
+impl School {
+    pub fn new(s_uuid: String, school: School) -> School {
+        let uuid = Some(s_uuid);
+        School { uuid, ..school }
     }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct ClinicalHandlebarsError {
+pub struct SchoolHandlebarsError {
     pub error: String,
 }
 
-impl ClinicalHandlebarsError {
-    pub fn new(error: String) -> ClinicalHandlebarsError {
-        ClinicalHandlebarsError { error }
+impl SchoolHandlebarsError {
+    pub fn new(error: String) -> SchoolHandlebarsError {
+        SchoolHandlebarsError { error }
     }
 }

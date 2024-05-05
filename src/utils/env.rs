@@ -16,6 +16,7 @@ pub struct ConfVars {
     pub server_address: String,
     pub server_port: String,
     pub server_protocol: String,
+    pub hbs_target_address: String,
 }
 
 pub fn set_env_vars() -> ConfVars {
@@ -23,5 +24,6 @@ pub fn set_env_vars() -> ConfVars {
         server_address: set_environment_variable("SERVER_ADDRESS", "0.0.0.0"),
         server_port: set_environment_variable("SERVER_PORT", "8080"),
         server_protocol: set_environment_variable("SERVER_PROTOCOL", "http"),
+        hbs_target_address: set_environment_variable("HBS_TARGET_ADDRESS", "0.0.0.0"),
     }
 }

@@ -1,17 +1,40 @@
 <div class="cell">
   <form
     class="box"
-    id="edit-enterprise"
-    hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/clinical"
+    id="clinical_edit"
+    hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/schools"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
     hx-vals='{"is_company": false, "deleted": false, "company_name": null}'
   >
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Nombre de la Escuela</label>
+      </div>
+      <div class="field-body">
+        <div class="field"> <!-- linked_in -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter linkedIn address or handle"
+              name="school_name"
+              value="{{s.school_name}}"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-school"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="field is-horizontal">
       <!-- name last name 1-->
       <div class="field-label is-normal"> <!-- 2 -->
-        <label class="label">Nombre</label>
+        <label class="label">Nombre del Contacto</label>
       </div>
       <!-- /2 -->
       <div class="field-body">
@@ -23,7 +46,7 @@
               type="text"
               name="name"
               placeholder="Nombre"
-              value=""
+              value="{{s.name}}"
             />
             <span class="icon is-small is-left">
               <i class="fas fa-user"></i>
@@ -38,7 +61,7 @@
               type="text"
               name="last_name"
               placeholder="Apellido"
-              value=""
+              value="{{s.last_name}}"
             />
             <span class="icon is-small is-left">
               <i class="fas fa-user"></i>
@@ -51,62 +74,6 @@
       <!-- /3 -->
     </div>
     <!-- /1 -->
-
-    <div class="field is-horizontal"> <!-- is_company - company_name -->
-      <div class="field-label is-normal">
-        <label class="label">&iquest;Es Hospital o Clínica?</label>
-      </div>
-
-      <div class="field-body">
-
-        <div class="field is-narrow"> <!-- Is Company -->
-          <div class="control" style="padding-top: 10px;">
-              <input
-                type="checkbox"
-                name="is_company"
-                id="is_company"
-                hx-on:change="is_company_bool()"
-              />
-              Sí / No
-          </div>
-        </div>
-
-        <div class="field"> <!-- clinic_name -->
-          <div class="control has-icons-left">
-            <input
-              class="input"
-              type="text"
-              name="clinic_name"
-              placeholder="Nombre de Clínica/Hospital"
-              value=""
-              hx-on:change="is_company_bool()"
-              id="company_name"
-            />
-            <span class="icon is-small is-left">
-              <i class="fas fa-hospital-user"></i>
-            </span>
-          </div>
-        </div>
-
-
-        <div class="field"> <!-- line_of_business -->
-          <div class="control has-icons-left">
-            <input
-              class="input"
-              type="text"
-              name="specialty"
-              placeholder="Especialidad"
-              value=""
-              hx-on:keyup="is_company_bool()"
-              id="line_of_business"
-            />
-            <span class="icon is-small is-left">
-              <i class="fas fa-sync-alt"></i>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div> <!-- /is_company.field.is-horizontal -->
 
     <div class="field is-horizontal"> <!-- datos de contacto -->
       <div class="field-label is-normal">
@@ -121,7 +88,7 @@
               type="email"
               placeholder="Enter your email"
               name="email"
-              value=""
+              value="{{s.email}}"
             />
             <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
@@ -135,7 +102,7 @@
               type="text"
               placeholder="Teléfono de contacto"
               name="phone"
-              value=""
+              value="{{s.phone}}"
             />
             <span class="icon is-small is-left">
               <i class="fas fa-phone"></i>
@@ -158,7 +125,7 @@
               type="text"
               placeholder="Enter the company instagram"
               name="instagram"
-              value=""
+              value="{{s.instagram}}"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-instagram"></i>
@@ -173,7 +140,7 @@
               type="text"
               placeholder="Enter the facebook address"
               name="fb"
-              value=""
+              value="{{s.fb}}"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-facebook"></i>
@@ -195,7 +162,7 @@
               type="text"
               placeholder="Enter the company twitter"
               name="twitter"
-              value=""
+              value="{{s.twitter}}"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-twitter"></i>
@@ -210,7 +177,7 @@
               type="text"
               placeholder="Enter the company tiktok"
               name="tik_tok"
-              value=""
+              value="{{s.tik_tok}}"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-tiktok"></i>
@@ -232,7 +199,7 @@
               type="text"
               placeholder="Enter linkedIn address or handle"
               name="linked_in"
-              value=""
+              value="{{s.linked_in}}"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-linkedin"></i>
@@ -252,7 +219,7 @@
           <div class="control">
             <div class="select is-fullwidth">
               <select name="sales_funnel">
-                {{#each sales_funnel}}
+                {{#each funnel}}
                   <option {{#if selected}} selected {{/if}} value="{{value}}">{{text}}</option>
                 {{/each}}
               </select>
@@ -262,25 +229,42 @@
       </div>
     </div>
 
+
+
     <div class="field is-horizontal">
+
       <div class="field-label is-normal">
-        <label class="label">Servicios Ofrecidos</label>
+        <label class="label">Niveles Escolares</label>
       </div>
+
       <div class="field-body">
-        <div class="field is-narrow">
-          <div class="control">
+        <div class="field">
+          <div class="control is-expanded">
             <div class="select is-multiple">
-              <select name="services_offered" size="5" multiple>
-                {{#each services_tag}}
+              <select name="school_level" size="5" multiple>
+                {{#each school}}
                     <option {{#if selected}}selected{{/if}} value="{{value}}">{{text}}</option>
                 {{/each}}
               </select>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
+        <div class="field">
+          <div class="control is-expanded">
+            <div class="select is-multiple">
+              <select name="services_offered" size="5" multiple>
+                {{#each services}}
+                    <option {{#if selected}}selected{{/if}} value="{{value}}">{{text}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
 
     <div class="field is-horizontal">
       <div class="field-label is-normal">
@@ -292,7 +276,7 @@
             <textarea
               class="textarea"
               name="notes"
-              placeholder="Enter your message"></textarea
+              placeholder="Enter your message">{{s.notes}}</textarea
             >
           </div>
         </div>
@@ -302,37 +286,18 @@
 
 
     <!-- hidden_fields -->
+    <input type="hidden" name="uuid" value="{{s.uuid}}" />
+    <input type="hidden" name="first_contact_date" value="{{s.first_contact_date}}" />
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-link">Submit</button>
       </div>
       <div class="control">
         <button class="button is-link is-light"
-          hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/clinics_table" hx-swap="innerHTML"
+          hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/htmx/schools/table" hx-swap="innerHTML"
                         hx-target="#dynamic-content"
         >Cancel</button>
       </div>
     </div>
   </form>
 </div>
-
-
-<script>
-  function is_company_bool() {
-    const { checked } = document.getElementById("is_company");
-    const my_form = document.getElementById("edit-enterprise");
-
-    let { value: line_of_business = null } = document.getElementById("line_of_business");
-    let { value: company_name = null } = document.getElementById("company_name");
-
-    line_of_business = line_of_business ? `"${line_of_business}"` : null;
-    company_name = company_name ? `"${company_name}"` : null;
-
-    my_form.setAttribute(
-      "hx-vals",
-      `js:{deleted: false, is_company: ${checked}, line_of_business: ${line_of_business}, company_name: ${company_name}}`,
-    );
-  }
-
-  (() => is_company_bool())();
-</script>

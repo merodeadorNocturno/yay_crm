@@ -91,12 +91,12 @@ impl UsersDB for Database {
             Ok(mut response) => match response.take(0) {
                 Ok(deleted_users) => Some(deleted_users),
                 Err(e) => {
-                    error!("Failed to retrieve active users {}", e);
+                    error!("Failed to retrieve deleted users {}", e);
                     None
                 }
             },
             Err(e) => {
-                error!("Failed to retrieve active users {}", e);
+                error!("Failed to retrieve deleted users {}", e);
                 None
             }
         }

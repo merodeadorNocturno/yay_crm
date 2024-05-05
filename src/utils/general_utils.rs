@@ -1,34 +1,13 @@
-// use std::fmt::Debug;
-
-// use handlebars::{Handlebars, RenderError};
-// use log::{debug, info};
-
-// use serde::Serialize;
 use crate::models::{
-    sales_model::{SalesFunnel, SalesFunnelTag, ServicesOffered, ServicesOfferedTag},
+    sales_model::{
+        SalesFunnel, SalesFunnelTag, SchoolLevel, SchoolLevelTag, ServicesOffered,
+        ServicesOfferedTag,
+    },
     users_model::{Roles, RolesTag},
 };
 use uuid::Uuid;
 
-// pub const DEFAULT_PASSWORD: &[u8; 248] = b"rq^FK?&!5.UVG*+;@!SnE_<gxjZB+A0#0<aU*:x~LOK/,hlQW]Y2oB8+!wxZysG?~{!_I!XbA?_|xta6.nL6k;)cgtIjhLlYp/t7ulx7.[W]%<_5Y|w8MJffH@-Sn]!f9Bz~ivHa8wYvRP:;Wzr2%gv_dbjr&n.UQC$;3|%{qDvKy=IA!p.7g<[0o:qim3!M!x*Sg1!B}5cyN#+!wl5qT8t!@4il]|mjK|xP[!cFMX!F&G!Q!#6,!!c#";
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
-
-// pub fn render_container<T: Serialize + Debug>(
-//     template_path: &str,
-//     object_to_render: &T,
-// ) -> Result<String, RenderError> {
-//     info!("Render Container");
-//     let handlebars = Handlebars::new();
-//     let render_ok = match handlebars.render_template(template_path, object_to_render) {
-//         Ok(render_good) => Ok(render_good),
-//         Err(e) => {
-//             debug!("This is an error in render_container: {:?}", e.to_string());
-//             Err(e)
-//         }
-//     };
-
-//     render_ok
-// }
 
 pub fn get_uuid() -> String {
     let mut buffer = Uuid::encode_buffer();
@@ -42,13 +21,6 @@ pub fn get_uuid() -> String {
 //         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ {:?}",
 //         std::any::type_name::<T>()
 //     );
-// }
-
-// pub fn create_select_query(table_name: &str, search_by: &str, where_item_equals: &str) -> String {
-//     format!(
-//         "SELECT {0} FROM {1} WHERE {0} = '{2}'",
-//         search_by, table_name, where_item_equals
-//     )
 // }
 
 pub fn get_roles_tag() -> Vec<RolesTag> {
@@ -133,6 +105,46 @@ pub fn get_options_and_services() -> (Vec<ServicesOfferedTag>, Vec<SalesFunnelTa
     (services_tag, funnel_tag)
 }
 
+pub fn get_school_level_tags() -> Vec<SchoolLevelTag> {
+    vec![
+        SchoolLevelTag {
+            value: SchoolLevel::NURSERY,
+            text: SchoolLevel::NURSERY.to_string(),
+            selected: false,
+        },
+        SchoolLevelTag {
+            value: SchoolLevel::KINDER,
+            text: SchoolLevel::KINDER.to_string(),
+            selected: false,
+        },
+        SchoolLevelTag {
+            value: SchoolLevel::ELEMENTARY,
+            text: SchoolLevel::ELEMENTARY.to_string(),
+            selected: false,
+        },
+        SchoolLevelTag {
+            value: SchoolLevel::MIDDLESCHOOL,
+            text: SchoolLevel::MIDDLESCHOOL.to_string(),
+            selected: false,
+        },
+        SchoolLevelTag {
+            value: SchoolLevel::HIGHSCHOOL,
+            text: SchoolLevel::HIGHSCHOOL.to_string(),
+            selected: false,
+        },
+        SchoolLevelTag {
+            value: SchoolLevel::TECHNICALSCHOOL,
+            text: SchoolLevel::TECHNICALSCHOOL.to_string(),
+            selected: false,
+        },
+        SchoolLevelTag {
+            value: SchoolLevel::UNIVERSITY,
+            text: SchoolLevel::UNIVERSITY.to_string(),
+            selected: false,
+        },
+    ]
+}
+
 pub fn create_option_tags_info_for_services_and_funnel(
     enterprise_services_offered: Vec<ServicesOffered>,
     enterprise_sales_funnel: SalesFunnel,
@@ -160,8 +172,6 @@ pub fn create_option_tags_info_for_services_and_funnel(
 pub fn create_role_tags_for_users(user_role: Roles) -> Vec<RolesTag> {
     let mut roles_tag = get_roles_tag();
 
-    // let my_roles = user_role;
-
     for role in &mut roles_tag {
         if user_role == role.value {
             role.selected = true;
@@ -169,4 +179,16 @@ pub fn create_role_tags_for_users(user_role: Roles) -> Vec<RolesTag> {
     }
 
     roles_tag
+}
+
+pub fn create_school_level_tags(school_level: Vec<SchoolLevel>) -> Vec<SchoolLevelTag> {
+    let mut level_tag = get_school_level_tags();
+
+    for level in &mut level_tag {
+        if school_level.contains(&level.value) {
+            level.selected = true;
+        }
+    }
+
+    level_tag
 }

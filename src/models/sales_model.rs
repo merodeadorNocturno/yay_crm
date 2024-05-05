@@ -57,15 +57,10 @@ impl fmt::Display for ServicesOffered {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ServicesOffered::BRANDING => write!(f, "BRANDING"),
-            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-copyright\"></i><span class=\"tooltiptext\">Branding</span></span>"),
             ServicesOffered::WEBSERVICES => write!(f, "WEB SERVICES"),
-            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-globe-americas\"></i><span class=\"tooltiptext\">Web Services</span></span>"),
             ServicesOffered::DIGITALSTRATEGY => write!(f, "DIGITAL STRATEGY"),
-            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-robot\"></i><span class=\"tooltiptext\">Digital Strategy</span></span>"),
             ServicesOffered::ATTRACTIONOFNEWCLIENTS => write!(f, "ATTRACTION OF NEW CLIENTS"),
-            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-magnet\"></i><span class=\"tooltiptext\">Attract new clients</span></span>"),
             ServicesOffered::SALESMANAGEMENT => write!(f, "SALES MANAGEMENT"),
-            // write!(f, "<span class=\"icon is-small is-left tooltip\"><i class=\"far fa-money-bill-alt\"></i><span class=\"tooltiptext\">Sales Management</span></span>"),
         }
     }
 }
@@ -73,4 +68,36 @@ impl fmt::Display for ServicesOffered {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct IsDeleted {
     pub deleted: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+pub enum SchoolLevel {
+    NURSERY,
+    KINDER,
+    ELEMENTARY,
+    MIDDLESCHOOL,
+    HIGHSCHOOL,
+    TECHNICALSCHOOL,
+    UNIVERSITY,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SchoolLevelTag {
+    pub value: SchoolLevel,
+    pub text: String,
+    pub selected: bool,
+}
+
+impl fmt::Display for SchoolLevel {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            SchoolLevel::NURSERY => write!(f, "Guardería"),
+            SchoolLevel::KINDER => write!(f, "Kinder"),
+            SchoolLevel::ELEMENTARY => write!(f, "Primaria"),
+            SchoolLevel::MIDDLESCHOOL => write!(f, "Secundaria"),
+            SchoolLevel::HIGHSCHOOL => write!(f, "Preparatoria"),
+            SchoolLevel::TECHNICALSCHOOL => write!(f, "Escuela Técnica"),
+            SchoolLevel::UNIVERSITY => write!(f, "Universidad"),
+        }
+    }
 }

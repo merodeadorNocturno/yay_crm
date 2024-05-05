@@ -146,7 +146,7 @@ pub fn help_html_controllers(cfg: &mut ServiceConfig) {
       match yay_help_template {
         Ok(yht) => HttpResponse::Ok()
           .content_type("text/html")
-          .append_header(("HX-Trigger", "help_table"))
+          .append_header(("HX-Trigger", "activate_navbar_element"))
           .body(yht),
         Err(e) => HttpResponse::Ok()
           .content_type("text/html")

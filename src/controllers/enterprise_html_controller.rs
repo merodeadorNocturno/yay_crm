@@ -163,7 +163,7 @@ pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
         match my_enterprise_table {
           Ok(et) => HttpResponse::Ok()
             .content_type("text/html")
-            .append_header(("HX-Trigger", "enterprise_table"))
+            .append_header(("HX-Trigger", "activate_navbar_element"))
             .body(et),
           Err(e) => HttpResponse::Ok()
             .content_type("text/html")

@@ -2,7 +2,7 @@
   <form
     class="box"
     id="edit-enterprise"
-    hx-post="{{conf.server_protocol}}://{{conf.server_address}}:{{conf.server_port}}/enterprise"
+    hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/enterprise"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
@@ -60,7 +60,8 @@
       <div class="field-body">
 
         <div class="field is-narrow"> <!-- Is Company -->
-          <div class="control has-icons-left">
+          <div class="control" style="padding-top: 10px;">
+            <label class="checkbox">
               <input
                 type="checkbox"
                 name="is_company"
@@ -68,6 +69,7 @@
                 hx-on:change="is_company_bool()"
               />
               Sí / No
+            </label>
           </div>
         </div>
 
@@ -308,7 +310,7 @@
       </div>
       <div class="control">
         <button class="button is-link is-light"
-          hx-post="{{conf.server_protocol}}://{{conf.server_address}}:{{conf.server_port}}/enterprise_table" hx-swap="innerHTML"
+          hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/enterprise_table" hx-swap="innerHTML"
                         hx-target="#dynamic-content"
         >Cancel</button>
       </div>

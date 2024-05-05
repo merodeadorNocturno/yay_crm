@@ -1,5 +1,5 @@
 use actix_web::{
-    get, patch, post,
+    delete, get, patch, post,
     web::{Data, Json, Path, ServiceConfig},
 };
 
@@ -16,7 +16,7 @@ use crate::{
 
 #[get("/clinical")]
 async fn find_all(db: Data<Database>) -> Result<Json<Vec<Clinical>>, ClinicalError> {
-    let clinical = Database::find_all(&db).await;
+    let clinical = Database::find_all_non_deleted(&db).await;
 
     match clinical {
         Some(found_clinical) => Ok(Json(found_clinical)),
@@ -137,10 +137,6 @@ async fn update_one(
                 sales_funnel: body.sales_funnel.clone(),
                 notes: body.notes.clone(),
                 services_offered: body.services_offered.clone(),
-                resolution: match Some(&body.resolution) {
-                    Some(resolution_req) => resolution_req.clone(),
-                    None => None,
-                },
                 date_created,
                 date_modified: Some(date_modified),
                 created_by: match c_cloned {
@@ -170,9 +166,53 @@ async fn update_one(
     }
 }
 
+#[get("/clinical/deleted")]
+async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<Clinical>>, ClinicalError> {
+    let clinics = Database::find_all_deleted(&db).await;
+    match clinics {
+        Some(found_clinics) => Ok(Json(found_clinics)),
+        None => {
+            error!("Didn't find any deleted clinics");
+            Err(ClinicalError::NoClinicalsFound)
+        }
+    }
+}
+
+#[delete("/clinical/{uuid}")]
+async fn delete_one(
+    db: Data<Database>,
+    uuid: Path<ClinicalUuid>,
+) -> Result<Json<ClinicalUuid>, ClinicalError> {
+    let clinic_uuid = uuid.into_inner().uuid;
+    let clinic_from_db: Option<Clinical> = Database::delete_one(&db, clinic_uuid.clone()).await;
+
+    match clinic_from_db {
+        Some(mut clinic) => {
+            clinic.deleted = true;
+            match Database::update_one(&db, clinic).await {
+                Some(_) => Ok(Json(ClinicalUuid {
+                    uuid: clinic_uuid.to_string(),
+                })),
+                None => {
+                    error!("Unable to update clinic :: {:?}", &clinic_uuid);
+                    Ok(Json(ClinicalUuid {
+                        uuid: "".to_string(),
+                    }))
+                }
+            }
+        }
+        None => {
+            error!("Error [POST] /enterprise");
+            Err(ClinicalError::ClinicalCreationFailure)
+        }
+    }
+}
+
 pub fn clinical_api_controllers(cfg: &mut ServiceConfig) {
     cfg.service(find_all);
+    cfg.service(find_all_deleted);
     cfg.service(find_one);
     cfg.service(create);
     cfg.service(update_one);
+    cfg.service(delete_one);
 }
