@@ -196,7 +196,7 @@ async fn user_delete(
 
 pub fn user_html_controllers(cfg: &mut ServiceConfig) {
     cfg.route(
-        "/user_htmx/{uuid}",
+        "/htmx/user/edit/{uuid}",
         post().to(
             |_req: HttpRequest, hbs_path, db: Data<Database>| async move {
                 let user_editor = user_edit(hbs_path, db).await;
@@ -216,7 +216,7 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
     );
 
     cfg.route(
-      "/user_htmx",
+      "/htmx/user",
       post().to(
         |db: Data<Database>| async move {
           let my_users_table = users_table(db).await;
@@ -239,7 +239,7 @@ pub fn user_html_controllers(cfg: &mut ServiceConfig) {
     );
 
     cfg.route(
-      "/new_user",
+      "/htmx/user/new",
       post().to(
         || async move {
           let new_user_form = user_new().await;

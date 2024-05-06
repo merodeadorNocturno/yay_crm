@@ -157,7 +157,7 @@ pub fn clinical_html_controllers(cfg: &mut ServiceConfig) {
   );
 
     cfg.route(
-    "/clinics_table",
+    "/htmx/clinics/table",
     post().to(
       |db: Data<Database>| async move {
         let my_enterprise_table = clinical_table(db).await;

@@ -9,7 +9,7 @@
     <div class="level-item">
       <a
         class="button is-success"
-        hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/new_user"
+        hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/htmx/user/new"
         hx-swap="innerHTML"
         hx-target="#edit-user-dynamic-content"
       >
@@ -42,7 +42,7 @@
           <td>{{role}}</td>
           <td>
             <span
-              hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}:{{../conf.server_port}}/user_htmx/{{uuid}}"
+              hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}:{{../conf.server_port}}/htmx/user/edit/{{uuid}}"
               hx-swap="innerHTML"
               hx-target="#edit-user-dynamic-content"
               class="icon is-small is-left"
