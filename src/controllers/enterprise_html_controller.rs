@@ -133,7 +133,7 @@ async fn enterprise_table(db: Data<Database>) -> Result<String, RenderError> {
 
 pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
     cfg.route(
-      "/enterprise_htmx/{uuid}",
+      "/htmx/enterprise/edit/{uuid}",
       post().to(
           |_req: HttpRequest, hbs_path, db: Data<Database>| async move {
               let user_editor = enterprise_edit(hbs_path, db).await;
@@ -155,7 +155,7 @@ pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
   );
 
     cfg.route(
-    "/enterprise_table",
+    "/htmx/enterprise/table",
     post().to(
       |db: Data<Database>| async move {
         let my_enterprise_table = enterprise_table(db).await;
@@ -178,7 +178,7 @@ pub fn enterprise_html_controllers(cfg: &mut ServiceConfig) {
   );
 
     cfg.route(
-        "/new_enterprise",
+        "/htmx/enterprise/new",
         post().to(|| async move {
             let new_enterprise_editor = enterprise_new().await;
 

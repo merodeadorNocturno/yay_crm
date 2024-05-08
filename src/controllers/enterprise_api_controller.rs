@@ -1,5 +1,5 @@
 use actix_web::{
-    get, patch, post,
+    delete, get, patch, post,
     web::{Data, Json, Path, ServiceConfig},
 };
 
@@ -14,9 +14,9 @@ use crate::{
     utils::general_utils::get_uuid,
 };
 
-#[get("/enterprise")]
+#[get("/enterprises")]
 async fn find_all(db: Data<Database>) -> Result<Json<Vec<Enterprise>>, EnterpriseError> {
-    let enterprise = Database::find_all(&db).await;
+    let enterprise = Database::find_all_active(&db).await;
 
     match enterprise {
         Some(found_enterprise) => Ok(Json(found_enterprise)),
@@ -27,7 +27,7 @@ async fn find_all(db: Data<Database>) -> Result<Json<Vec<Enterprise>>, Enterpris
     }
 }
 
-#[get("/enterprise/{uuid}")]
+#[get("/enterprises/{uuid}")]
 async fn find_one(
     db: Data<Database>,
     uuid: Path<EnterpriseUuid>,
@@ -44,7 +44,7 @@ async fn find_one(
     }
 }
 
-#[post("/enterprise")]
+#[post("/enterprises")]
 async fn create(
     db: Data<Database>,
     body: Json<Enterprise>,
@@ -87,7 +87,7 @@ async fn create(
     }
 }
 
-#[patch("/enterprise")]
+#[patch("/enterprises")]
 async fn update_one(
     db: Data<Database>,
     body: Json<Enterprise>,
@@ -163,9 +163,57 @@ async fn update_one(
     }
 }
 
+#[get("/enterprises/deleted")]
+async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<Enterprise>>, EnterpriseError> {
+    let enterprises = Database::find_all_deleted(&db).await;
+
+    match enterprises {
+        Some(deleted_enterprises) => Ok(Json(deleted_enterprises)),
+        None => {
+            error!("Didnt' find any deleted enterprises");
+            Err(EnterpriseError::NoEnterprisesFound)
+        }
+    }
+}
+
+#[delete("/enterprises/{uuid}")]
+async fn delete_one(
+    db: Data<Database>,
+    uuid: Path<EnterpriseUuid>,
+) -> Result<Json<EnterpriseUuid>, EnterpriseError> {
+    let enterprise_uuid = uuid.into_inner().uuid;
+    let enterprise_from_db: Option<Enterprise> =
+        Database::delete_one(&db, enterprise_uuid.clone()).await;
+
+    match enterprise_from_db {
+        Some(mut enterprise) => {
+            enterprise.deleted = true;
+            match Database::update_one(&db, enterprise).await {
+                Some(_) => Ok(Json(EnterpriseUuid {
+                    uuid: enterprise_uuid.to_string(),
+                })),
+                None => {
+                    error!("Unable to delete enterprise:: {:?}", &enterprise_uuid);
+                    Ok(Json(EnterpriseUuid {
+                        uuid: "".to_string(),
+                    }))
+                }
+            }
+        }
+        None => {
+            error!("Unable to update school :: {:?}", &enterprise_uuid);
+            Ok(Json(EnterpriseUuid {
+                uuid: "".to_string(),
+            }))
+        }
+    }
+}
+
 pub fn enterprise_api_controllers(cfg: &mut ServiceConfig) {
-    cfg.service(find_all);
-    cfg.service(find_one);
     cfg.service(create);
+    cfg.service(delete_one);
+    cfg.service(find_all);
+    cfg.service(find_all_deleted);
+    cfg.service(find_one);
     cfg.service(update_one);
 }

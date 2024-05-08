@@ -208,10 +208,10 @@ async fn delete_one(
 }
 
 pub fn school_api_controllers(cfg: &mut ServiceConfig) {
-    cfg.service(find_all_deleted);
-    cfg.service(find_all);
-    cfg.service(find_one);
     cfg.service(create);
-    cfg.service(update_one);
     cfg.service(delete_one);
+    cfg.service(find_all);
+    cfg.service(find_all_deleted);
+    cfg.service(find_one);
+    cfg.service(update_one);
 }

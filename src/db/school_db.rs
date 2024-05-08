@@ -61,7 +61,7 @@ impl SchoolDB for Database {
             Ok(mut result) => match result.take(0) {
                 Ok(deleted_schools) => Some(deleted_schools),
                 Err(e) => {
-                    error!("Failed to retrieve deleted schoosl {}", e);
+                    error!("Failed to retrieve deleted schools {}", e);
                     None
                 }
             },
@@ -91,13 +91,13 @@ impl SchoolDB for Database {
                         None => None,
                     },
                     Err(e) => {
-                        error!("Failed to delete schoos: {}", e);
+                        error!("Failed to delete school: {}", e);
                         None
                     }
                 }
             }
             Err(e) => {
-                error!("Failed to delete schoos: {}", e);
+                error!("Failed to delete school: {}", e);
                 None
             }
         }
