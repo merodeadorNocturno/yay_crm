@@ -41,7 +41,7 @@ async fn main() -> std::io::Result<()> {
     let mut builder = Builder::new();
 
     builder
-        .filter(None, LevelFilter::Debug)
+        .filter(None, LevelFilter::Error)
         .write_style(WriteStyle::Always)
         .init();
 
