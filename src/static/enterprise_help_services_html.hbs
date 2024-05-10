@@ -2,13 +2,13 @@
   <p class="panel-heading">Servicios Ofrecidos</p>
   <p class="panel-tabs">
     <a
-      hx-get="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/help_enterprise"
+      hx-get="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/help_enterprise"
       hx-swap="innerHTML"
       hx-target="#enterprise-help"
       >Contacto</a
     >
     <a
-      hx-get="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/help_enterprise_avance"
+      hx-get="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/help_enterprise_avance"
       hx-swap="innerHTML"
       hx-target="#enterprise-help"
       >Avance</a

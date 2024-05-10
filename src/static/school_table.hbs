@@ -10,7 +10,7 @@
     <div class="level-item">
       <a
         class="button is-success"
-        hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/htmx/schools/new"
+        hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/htmx/schools/new"
         hx-swap="innerHTML"
         hx-target="#dynamic-content"
       >
@@ -224,7 +224,7 @@
       <p class="notification has-text-centered">
         <span
           class="icon is-small tooltip"
-          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}:{{../conf.server_port}}/htmx/schools/edit/{{uuid}}"
+          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/htmx/schools/edit/{{uuid}}"
           hx-swap="innerHTML"
           hx-target="#dynamic-content"
         >

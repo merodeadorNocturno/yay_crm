@@ -1,5 +1,12 @@
 use actix_cors::Cors;
 use actix_web::{middleware, web::Data, App, HttpServer};
+// use actix_web_httpauth::{
+//     extractors::{
+//         bearer::{BearerAuth, Config},
+//         AuthenticationError,
+//     },
+//     middleware::HttpAuthentication,
+// };
 use env_logger::{Builder, WriteStyle};
 use log::{info, warn, LevelFilter};
 
@@ -15,6 +22,7 @@ mod utils;
 
 use crate::db::config::Database;
 use crate::{
+    // auth::auth::validate_token,
     controllers::{
         clinics_api_controller::clinical_api_controllers,
         clinics_html_controller::clinical_html_controllers,
@@ -29,6 +37,7 @@ use crate::{
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // let auth_0 = HttpAuthentication::bearer(authenticator);
     let mut builder = Builder::new();
 
     builder
@@ -57,6 +66,7 @@ async fn main() -> std::io::Result<()> {
         let cors = Cors::permissive().max_age(3600);
 
         App::new()
+            // .wrap(auth_0)
             .wrap(middleware::NormalizePath::trim())
             .wrap(cors)
             .app_data(db_data.clone())

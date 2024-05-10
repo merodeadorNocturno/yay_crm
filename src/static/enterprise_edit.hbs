@@ -2,7 +2,7 @@
   <form
     class="box"
     id="edit-enterprise"
-    hx-patch="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/enterprise"
+    hx-patch="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/enterprise"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
@@ -311,7 +311,7 @@
       </div>
       <div class="control">
         <button class="button is-link is-light"
-          hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/htmx/enterprise/table" hx-swap="innerHTML"
+          hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/htmx/enterprise/table" hx-swap="innerHTML"
                         hx-target="#dynamic-content"
         >Cancel</button>
       </div>

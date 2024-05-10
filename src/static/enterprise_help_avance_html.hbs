@@ -2,14 +2,14 @@
   <p class="panel-heading">Avance en la negociación</p>
   <p class="panel-tabs">
     <a
-      hx-get="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/help_enterprise"
+      hx-get="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/help_enterprise"
       hx-swap="innerHTML"
       hx-target="#enterprise-help"
       >Contacto</a
     >
     <a class="is-active">Avance</a>
     <a
-      hx-get="{{conf.server_protocol}}://{{conf.hbs_target_address}}:{{conf.server_port}}/help_enterprise_servicios"
+      hx-get="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/help_enterprise_servicios"
       hx-swap="innerHTML"
       hx-target="#enterprise-help"
       >Servicios Ofecidos</a
