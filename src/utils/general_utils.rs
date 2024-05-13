@@ -81,6 +81,11 @@ pub fn get_options_and_services() -> (Vec<ServicesOfferedTag>, Vec<SalesFunnelTa
             selected: false,
         },
         SalesFunnelTag {
+            value: SalesFunnel::NEED,
+            text: SalesFunnel::NEED.to_string(),
+            selected: false,
+        },
+        SalesFunnelTag {
             value: SalesFunnel::PROSPECT,
             text: SalesFunnel::PROSPECT.to_string(),
             selected: false,

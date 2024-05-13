@@ -4,6 +4,7 @@ use std::fmt;
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum SalesFunnel {
     LOST,
+    NEED,
     NEGOTIATION,
     PROSPECT,
     QUOTE,
@@ -14,18 +15,13 @@ pub enum SalesFunnel {
 impl fmt::Display for SalesFunnel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            SalesFunnel::LOST => write!(f, "LOST"),
-            // "<div class=\"notification is-small has-text-centered is-lost\"><span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-trash\"></i><span class=\"tooltiptext\">Lost</span></span></div>"),
-            SalesFunnel::NEGOTIATION => write!(f, "NEGOTIATION"),
-            // "<div class=\"notification is-small has-text-centered is-negociation\"><span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-trash\"></i><span class=\"tooltiptext\">Negociación</span></span></div>"),
-            SalesFunnel::PROSPECT => write!(f, "PROSPECT"),
-            // "<div class=\"notification is-small has-text-centered is-prospect\"><span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-trash\"></i><span class=\"tooltiptext\">Prospecto</span></span></div>"),
-            SalesFunnel::QUOTE => write!(f, "QUOTE"),
-            // "<div class=\"notification is-small has-text-centered is-quote\"><span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-trash\"></i><span class=\"tooltiptext\">Cotización</span></span></div>"),
-            SalesFunnel::RESEARCH => write!(f, "RESEARCH"),
-            // "<div class=\"notification is-small has-text-centered is-research\"><span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-trash\"></i><span class=\"tooltiptext\">Investigación</span></span></div>"),
-            SalesFunnel::WIN => write!(f, "WIN"),
-            // "<div class=\"notification is-small has-text-centered is-win\"><span class=\"icon is-small is-left tooltip\"><i class=\"fas fa-trash\"></i><span class=\"tooltiptext\">Wing</span></span></div>"),
+            SalesFunnel::LOST => write!(f, "Perdido"),
+            SalesFunnel::NEGOTIATION => write!(f, "Negociación"),
+            SalesFunnel::NEED => write!(f, "Necesidad"),
+            SalesFunnel::PROSPECT => write!(f, "Prospecto"),
+            SalesFunnel::QUOTE => write!(f, "Cotización"),
+            SalesFunnel::RESEARCH => write!(f, "Investigación"),
+            SalesFunnel::WIN => write!(f, "Ganado"),
         }
     }
 }
