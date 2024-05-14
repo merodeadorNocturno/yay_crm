@@ -76,8 +76,13 @@ pub fn get_options_and_services() -> (Vec<ServicesOfferedTag>, Vec<SalesFunnelTa
             selected: false,
         },
         SalesFunnelTag {
-            value: SalesFunnel::NEGOTIATION,
-            text: SalesFunnel::NEGOTIATION.to_string(),
+            value: SalesFunnel::PROSPECT,
+            text: SalesFunnel::PROSPECT.to_string(),
+            selected: false,
+        },
+        SalesFunnelTag {
+            value: SalesFunnel::RESEARCH,
+            text: SalesFunnel::RESEARCH.to_string(),
             selected: false,
         },
         SalesFunnelTag {
@@ -86,18 +91,13 @@ pub fn get_options_and_services() -> (Vec<ServicesOfferedTag>, Vec<SalesFunnelTa
             selected: false,
         },
         SalesFunnelTag {
-            value: SalesFunnel::PROSPECT,
-            text: SalesFunnel::PROSPECT.to_string(),
-            selected: false,
-        },
-        SalesFunnelTag {
             value: SalesFunnel::QUOTE,
             text: SalesFunnel::QUOTE.to_string(),
             selected: false,
         },
         SalesFunnelTag {
-            value: SalesFunnel::RESEARCH,
-            text: SalesFunnel::RESEARCH.to_string(),
+            value: SalesFunnel::NEGOTIATION,
+            text: SalesFunnel::NEGOTIATION.to_string(),
             selected: false,
         },
         SalesFunnelTag {

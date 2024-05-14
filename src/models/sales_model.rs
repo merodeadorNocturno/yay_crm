@@ -4,24 +4,24 @@ use std::fmt;
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum SalesFunnel {
     LOST,
-    NEED,
-    NEGOTIATION,
     PROSPECT,
-    QUOTE,
     RESEARCH,
+    NEED,
+    QUOTE,
+    NEGOTIATION,
     WIN,
 }
 
 impl fmt::Display for SalesFunnel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            SalesFunnel::LOST => write!(f, "Perdido"),
-            SalesFunnel::NEGOTIATION => write!(f, "Negociación"),
-            SalesFunnel::NEED => write!(f, "Necesidad"),
-            SalesFunnel::PROSPECT => write!(f, "Prospecto"),
-            SalesFunnel::QUOTE => write!(f, "Cotización"),
-            SalesFunnel::RESEARCH => write!(f, "Investigación"),
-            SalesFunnel::WIN => write!(f, "Ganado"),
+            SalesFunnel::LOST => write!(f, "Perdido 0%"),
+            SalesFunnel::PROSPECT => write!(f, "Prospecto 0%"),
+            SalesFunnel::RESEARCH => write!(f, "Investigación 10%"),
+            SalesFunnel::NEED => write!(f, "Necesidad 20%"),
+            SalesFunnel::QUOTE => write!(f, "Cotización 50%"),
+            SalesFunnel::NEGOTIATION => write!(f, "Negociación 80%"),
+            SalesFunnel::WIN => write!(f, "Ganado 100%"),
         }
     }
 }
