@@ -18,6 +18,10 @@ pub struct School {
     pub last_name: String,
     #[validate(length(min = 2, message = "School name does not match valid length"))]
     pub school_name: String,
+    #[validate(url)]
+    pub school_web: Option<String>,
+    #[validate(email)]
+    pub school_email: Option<String>,
     pub school_level: Vec<SchoolLevel>,
     #[validate(email)]
     pub email: String,

@@ -22,7 +22,6 @@ mod utils;
 
 use crate::db::config::Database;
 use crate::{
-    // auth::auth::validate_token,
     controllers::{
         clinics_api_controller::clinical_api_controllers,
         clinics_html_controller::clinical_html_controllers,

@@ -106,6 +106,14 @@ async fn update_one(db: Data<Database>, body: Json<School>) -> Result<Json<Schoo
                 last_name: body.last_name.clone(),
                 school_name: body.school_name.clone(),
                 school_level: body.school_level.clone(),
+                school_web: match Some(&body.school_web) {
+                    Some(school_page) => school_page.clone(),
+                    None => None,
+                },
+                school_email: match Some(&body.school_email) {
+                    Some(school_email) => school_email.clone(),
+                    None => None,
+                },
                 email: body.email.clone(),
                 phone: body.phone.clone(),
                 deleted: body.deleted.clone(),
