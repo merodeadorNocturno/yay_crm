@@ -71,7 +71,7 @@ async fn create(db: Data<Database>, body: Json<School>) -> Result<Json<SchoolUui
             }
         }
         Err(e) => {
-            error!("Error clinical.create {:?}", e);
+            error!("Error School.create {:?}", e);
             Err(SchoolError::SchoolCreationFailure)
         }
     }

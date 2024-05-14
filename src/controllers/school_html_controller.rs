@@ -2,6 +2,7 @@ use actix_web::{
     web::{post, Data, Path, ServiceConfig},
     HttpRequest, HttpResponse,
 };
+use chrono::Local;
 use handlebars::{Handlebars, RenderError};
 use log::{debug, error, info};
 use serde_json::json;
@@ -149,7 +150,8 @@ async fn school_new() -> Result<String, RenderError> {
       "conf": cf,
       "school": school_level_tags,
       "funnel": funnel_tag,
-      "services": services_tag
+      "services": services_tag,
+      "date": format!("{}", Local::now()),
     });
 
     let handlebars_render = handlebars.render_template(&template_contents, &data)?;

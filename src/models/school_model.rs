@@ -16,7 +16,7 @@ pub struct School {
     pub name: String,
     #[validate(length(min = 2, message = "Lastname does not match valid length"))]
     pub last_name: String,
-    #[validate(length(min = 2, message = "Clinic/Hospital name does not match valid length"))]
+    #[validate(length(min = 2, message = "School name does not match valid length"))]
     pub school_name: String,
     pub school_level: Vec<SchoolLevel>,
     #[validate(email)]

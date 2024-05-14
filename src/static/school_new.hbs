@@ -1,12 +1,15 @@
-<div class="cell">
+
+
+
+<div class="cell" id="my_form_id">
   <form
     class="box"
-    id="clinical_edit"
+    id="school_new"
     hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/schools"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
-    hx-vals='{"is_company": false, "deleted": false, "company_name": null}'
+    hx-vals='js:{...checkFields()}'
   >
 
     <div class="field is-horizontal">
@@ -124,8 +127,9 @@
               class="input"
               type="text"
               placeholder="Enter the company instagram"
-              name="instagram"
+              name="instagram_name"
               value="{{s.instagram}}"
+              id="input_instragram"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-instagram"></i>
@@ -139,8 +143,9 @@
               class="input"
               type="text"
               placeholder="Enter the facebook address"
-              name="fb"
+              name="fb_name"
               value="{{s.fb}}"
+              id="input_facebook"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-facebook"></i>
@@ -161,8 +166,9 @@
               class="input"
               type="text"
               placeholder="Enter the company twitter"
-              name="twitter"
+              name="twitter_name"
               value="{{s.twitter}}"
+              id="input_twitter"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-twitter"></i>
@@ -176,8 +182,9 @@
               class="input"
               type="text"
               placeholder="Enter the company tiktok"
-              name="tik_tok"
+              name="tik_tok_name"
               value="{{s.tik_tok}}"
+              id="input_tik_tok"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-tiktok"></i>
@@ -198,8 +205,9 @@
               class="input"
               type="text"
               placeholder="Enter linkedIn address or handle"
-              name="linked_in"
+              name="linked_in_name"
               value="{{s.linked_in}}"
+              id="input_linked_id"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-linkedin"></i>
@@ -287,7 +295,7 @@
 
     <!-- hidden_fields -->
     <input type="hidden" name="uuid" value="{{s.uuid}}" />
-    <input type="hidden" name="first_contact_date" value="{{s.first_contact_date}}" />
+    <input type="hidden" name="first_contact_date" value="{{date}}" />
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-link">Submit</button>
@@ -301,3 +309,33 @@
     </div>
   </form>
 </div>
+
+<script>
+function checkFields() {
+    const exclude = [
+      "services_offered",
+      "school_level",
+      "sales_funnel"
+    ];
+    let form = document.getElementById("school_new");
+    let formData = new FormData(form);
+    let data = Array.from(formData.entries());
+
+    const post_data = {};
+
+    for (let [key, value] of data) {
+      if (exclude.includes(key)) {
+        continue;
+      }
+
+      const new_key = key.replace('_name', '');
+      if (value) {
+        post_data[new_key] = value
+      }
+    };
+
+    post_data.deleted = false;
+    console.log('>>>>>>>>>>>>>>>>', post_data);
+    return post_data
+}
+</script>
