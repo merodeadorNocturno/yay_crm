@@ -1,4 +1,4 @@
-use log::info;
+use log::{info, LevelFilter};
 use serde::{Deserialize, Serialize};
 use std::{env, io};
 
@@ -40,4 +40,20 @@ pub fn set_env_vars() -> ConfVars {
         hbs_target_address,
         hbs_target_port,
     }
+}
+
+pub fn get_log_level() -> LevelFilter {
+    let log_level = set_environment_variable("RUST_LOG", "debug");
+
+    let level_filter = match log_level.as_str() {
+        "off" => LevelFilter::Off,
+        "error" => LevelFilter::Error,
+        "warn" => LevelFilter::Warn,
+        "info" => LevelFilter::Info,
+        "debug" => LevelFilter::Debug,
+        "trace" => LevelFilter::Trace,
+        _ => LevelFilter::Debug,
+    };
+
+    level_filter
 }

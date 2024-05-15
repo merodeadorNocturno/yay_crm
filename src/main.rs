@@ -8,7 +8,7 @@ use actix_web::{middleware, web::Data, App, HttpServer};
 //     middleware::HttpAuthentication,
 // };
 use env_logger::{Builder, WriteStyle};
-use log::{info, warn, LevelFilter};
+use log::{info, warn};
 
 #[macro_use]
 extern crate handlebars;
@@ -31,7 +31,7 @@ use crate::{
         school_html_controller::school_html_controller,
         users_api_controller::users_api_controllers, users_html_controller::user_html_controllers,
     },
-    utils::env::{get_cwd, set_env_vars, ConfVars},
+    utils::env::{get_cwd, get_log_level, set_env_vars, ConfVars},
 };
 
 #[actix_web::main]
@@ -40,7 +40,7 @@ async fn main() -> std::io::Result<()> {
     let mut builder = Builder::new();
 
     builder
-        .filter(None, LevelFilter::Error)
+        .filter(None, get_log_level())
         .write_style(WriteStyle::Always)
         .init();
 
@@ -65,7 +65,6 @@ async fn main() -> std::io::Result<()> {
         let cors = Cors::permissive().max_age(3600);
 
         App::new()
-            // .wrap(auth_0)
             .wrap(middleware::NormalizePath::trim())
             .wrap(cors)
             .app_data(db_data.clone())
