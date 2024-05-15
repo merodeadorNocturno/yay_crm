@@ -74,36 +74,43 @@ pub fn get_options_and_services() -> (Vec<ServicesOfferedTag>, Vec<SalesFunnelTa
             value: SalesFunnel::LOST,
             text: SalesFunnel::LOST.to_string(),
             selected: false,
+            icon: Some("fas fa-trash".to_string()),
         },
         SalesFunnelTag {
             value: SalesFunnel::PROSPECT,
             text: SalesFunnel::PROSPECT.to_string(),
             selected: false,
+            icon: Some("fas fa-binoculars".to_string()),
         },
         SalesFunnelTag {
             value: SalesFunnel::RESEARCH,
             text: SalesFunnel::RESEARCH.to_string(),
             selected: false,
+            icon: Some("fas fa-user-secret".to_owned()),
         },
         SalesFunnelTag {
             value: SalesFunnel::NEED,
             text: SalesFunnel::NEED.to_string(),
             selected: false,
+            icon: Some("fas fa-drumstick-bite".to_string()),
         },
         SalesFunnelTag {
             value: SalesFunnel::QUOTE,
             text: SalesFunnel::QUOTE.to_string(),
             selected: false,
+            icon: Some("fas fa-money-check-alt".to_string()),
         },
         SalesFunnelTag {
             value: SalesFunnel::NEGOTIATION,
             text: SalesFunnel::NEGOTIATION.to_string(),
             selected: false,
+            icon: Some("fas fa-people-arrows".to_string()),
         },
         SalesFunnelTag {
             value: SalesFunnel::WIN,
             text: SalesFunnel::WIN.to_string(),
             selected: false,
+            icon: Some("fas fa-handshake".to_string()),
         },
     ];
 

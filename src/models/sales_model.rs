@@ -26,11 +26,12 @@ impl fmt::Display for SalesFunnel {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SalesFunnelTag {
     pub value: SalesFunnel,
     pub text: String,
     pub selected: bool,
+    pub icon: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
@@ -42,7 +43,7 @@ pub enum ServicesOffered {
     SALESMANAGEMENT,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ServicesOfferedTag {
     pub value: ServicesOffered,
     pub text: String,

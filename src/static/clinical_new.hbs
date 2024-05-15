@@ -1,12 +1,12 @@
 <div class="cell">
   <form
     class="box"
-    id="edit-enterprise"
+    id="clinic_new"
     hx-post="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/clinical"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
-    hx-vals='{"is_company": false, "deleted": false, "company_name": null}'
+    hx-vals='js:{...checkClinicFields()}'
   >
     <div class="field is-horizontal">
       <!-- name last name 1-->
@@ -120,7 +120,7 @@
               class="input"
               type="email"
               placeholder="Correo-e del Contacto"
-              name="email"
+              name="email_name"
               value=""
             />
             <span class="icon is-small is-left">
@@ -145,6 +145,47 @@
       </div>
     </div>
 
+
+
+    <div class="field is-horizontal"> <!-- datos de contacto -->
+      <div class="field-label is-normal">
+        <label class="label">Web de la Clínica</label>
+      </div>
+
+      <div class="field-body">
+        <div class="field"> <!-- email -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="email"
+              placeholder="Correo-e del Contacto"
+              name="clinic_email_name"
+              value=""
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-envelope"></i>
+            </span>
+          </div>
+        </div>
+        <div class="field"> <!-- phone -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Teléfono de contacto"
+              name="clinic_web"
+              value=""
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-phone"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
     <div class="field is-horizontal"> <!-- fb - instagram -->
       <div class="field-label is-normal">
         <label class="label">Instagram - FB</label>
@@ -157,8 +198,7 @@
               class="input"
               type="text"
               placeholder="Enter the company instagram"
-              name="instagram"
-              value=""
+              name="instagram_name"
             />
             <span class="icon is-small is-left">
               <i class="fab fa-instagram"></i>
@@ -172,7 +212,7 @@
               class="input"
               type="text"
               placeholder="Enter the facebook address"
-              name="fb"
+              name="fb_name"
               value=""
             />
             <span class="icon is-small is-left">
@@ -194,7 +234,7 @@
               class="input"
               type="text"
               placeholder="Enter the company twitter"
-              name="twitter"
+              name="twitter_name"
               value=""
             />
             <span class="icon is-small is-left">
@@ -209,7 +249,7 @@
               class="input"
               type="text"
               placeholder="Enter the company tiktok"
-              name="tik_tok"
+              name="tik_tok_name"
               value=""
             />
             <span class="icon is-small is-left">
@@ -231,7 +271,7 @@
               class="input"
               type="text"
               placeholder="Enter linkedIn address or handle"
-              name="linked_in"
+              name="linked_in_name"
               value=""
             />
             <span class="icon is-small is-left">
@@ -317,9 +357,8 @@
 
 
 <script>
-  function is_company_bool() {
-    const { checked } = document.getElementById("is_company");
-    const my_form = document.getElementById("edit-enterprise");
+  function is_company_bool(my_form) {
+    const { checked: is_company } = document.getElementById("is_company");
 
     let { value: line_of_business = null } = document.getElementById("line_of_business");
     let { value: company_name = null } = document.getElementById("company_name");
@@ -327,11 +366,47 @@
     line_of_business = line_of_business ? `"${line_of_business}"` : null;
     company_name = company_name ? `"${company_name}"` : null;
 
-    my_form.setAttribute(
-      "hx-vals",
-      `js:{deleted: false, is_company: ${checked}, line_of_business: ${line_of_business}, company_name: ${company_name}}`,
-    );
+
+    return {
+      is_company,
+      line_of_business,
+      company_name,
+    }
+
+    // my_form.setAttribute(
+    //   "hx-vals",
+    //   `js:{deleted: false, is_company: ${checked}, line_of_business: ${line_of_business}, company_name: ${company_name}}`,
+    // );
   }
 
-  (() => is_company_bool())();
+  function checkClinicFields() {
+      const exclude = [
+        "services_offered",
+        "school_level",
+        "sales_funnel"
+      ];
+      let form = document.getElementById("clinic_new");
+
+      const company_metadata = is_company_bool(form);
+
+      let formData = new FormData(form);
+      let data = Array.from(formData.entries());
+
+      const post_data = {};
+
+      for (let [key, value] of data) {
+        if (exclude.includes(key)) {
+          continue;
+        }
+
+        const new_key = key.replace('_name', '');
+        if (value) {
+          post_data[new_key] = value
+        }
+      };
+
+      post_data.deleted = false;
+      return { ...post_data, ...company_metadata }
+  }
+
 </script>

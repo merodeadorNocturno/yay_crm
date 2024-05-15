@@ -64,23 +64,23 @@
           <i
             class="fas {{#if is_company}}fa-industry{{else}}fa-user-md{{/if}}"
           ></i>
-          <span class="tooltiptext">{{specialty}}</span>
+          <span class="tooltiptext">{{clinic.specialty}}</span>
         </span>
-        {{#if is_company}} {{clinic_name}} {{else}} {{name}} {{last_name}}
-        {{/if}}
+        {{#if clinic.is_company}} {{clinic.clinic_name}} {{else}}
+        {{clinic.name}} {{clinic.last_name}} {{/if}}
       </p>
     </div>
 
     <div class="column is-3">
       <p class="notification has-text-centered">
-        {{#if email}}
+        {{#if clinic.email}}
         <span class="icon is-small is-left tooltip">
           <a href="mailto:{{email}}" title="email {{name}} {{last_name}}"
             ><i class="fas fa-envelope"></i
           ></a>
-          <span class="tooltiptext">email: {{email}}</span>
+          <span class="tooltiptext">email: {{clinic.email}}</span>
         </span>
-        {{/if}} {{#if instagram}}
+        {{/if}} {{#if clinic.instagram}}
         <span class="icon is-small is-left tooltip">
           <a
             href="{{instagram}}"
@@ -88,7 +88,7 @@
             title="Instagram {{name}} {{last_name}}"
             ><i class="fab fa-instagram"></i
           ></a>
-          <span class="tooltiptext">instagram: {{instagram}}</span>
+          <span class="tooltiptext">instagram: {{clinic.instagram}}</span>
         </span>
         {{/if}} {{#if fb}}
         <span class="icon is-small is-left tooltip">
@@ -128,62 +128,27 @@
       <p class="notification is-small has-text-centered">
         <span class="icon is-small is-left tooltip">
           <i class="fas fa-calendar-alt"></i>
-          <span class="tooltiptext">{{first_contact_date}}</span>
+          <span class="tooltiptext">{{clinic.first_contact_date}}</span>
         </span>
       </p>
     </div>
 
     <div class="column is-1">
-      {{#if (str_equal sales_funnel "LOST")}}
+      {{#each funnel_tag}} {{#if selected}}
       <div class="notification is-small has-text-centered is-lost">
         <span class="icon is-small is-left tooltip">
-          <i class="fas fa-trash"></i>
-          <span class="tooltiptext">Lost</span>
+          <i class="{{icon}}"></i>
+          <span class="tooltiptext">{{text}}</span>
         </span>
       </div>
-      {{/if}} {{#if (str_equal sales_funnel "NEGOTIATION")}}
-      <div class="notification is-small has-text-centered is-negotiation">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-people-arrows"></i>
-          <span class="tooltiptext">Negociación</span>
-        </span>
-      </div>
-      {{/if}} {{#if (str_equal sales_funnel "PROSPECT")}}
-      <div class="notification is-small has-text-centered is-prospect">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-binoculars"></i>
-          <span class="tooltiptext">Prospect</span>
-        </span>
-      </div>
-      {{/if}} {{#if (str_equal sales_funnel "QUOTE")}}
-      <div class="notification is-small has-text-centered is-quote">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-money-check-alt"></i>
-          <span class="tooltiptext">Cotización</span>
-        </span>
-      </div>
-      {{/if}} {{#if (str_equal sales_funnel "RESEARCH")}}
-      <div class="notification is-small has-text-centered is-research">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-user-secret"></i>
-          <span class="tooltiptext">Research</span>
-        </span>
-      </div>
-      {{/if}} {{#if (str_equal sales_funnel "WIN")}}
-      <div class="notification is-small has-text-centered is-win">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-handshake"></i>
-          <span class="tooltiptext">Win</span>
-        </span>
-      </div>
-      {{/if}}
+      {{/if}} {{/each}}
     </div>
 
     <div class="column is-1">
       <p class="notification is-small has-text-centered">
         <span class="icon is-small is-left tooltip">
           <i class="fas fa-clipboard"></i>
-          <span class="tooltiptext">{{notes}}</span>
+          <span class="tooltiptext">{{clinic.notes}}</span>
         </span>
       </p>
     </div>
@@ -223,7 +188,7 @@
       <p class="notification has-text-centered">
         <span
           class="icon is-small tooltip"
-          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/clinics/edit/{{uuid}}"
+          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/clinics/edit/{{clinic.uuid}}"
           hx-swap="innerHTML"
           hx-target="#dynamic-content"
         >

@@ -19,9 +19,12 @@ pub struct Clinical {
     pub is_company: bool,
     #[validate(length(min = 2, message = "Clinic/Hospital name does not match valid length"))]
     pub clinic_name: Option<String>,
+    pub clinic_web: Option<String>,
+    #[validate(email)]
+    pub clinic_email: Option<String>,
     pub specialty: String,
     #[validate(email)]
-    pub email: String,
+    pub email: Option<String>,
     pub phone: String,
     pub deleted: bool,
     #[validate(url)]

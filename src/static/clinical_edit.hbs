@@ -1,12 +1,12 @@
 <div class="cell">
   <form
     class="box"
-    id="clinical_edit"
+    id="clinic_edit"
     hx-patch="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/clinical"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
-    hx-vals='{"is_company": false, "deleted": false, "company_name": null}'
+    hx-vals='js:{...checkClinicFields()}'
   >
     <div class="field is-horizontal">
       <!-- name last name 1-->
@@ -77,7 +77,7 @@
             <input
               class="input"
               type="text"
-              name="company_name"
+              name="clinic_name"
               placeholder="Nombre compañía"
               value="{{c.clinic_name}}"
               hx-on:change="is_company_bool()"
@@ -90,7 +90,7 @@
         </div>
 
 
-        <div class="field"> <!-- line_of_business -->
+        <div class="field"> <!-- Especialidad -->
           <div class="control has-icons-left">
             <input
               class="input"
@@ -121,7 +121,7 @@
               class="input"
               type="email"
               placeholder="Correo-e del Contacto"
-              name="email"
+              name="email_tag"
               value="{{c.email}}"
             />
             <span class="icon is-small is-left">
@@ -146,6 +146,48 @@
       </div>
     </div>
 
+
+
+
+    <div class="field is-horizontal"> <!-- datos de contacto -->
+      <div class="field-label is-normal">
+        <label class="label">Web de la Clínica</label>
+      </div>
+
+      <div class="field-body">
+        <div class="field"> <!-- email -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="email"
+              placeholder="Correo-e del Contacto"
+              name="clinic_email_tag"
+              value=""
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-envelope"></i>
+            </span>
+          </div>
+        </div>
+        <div class="field"> <!-- phone -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Teléfono de contacto"
+              name="clinic_web"
+              value=""
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-phone"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
     <div class="field is-horizontal"> <!-- fb - instagram -->
       <div class="field-label is-normal">
         <label class="label">Instagram - FB</label>
@@ -158,7 +200,7 @@
               class="input"
               type="text"
               placeholder="Enter the company instagram"
-              name="instagram"
+              name="instagram_tag"
               value="{{c.instagram}}"
             />
             <span class="icon is-small is-left">
@@ -173,7 +215,7 @@
               class="input"
               type="text"
               placeholder="Enter the facebook address"
-              name="fb"
+              name="fb_tag"
               value="{{c.fb}}"
             />
             <span class="icon is-small is-left">
@@ -195,7 +237,7 @@
               class="input"
               type="text"
               placeholder="Enter the company twitter"
-              name="twitter"
+              name="twitter_tag"
               value="{{c.twitter}}"
             />
             <span class="icon is-small is-left">
@@ -210,7 +252,7 @@
               class="input"
               type="text"
               placeholder="Enter the company tiktok"
-              name="tik_tok"
+              name="tik_tok_tag"
               value="{{c.tik_tok}}"
             />
             <span class="icon is-small is-left">
@@ -232,7 +274,7 @@
               class="input"
               type="text"
               placeholder="Enter linkedIn address or handle"
-              name="linked_in"
+              name="linked_in_tag"
               value="{{c.linked_in}}"
             />
             <span class="icon is-small is-left">
@@ -321,21 +363,53 @@
 
 
 <script>
-  function is_company_bool() {
-    const { checked } = document.getElementById("is_company");
-    const my_form = document.getElementById("edit-clinical");
+function is_company_bool(my_form) {
+  const { checked: is_company } = document.getElementById("is_company");
 
-    let { value: line_of_business = null } = document.getElementById("line_of_business");
-    let { value: company_name = null } = document.getElementById("company_name");
+  let { value: specialty = null } = document.getElementById("specialty");
+  let { value: clinic_name = null } = document.getElementById("clinic_name");
 
-    line_of_business = line_of_business ? `"${line_of_business}"` : null;
-    company_name = company_name ? `"${company_name}"` : null;
+  specialty = specialty ? `"${specialty}"` : null;
+  clinic_name = clinic_name ? `"${clinic_name}"` : null;
 
-    my_form.setAttribute(
-      "hx-vals",
-      `js:{deleted: false, is_company: ${checked}, line_of_business: ${line_of_business}, company_name: ${company_name}}`,
-    );
+
+  return {
+    is_company,
+    specialty,
+    clinic_name,
   }
+}
 
-  (() => is_company_bool())();
+function checkClinicFields() {
+    const exclude = [
+      "services_offered",
+      "school_level",
+      "sales_funnel"
+    ];
+    let form = document.getElementById("clinic_edit");
+
+    const company_metadata = is_company_bool(form);
+
+    let formData = new FormData(form);
+    let data = Array.from(formData.entries());
+
+    const post_data = {};
+
+    for (let [key, value] of data) {
+      if (exclude.includes(key)) {
+        continue;
+      }
+
+      const new_key = key.replace('_tag', '');
+      if (value) {
+        post_data[new_key] = value
+      }
+    };
+
+    post_data.deleted = false;
+
+    const result = { ...post_data, ...company_metadata };
+
+    return result
+}
 </script>

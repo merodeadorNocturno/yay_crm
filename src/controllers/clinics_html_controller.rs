@@ -4,14 +4,18 @@ use actix_web::{
 };
 use handlebars::{Handlebars, RenderError};
 use log::{error, info};
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::db::{clinical_db::ClinicalDB, config::Database};
-use crate::models::clinical_model::*;
+use crate::models::{clinical_model::*, sales_model::ServicesOfferedTag};
 use crate::utils::{
     env::{set_env_vars, ConfVars},
     fs_utils::read_hbs_template,
     general_utils::{create_option_tags_info_for_services_and_funnel, get_options_and_services},
+};
+use crate::{
+    db::{clinical_db::ClinicalDB, config::Database},
+    models::sales_model::SalesFunnelTag,
 };
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
@@ -117,10 +121,32 @@ async fn clinical_table(db: Data<Database>) -> Result<String, RenderError> {
         }
     };
 
+    #[derive(Clone, Serialize, Deserialize)]
+    struct ClinicAndTags {
+        pub clinic: Clinical,
+        pub funnel_tag: Vec<SalesFunnelTag>,
+        pub services_tag: Vec<ServicesOfferedTag>,
+    }
+
     match clinics_from_db {
         Some(these_clinics) => {
+            let mut clinical_tags_vector: Vec<ClinicAndTags> = Vec::new();
+
+            for clinic in these_clinics {
+                let (services_tag, funnel_tag) = create_option_tags_info_for_services_and_funnel(
+                    clinic.services_offered.clone(),
+                    clinic.sales_funnel.clone(),
+                );
+
+                clinical_tags_vector.push(ClinicAndTags {
+                    clinic,
+                    funnel_tag,
+                    services_tag,
+                })
+            }
+
             let cf: ConfVars = set_env_vars();
-            let data = json!({ "conf": cf, "clinics": these_clinics });
+            let data = json!({ "conf": cf, "clinics": clinical_tags_vector.clone() });
 
             let render = handlebars.render_template(&template_contents, &data)?;
             Ok(render)

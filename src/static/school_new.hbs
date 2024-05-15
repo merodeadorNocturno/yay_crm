@@ -9,7 +9,7 @@
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
-    hx-vals='js:{...checkFields()}'
+    hx-vals='js:{...checkSchoolFields()}'
   >
 
     <div class="field is-horizontal">
@@ -346,7 +346,7 @@
 </div>
 
 <script>
-function checkFields() {
+function checkSchoolFields() {
     const exclude = [
       "services_offered",
       "school_level",
@@ -370,7 +370,7 @@ function checkFields() {
     };
 
     post_data.deleted = false;
-    console.log('>>>>>>>>>>>>>>>>', post_data);
+
     return post_data
 }
 </script>

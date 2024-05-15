@@ -110,7 +110,18 @@ async fn update_one(
                     None => None,
                 },
                 specialty: body.specialty.clone(),
-                email: body.email.clone(),
+                clinic_web: match Some(&body.clinic_web) {
+                    Some(web_url) => web_url.clone(),
+                    None => None,
+                },
+                clinic_email: match Some(&body.clinic_email) {
+                    Some(clinic_email) => clinic_email.clone(),
+                    None => None,
+                },
+                email: match Some(&body.email) {
+                    Some(email) => email.clone(),
+                    None => None,
+                },
                 phone: body.phone.clone(),
                 deleted: body.deleted.clone(),
                 fb: match Some(&body.fb) {
