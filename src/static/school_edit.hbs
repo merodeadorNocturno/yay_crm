@@ -1,12 +1,12 @@
 <div class="cell">
   <form
     class="box"
-    id="clinical_edit"
+    id="school_edit"
     hx-patch="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/schools"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
-    hx-vals='{"is_company": false, "deleted": false, "company_name": null}'
+    hx-vals='js:{...checkSchoolEditFields()}'
   >
 
     <div class="field is-horizontal">
@@ -87,7 +87,7 @@
               class="input"
               type="email"
               placeholder="Correo-e del Contacto"
-              name="email"
+              name="email_tag"
               value="{{s.email}}"
             />
             <span class="icon is-small is-left">
@@ -101,7 +101,7 @@
               class="input"
               type="text"
               placeholder="Teléfono de contacto"
-              name="phone"
+              name="phone_tag"
               value="{{s.phone}}"
             />
             <span class="icon is-small is-left">
@@ -111,6 +111,45 @@
         </div>
       </div>
     </div>
+
+
+
+    <div class="field is-horizontal"> <!-- datos de contacto -->
+      <div class="field-label is-normal">
+        <label class="label">Contacto de la escuela</label>
+      </div>
+
+      <div class="field-body">
+        <div class="field"> <!-- email -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="email"
+              placeholder="Correo-e de la Escuela"
+              name="school_email_tag"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-envelope"></i>
+            </span>
+          </div>
+        </div>
+        <div class="field"> <!-- phone -->
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Página Web de la Escuela"
+              name="school_web_tag"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-file-code"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
 
     <div class="field is-horizontal"> <!-- fb - instagram -->
       <div class="field-label is-normal">
@@ -124,7 +163,7 @@
               class="input"
               type="text"
               placeholder="Enter the company instagram"
-              name="instagram"
+              name="instagram_tag"
               value="{{s.instagram}}"
             />
             <span class="icon is-small is-left">
@@ -139,7 +178,7 @@
               class="input"
               type="text"
               placeholder="Enter the facebook address"
-              name="fb"
+              name="fb_tag"
               value="{{s.fb}}"
             />
             <span class="icon is-small is-left">
@@ -161,7 +200,7 @@
               class="input"
               type="text"
               placeholder="Enter the company twitter"
-              name="twitter"
+              name="twitter_tag"
               value="{{s.twitter}}"
             />
             <span class="icon is-small is-left">
@@ -176,7 +215,7 @@
               class="input"
               type="text"
               placeholder="Enter the company tiktok"
-              name="tik_tok"
+              name="tik_tok_tag"
               value="{{s.tik_tok}}"
             />
             <span class="icon is-small is-left">
@@ -198,7 +237,7 @@
               class="input"
               type="text"
               placeholder="Enter linkedIn address or handle"
-              name="linked_in"
+              name="linked_in_tag"
               value="{{s.linked_in}}"
             />
             <span class="icon is-small is-left">
@@ -304,21 +343,31 @@
 
 
 <script>
-  // function is_company_bool() {
-    // const { checked } = document.getElementById("is_company");
-    // const my_form = document.getElementById("edit-clinical");
+function checkSchoolEditFields() {
+    const exclude = [
+      "services_offered",
+      "school_level",
+      "sales_funnel"
+    ];
+    let form = document.getElementById("school_edit");
+    let formData = new FormData(form);
+    let data = Array.from(formData.entries());
 
-    // let { value: line_of_business = null } = document.getElementById("line_of_business");
-    // let { value: company_name = null } = document.getElementById("company_name");
+    const post_data = {};
 
-    // line_of_business = line_of_business ? `"${line_of_business}"` : null;
-    // company_name = company_name ? `"${company_name}"` : null;
+    for (let [key, value] of data) {
+      if (exclude.includes(key)) {
+        continue;
+      }
 
-  //   my_form.setAttribute(
-  //     "hx-vals",
-  //     `js:{deleted: false, company_name: ${company_name}}`,
-  //   );
-  // }
+      const new_key = key.replace('_tag', '');
+      if (value) {
+        post_data[new_key] = value
+      }
+    };
 
-  // (() => is_company_bool())();
+    post_data.deleted = false;
+
+    return post_data
+}
 </script>
