@@ -11,7 +11,10 @@ use crate::{
     db::{config::Database, users_db::UsersDB},
     error::user_error::UserError,
     models::users_model::{User, UserFromJson, UserUuid},
-    utils::{general_utils::get_uuid, pwd::pwd_hasher},
+    utils::{
+        general_utils::{get_uuid, shuffle_id},
+        pwd::pwd_hasher,
+    },
 };
 
 #[get("/users")]
@@ -56,7 +59,7 @@ async fn find_one(db: Data<Database>, user_id: Path<UserUuid>) -> Result<Json<Us
 }
 
 #[post("/users")]
-async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<Json<User>, UserError> {
+async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<Json<UserUuid>, UserError> {
     let is_valid = user.validate();
     let new_user = user.into_inner();
 
@@ -96,7 +99,9 @@ async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<Json<Use
                 Database::add_one(&db, User::new(String::from(new_uuid), user_from_json)).await;
 
             match my_user {
-                Some(user_result) => Ok(Json(user_result)),
+                Some(user_result) => Ok(Json(UserUuid {
+                    uuid: shuffle_id(user_result.uuid),
+                })),
                 None => {
                     error!("Error [POST] /users");
                     Err(UserError::UserCreationFailure)

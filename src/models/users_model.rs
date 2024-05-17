@@ -5,7 +5,7 @@ use validator::Validate;
 
 use crate::constants::validation::*;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct UserUuid {
     pub uuid: String,
 }
