@@ -64,23 +64,23 @@
           <i
             class="fas {{#if is_company}}fa-industry{{else}}fa-user-md{{/if}}"
           ></i>
-          <span class="tooltiptext">{{clinic.specialty}}</span>
+          <span class="tooltiptext">{{section.specialty}}</span>
         </span>
-        {{#if clinic.is_company}} {{clinic.clinic_name}} {{else}}
-        {{clinic.name}} {{clinic.last_name}} {{/if}}
+        {{#if section.is_company}} {{section.clinic_name}} {{else}}
+        {{section.name}} {{section.last_name}} {{/if}}
       </p>
     </div>
 
     <div class="column is-3">
       <p class="notification has-text-centered">
-        {{#if clinic.email}}
+        {{#if section.email}}
         <span class="icon is-small is-left tooltip">
           <a href="mailto:{{email}}" title="email {{name}} {{last_name}}"
             ><i class="fas fa-envelope"></i
           ></a>
-          <span class="tooltiptext">email: {{clinic.email}}</span>
+          <span class="tooltiptext">email: {{section.email}}</span>
         </span>
-        {{/if}} {{#if clinic.instagram}}
+        {{/if}} {{#if section.instagram}}
         <span class="icon is-small is-left tooltip">
           <a
             href="{{instagram}}"
@@ -88,9 +88,9 @@
             title="Instagram {{name}} {{last_name}}"
             ><i class="fab fa-instagram"></i
           ></a>
-          <span class="tooltiptext">instagram: {{clinic.instagram}}</span>
+          <span class="tooltiptext">instagram: {{section.instagram}}</span>
         </span>
-        {{/if}} {{#if clinic.fb}}
+        {{/if}} {{#if section.fb}}
         <span class="icon is-small is-left tooltip">
           <a
             href="{{fb}}"
@@ -98,29 +98,29 @@
             title="facebook {{name}} {{last_name}}"
             ><i class="fab fa-facebook"></i
           ></a>
-          <span class="tooltiptext">facebook: {{clinic.fb}}</span>
+          <span class="tooltiptext">facebook: {{section.fb}}</span>
         </span>
-        {{/if}} {{#if clinic.phone}}
+        {{/if}} {{#if section.phone}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{clinic.phone}}"
+            href="{{section.phone}}"
             target="_blank"
             title="Phone {{name}} {{last_name}}"
             ><i class="fas fa-phone"></i
           ></a>
           <span class="tooltiptext"
-            >{{clinic.name}} {{clinic.last_name}}: {{clinic.phone}}</span
+            >{{section.name}} {{section.last_name}}: {{section.phone}}</span
           >
         </span>
-        {{/if}} {{#if clinic.linked_in}}
+        {{/if}} {{#if section.linked_in}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{clinic.linked_in}}"
+            href="{{section.linked_in}}"
             target="_blank"
-            title="linkedin: {{clinic.linked_in}}"
+            title="linkedin: {{section.linked_in}}"
             ><i class="fab fa-linkedin"></i
           ></a>
-          <span class="tooltiptext">LinkedIn: {{clinic.linked_in}}</span>
+          <span class="tooltiptext">LinkedIn: {{section.linked_in}}</span>
         </span>
         {{/if}}
       </p>
@@ -130,14 +130,14 @@
       <p class="notification is-small has-text-centered">
         <span class="icon is-small is-left tooltip">
           <i class="fas fa-calendar-alt"></i>
-          <span class="tooltiptext">{{clinic.first_contact_date}}</span>
+          <span class="tooltiptext">{{section.first_contact_date}}</span>
         </span>
       </p>
     </div>
 
     <div class="column is-1">
       {{#each funnel_tag}} {{#if selected}}
-      <div class="notification is-small has-text-centered is-lost">
+      <div class="notification is-small has-text-centered {{css}}">
         <span class="icon is-small is-left tooltip">
           <i class="{{icon}}"></i>
           <span class="tooltiptext">{{text}}</span>
@@ -150,7 +150,7 @@
       <p class="notification is-small has-text-centered">
         <span class="icon is-small is-left tooltip">
           <i class="fas fa-clipboard"></i>
-          <span class="tooltiptext">{{clinic.notes}}</span>
+          <span class="tooltiptext">{{section.notes}}</span>
         </span>
       </p>
     </div>
@@ -170,7 +170,7 @@
       <p class="notification has-text-centered">
         <span
           class="icon is-small tooltip"
-          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/clinics/edit/{{clinic.uuid}}"
+          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/clinics/edit/{{section.uuid}}"
           hx-swap="innerHTML"
           hx-target="#dynamic-content"
         >

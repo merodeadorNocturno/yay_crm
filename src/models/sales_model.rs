@@ -32,6 +32,7 @@ pub struct SalesFunnelTag {
     pub text: String,
     pub selected: bool,
     pub icon: Option<String>,
+    pub css: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
@@ -98,4 +99,11 @@ impl fmt::Display for SchoolLevel {
             SchoolLevel::UNIVERSITY => write!(f, "Universidad"),
         }
     }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct GeneralTags<T> {
+    pub section: T,
+    pub funnel_tag: Vec<SalesFunnelTag>,
+    pub services_tag: Vec<ServicesOfferedTag>,
 }

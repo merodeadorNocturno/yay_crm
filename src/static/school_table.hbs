@@ -63,63 +63,67 @@
         <span class="icon is-small is-left tooltip">
           <i class="fas fa-chalkboard-teacher"></i>
           <span class="tooltiptext">
-            {{#each (levels school_level)}} {{#if selected}}{{text}}, {{/if}}
-            {{/each}}
+            {{#each (levels section.school_level)}} {{#if selected}}{{text}},
+            {{/if}} {{/each}}
           </span>
         </span>
-        {{#if school_name}} {{school_name}} {{else}} {{name}} {{last_name}}
-        {{/if}}
+        {{#if section.school_name}} {{section.school_name}} {{else}}
+        {{section.name}} {{section.last_name}} {{/if}}
       </p>
     </div>
 
     <div class="column is-3">
       <p class="notification has-text-centered">
-        {{#if email}}
+        {{#if section.email}}
         <span class="icon is-small is-left tooltip">
-          <a href="mailto:{{email}}" title="email {{name}} {{last_name}}"
+          <a
+            href="mailto:{{section.email}}"
+            title="email {{section.name}} {{section.last_name}}"
             ><i class="fas fa-envelope"></i
           ></a>
-          <span class="tooltiptext">email: {{email}}</span>
+          <span class="tooltiptext">email: {{section.email}}</span>
         </span>
-        {{/if}} {{#if instagram}}
+        {{/if}} {{#if section.instagram}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{instagram}}"
+            href="{{section.instagram}}"
             target="_blank"
-            title="Instagram {{name}} {{last_name}}"
+            title="Instagram {{section.school_name}}"
             ><i class="fab fa-instagram"></i
           ></a>
-          <span class="tooltiptext">instagram: {{instagram}}</span>
+          <span class="tooltiptext">instagram: {{section.instagram}}</span>
         </span>
-        {{/if}} {{#if fb}}
+        {{/if}} {{#if section.fb}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{fb}}"
+            href="{{section.fb}}"
             target="_blank"
-            title="facebook {{name}} {{last_name}}"
+            title="facebook {{section.school_name}}"
             ><i class="fab fa-facebook"></i
           ></a>
-          <span class="tooltiptext">facebook: {{fb}}</span>
+          <span class="tooltiptext">facebook: {{section.fb}}</span>
         </span>
-        {{/if}} {{#if phone}}
+        {{/if}} {{#if section.phone}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{phone}}"
+            href="{section.phone}}"
             target="_blank"
-            title="Phone {{name}} {{last_name}}"
+            title="Phone {{section.name}} {{section.last_name}}"
             ><i class="fas fa-phone"></i
           ></a>
-          <span class="tooltiptext">{{name}} {{last_name}}: {{phone}}</span>
+          <span class="tooltiptext"
+            >{{section.name}} {{section.last_name}}: {{section.phone}}</span
+          >
         </span>
-        {{/if}} {{#if linked_in}}
+        {{/if}} {{#if section.linked_in}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{linked_in}}"
+            href="{{section.linked_in}}"
             target="_blank"
-            title="linkedin: {{linked_in}}"
+            title="linkedin: {{section.linked_in}}"
             ><i class="fab fa-linkedin"></i
           ></a>
-          <span class="tooltiptext">LinkedIn: {{linked_in}}</span>
+          <span class="tooltiptext">LinkedIn: {{section.linked_in}}</span>
         </span>
         {{/if}}
       </p>
@@ -129,94 +133,39 @@
       <p class="notification is-small has-text-centered">
         <span class="icon is-small is-left tooltip">
           <i class="fas fa-calendar-alt"></i>
-          <span class="tooltiptext">{{first_contact_date}}</span>
+          <span class="tooltiptext">{{section.first_contact_date}}</span>
         </span>
       </p>
     </div>
 
     <div class="column is-1">
-      {{#if (str_equal sales_funnel "LOST")}}
-      <div class="notification is-small has-text-centered is-lost">
+      {{#each funnel_tag}} {{#if selected}}
+      <div class="notification is-small has-text-centered {{css}}">
         <span class="icon is-small is-left tooltip">
-          <i class="fas fa-trash"></i>
-          <span class="tooltiptext">Lost</span>
+          <i class="{{icon}}"></i>
+          <span class="tooltiptext">{{text}}</span>
         </span>
       </div>
-      {{/if}} {{#if (str_equal sales_funnel "NEGOTIATION")}}
-      <div class="notification is-small has-text-centered is-negotiation">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-people-arrows"></i>
-          <span class="tooltiptext">Negociación</span>
-        </span>
-      </div>
-      {{/if}} {{#if (str_equal sales_funnel "PROSPECT")}}
-      <div class="notification is-small has-text-centered is-prospect">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-binoculars"></i>
-          <span class="tooltiptext">Prospect</span>
-        </span>
-      </div>
-      {{/if}} {{#if (str_equal sales_funnel "QUOTE")}}
-      <div class="notification is-small has-text-centered is-quote">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-money-check-alt"></i>
-          <span class="tooltiptext">Cotización</span>
-        </span>
-      </div>
-      {{/if}} {{#if (str_equal sales_funnel "RESEARCH")}}
-      <div class="notification is-small has-text-centered is-research">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-user-secret"></i>
-          <span class="tooltiptext">Research</span>
-        </span>
-      </div>
-      {{/if}} {{#if (str_equal sales_funnel "WIN")}}
-      <div class="notification is-small has-text-centered is-win">
-        <span class="icon is-small is-left tooltip">
-          <i class="fas fa-handshake"></i>
-          <span class="tooltiptext">Win</span>
-        </span>
-      </div>
-      {{/if}}
+      {{/if}} {{/each}}
     </div>
 
     <div class="column is-1">
       <p class="notification is-small has-text-centered">
         <span class="icon is-small is-left tooltip">
           <i class="fas fa-clipboard"></i>
-          <span class="tooltiptext">{{notes}}</span>
+          <span class="tooltiptext">{{section.notes}}</span>
         </span>
       </p>
     </div>
 
     <div class="column is-2">
       <p class="notification is-small has-text-centered">
-        {{#each services_offered}} {{#if (str_equal this "BRANDING")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="fas fa-copyright"></i
-          ><span class="tooltiptext">Branding</span></span
-        >
-        {{/if}} {{#if (str_equal this "WEBSERVICES")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="fas fa-globe-americas"></i
-          ><span class="tooltiptext">Web Services</span></span
-        >
-        {{/if}} {{#if (str_equal this "DIGITALSTRATEGY")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="fas fa-robot"></i
-          ><span class="tooltiptext">Digital Strategy</span></span
-        >
-        {{/if}} {{#if (str_equal this "ATTRACTIONOFNEWCLIENTS")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="fas fa-magnet"></i
-          ><span class="tooltiptext">Attract new clients</span></span
-        >
-        {{/if}} {{#if (str_equal this "SALESMANAGEMENT")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="far fa-money-bill-alt"></i
-          ><span class="tooltiptext">Sales Management</span></span
-        >
-        {{/if}} {{/each}}
+        {{#each services_tag}}
+        <span class="icon is-small is-left tooltip">
+          <i class="{{icon}}"></i>
+          <span class="tooltiptext">{{text}}</span>
+        </span>
+        {{/each}}
       </p>
     </div>
 
@@ -224,7 +173,7 @@
       <p class="notification has-text-centered">
         <span
           class="icon is-small tooltip"
-          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/htmx/schools/edit/{{uuid}}"
+          hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/htmx/schools/edit/{{section.uuid}}"
           hx-swap="innerHTML"
           hx-target="#dynamic-content"
         >

@@ -10,7 +10,7 @@ use crate::{
     db::{config::Database, school_db::SchoolDB},
     error::school_error::SchoolError,
     models::school_model::{School, SchoolUuid},
-    utils::general_utils::get_uuid,
+    utils::general_utils::{get_uuid, shuffle_id},
 };
 
 #[get("/schools")]
@@ -78,7 +78,10 @@ async fn create(db: Data<Database>, body: Json<School>) -> Result<Json<SchoolUui
 }
 
 #[patch("/schools")]
-async fn update_one(db: Data<Database>, body: Json<School>) -> Result<Json<School>, SchoolError> {
+async fn update_one(
+    db: Data<Database>,
+    body: Json<School>,
+) -> Result<Json<SchoolUuid>, SchoolError> {
     let is_valid = body.validate();
 
     match is_valid {
@@ -156,7 +159,12 @@ async fn update_one(db: Data<Database>, body: Json<School>) -> Result<Json<Schoo
             let updated_school = Database::update_one(&db, my_school).await;
 
             match updated_school {
-                Some(school) => Ok(Json(school)),
+                Some(school) => Ok(Json(SchoolUuid {
+                    uuid: match school.uuid {
+                        Some(this_uuid) => shuffle_id(this_uuid),
+                        None => "".to_string(),
+                    },
+                })),
                 None => {
                     error!("Error updating school");
                     Err(SchoolError::NoSchoolsFound)

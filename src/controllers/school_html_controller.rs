@@ -9,7 +9,10 @@ use serde_json::json;
 
 use crate::{
     db::{config::Database, school_db::SchoolDB},
-    models::{sales_model::SchoolLevel, school_model::*},
+    models::{
+        sales_model::{GeneralTags, SchoolLevel},
+        school_model::*,
+    },
     utils::{
         env::{set_env_vars, ConfVars},
         fs_utils::read_hbs_template,
@@ -109,8 +112,22 @@ async fn school_table(db: Data<Database>) -> Result<String, RenderError> {
 
     match schools_from_db {
         Some(these_schools) => {
-            let data = json!({"conf": my_cf, "schools": these_schools});
-            debug!("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ {}", &data);
+            let mut tag_vectors: Vec<GeneralTags<School>> = Vec::new();
+
+            for school in these_schools {
+                let (services_tag, funnel_tag) = create_option_tags_info_for_services_and_funnel(
+                    school.services_offered.clone(),
+                    school.sales_funnel.clone(),
+                );
+
+                tag_vectors.push(GeneralTags::<School> {
+                    section: school,
+                    funnel_tag,
+                    services_tag,
+                });
+            }
+
+            let data = json!({"conf": my_cf, "schools": tag_vectors});
 
             let render = handlebars.render_template(&template_contents, &data)?;
             Ok(render)
