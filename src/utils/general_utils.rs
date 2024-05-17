@@ -1,3 +1,6 @@
+use rand::{thread_rng, Rng};
+use uuid::Uuid;
+
 use crate::models::{
     sales_model::{
         SalesFunnel, SalesFunnelTag, SchoolLevel, SchoolLevelTag, ServicesOffered,
@@ -5,7 +8,6 @@ use crate::models::{
     },
     users_model::{Roles, RolesTag},
 };
-use uuid::Uuid;
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
 
@@ -46,26 +48,31 @@ pub fn get_options_and_services() -> (Vec<ServicesOfferedTag>, Vec<SalesFunnelTa
             value: ServicesOffered::BRANDING,
             text: ServicesOffered::BRANDING.to_string(),
             selected: false,
+            icon: Some("fas fa-copyright".to_string()),
         },
         ServicesOfferedTag {
             value: ServicesOffered::WEBSERVICES,
             text: ServicesOffered::WEBSERVICES.to_string(),
             selected: false,
+            icon: Some("fas fa-globe-americas".to_string()),
         },
         ServicesOfferedTag {
             value: ServicesOffered::DIGITALSTRATEGY,
             text: ServicesOffered::DIGITALSTRATEGY.to_string(),
             selected: false,
+            icon: Some("fas fa-robot".to_string()),
         },
         ServicesOfferedTag {
             value: ServicesOffered::ATTRACTIONOFNEWCLIENTS,
             text: ServicesOffered::ATTRACTIONOFNEWCLIENTS.to_string(),
             selected: false,
+            icon: Some("fas fa-magnet".to_string()),
         },
         ServicesOfferedTag {
             value: ServicesOffered::SALESMANAGEMENT,
             text: ServicesOffered::SALESMANAGEMENT.to_string(),
             selected: false,
+            icon: Some("far fa-money-bill-alt".to_string()),
         },
     ];
 
@@ -203,4 +210,33 @@ pub fn create_school_level_tags(school_level: Vec<SchoolLevel>) -> Vec<SchoolLev
     }
 
     level_tag
+}
+
+fn get_rnd_position(my_usize: usize) -> u8 {
+    let mut random_generator = thread_rng();
+    let rnd_number = random_generator.gen_range(0..my_usize as u8);
+
+    rnd_number
+}
+
+pub fn shuffle_id(uuid: String) -> String {
+    let uuid_len = uuid.len();
+    let mut rnd_char: char = '0';
+    let end_search_index: usize = 2;
+
+    let rnd_index = get_rnd_position(uuid_len);
+    let rnd_pos = get_rnd_position(end_search_index);
+
+    let init_or_end = rnd_pos * (uuid_len as u8 - 1);
+
+    let mut vec_of_chars: Vec<char> = uuid.chars().collect();
+
+    if let Some(my_char) = vec_of_chars.get(rnd_index.clone() as usize) {
+        rnd_char = my_char.to_owned();
+    }
+
+    vec_of_chars.remove(rnd_index as usize);
+    vec_of_chars.insert(init_or_end as usize, rnd_char);
+
+    vec_of_chars.iter().collect()
 }

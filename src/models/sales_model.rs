@@ -48,6 +48,7 @@ pub struct ServicesOfferedTag {
     pub value: ServicesOffered,
     pub text: String,
     pub selected: bool,
+    pub icon: Option<String>,
 }
 
 impl fmt::Display for ServicesOffered {

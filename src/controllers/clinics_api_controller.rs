@@ -11,7 +11,7 @@ use crate::db::{clinical_db::ClinicalDB, config::Database};
 use crate::error::clinical_error::ClinicalError;
 use crate::{
     models::clinical_model::{Clinical, ClinicalUuid},
-    utils::general_utils::get_uuid,
+    utils::general_utils::{get_uuid, shuffle_id},
 };
 
 #[get("/clinical")]
@@ -45,7 +45,10 @@ async fn find_one(
 }
 
 #[post("/clinical")]
-async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<Json<Clinical>, ClinicalError> {
+async fn create(
+    db: Data<Database>,
+    body: Json<Clinical>,
+) -> Result<Json<ClinicalUuid>, ClinicalError> {
     let is_valid = body.validate();
     let date_created = Local::now();
     let mut new_clinical = body.into_inner();
@@ -60,7 +63,12 @@ async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<Json<Clinica
                 Database::add_one(&db, Clinical::new(String::from(new_uuid), new_clinical)).await;
 
             match my_clinical {
-                Some(clinical_result) => Ok(Json(clinical_result)),
+                Some(clinical_result) => Ok(Json(ClinicalUuid {
+                    uuid: match clinical_result.uuid {
+                        Some(this_uuid) => shuffle_id(this_uuid),
+                        None => "".to_string(),
+                    },
+                })),
                 None => {
                     error!("Error [POST] /clinical");
                     Err(ClinicalError::ClinicalCreationFailure)
@@ -78,7 +86,7 @@ async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<Json<Clinica
 async fn update_one(
     db: Data<Database>,
     body: Json<Clinical>,
-) -> Result<Json<Clinical>, ClinicalError> {
+) -> Result<Json<ClinicalUuid>, ClinicalError> {
     let is_valid = body.validate();
 
     match is_valid {
@@ -163,7 +171,12 @@ async fn update_one(
             let updated_clinical = Database::update_one(&db, my_clinical).await;
 
             match updated_clinical {
-                Some(clinical) => Ok(Json(clinical)),
+                Some(clinical) => Ok(Json(ClinicalUuid {
+                    uuid: match clinical.uuid {
+                        Some(this_uuid) => shuffle_id(this_uuid),
+                        None => "".to_string(),
+                    },
+                })),
                 None => {
                     error!("Error in clinical.update_one");
                     Err(ClinicalError::NoClinicalsFound)

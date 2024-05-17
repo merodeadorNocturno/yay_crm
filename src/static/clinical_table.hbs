@@ -90,7 +90,7 @@
           ></a>
           <span class="tooltiptext">instagram: {{clinic.instagram}}</span>
         </span>
-        {{/if}} {{#if fb}}
+        {{/if}} {{#if clinic.fb}}
         <span class="icon is-small is-left tooltip">
           <a
             href="{{fb}}"
@@ -98,27 +98,29 @@
             title="facebook {{name}} {{last_name}}"
             ><i class="fab fa-facebook"></i
           ></a>
-          <span class="tooltiptext">facebook: {{fb}}</span>
+          <span class="tooltiptext">facebook: {{clinic.fb}}</span>
         </span>
-        {{/if}} {{#if phone}}
+        {{/if}} {{#if clinic.phone}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{phone}}"
+            href="{{clinic.phone}}"
             target="_blank"
             title="Phone {{name}} {{last_name}}"
             ><i class="fas fa-phone"></i
           ></a>
-          <span class="tooltiptext">{{name}} {{last_name}}: {{phone}}</span>
+          <span class="tooltiptext"
+            >{{clinic.name}} {{clinic.last_name}}: {{clinic.phone}}</span
+          >
         </span>
-        {{/if}} {{#if linked_in}}
+        {{/if}} {{#if clinic.linked_in}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{linked_in}}"
+            href="{{clinic.linked_in}}"
             target="_blank"
-            title="linkedin: {{linked_in}}"
+            title="linkedin: {{clinic.linked_in}}"
             ><i class="fab fa-linkedin"></i
           ></a>
-          <span class="tooltiptext">LinkedIn: {{linked_in}}</span>
+          <span class="tooltiptext">LinkedIn: {{clinic.linked_in}}</span>
         </span>
         {{/if}}
       </p>
@@ -155,32 +157,12 @@
 
     <div class="column is-2">
       <p class="notification is-small has-text-centered">
-        {{#each services_offered}} {{#if (str_equal this "BRANDING")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="fas fa-copyright"></i
-          ><span class="tooltiptext">Branding</span></span
-        >
-        {{/if}} {{#if (str_equal this "WEBSERVICES")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="fas fa-globe-americas"></i
-          ><span class="tooltiptext">Web Services</span></span
-        >
-        {{/if}} {{#if (str_equal this "DIGITALSTRATEGY")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="fas fa-robot"></i
-          ><span class="tooltiptext">Digital Strategy</span></span
-        >
-        {{/if}} {{#if (str_equal this "ATTRACTIONOFNEWCLIENTS")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="fas fa-magnet"></i
-          ><span class="tooltiptext">Attract new clients</span></span
-        >
-        {{/if}} {{#if (str_equal this "SALESMANAGEMENT")}}
-        <span class="icon is-small is-left tooltip"
-          ><i class="far fa-money-bill-alt"></i
-          ><span class="tooltiptext">Sales Management</span></span
-        >
-        {{/if}} {{/each}}
+        {{#each services_tag}}
+        <span class="icon is-small is-left tooltip">
+          <i class="{{icon}}"></i>
+          <span class="tooltiptext">{{text}}</span>
+        </span>
+        {{/each}}
       </p>
     </div>
 
