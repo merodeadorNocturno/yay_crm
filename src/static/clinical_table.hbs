@@ -157,12 +157,12 @@
 
     <div class="column is-2">
       <p class="notification is-small has-text-centered">
-        {{#each services_tag}}
+        {{#each services_tag}} {{#if selected}}
         <span class="icon is-small is-left tooltip">
           <i class="{{icon}}"></i>
           <span class="tooltiptext">{{text}}</span>
         </span>
-        {{/each}}
+        {{/if}} {{/each}}
       </p>
     </div>
 
