@@ -26,7 +26,9 @@ async fn find_all(db: Data<Database>) -> Result<HttpResponse, SchoolError> {
             .json(schools_found)),
         None => {
             error!("Didn't find any School data");
-            Err(SchoolError::NoSchoolsFound)
+            Ok(HttpResponse::NotFound().json(SchoolUuid {
+                uuid: format!("{}", SchoolError::NoSchoolsFound),
+            }))
         }
     }
 }
@@ -40,7 +42,9 @@ async fn find_one(db: Data<Database>, uuid: Path<SchoolUuid>) -> Result<HttpResp
         Some(result) => Ok(HttpResponse::Ok().status(StatusCode::OK).json(result)),
         None => {
             error!("No schools found for id:: {:?}", &school_uuid);
-            Err(SchoolError::NoSchoolsFound)
+            Ok(HttpResponse::NotFound().json(SchoolUuid {
+                uuid: format!("{}", SchoolError::NoSchoolsFound),
+            }))
         }
     }
 }

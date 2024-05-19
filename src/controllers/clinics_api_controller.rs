@@ -1,8 +1,10 @@
 use actix_web::{
-    delete, get, patch, post,
+    delete, get,
+    http::StatusCode,
+    patch, post,
     web::{Data, Json, Path, ServiceConfig},
+    HttpResponse,
 };
-
 use chrono::Local;
 use log::error;
 use validator::Validate;
@@ -15,14 +17,18 @@ use crate::{
 };
 
 #[get("/clinical")]
-async fn find_all(db: Data<Database>) -> Result<Json<Vec<Clinical>>, ClinicalError> {
+async fn find_all(db: Data<Database>) -> Result<HttpResponse, ClinicalError> {
     let clinical = Database::find_all_non_deleted(&db).await;
 
     match clinical {
-        Some(found_clinical) => Ok(Json(found_clinical)),
+        Some(found_clinical) => Ok(HttpResponse::Ok()
+            .status(StatusCode::OK)
+            .json(found_clinical)),
         None => {
             error!("Didn't find any Clinical data");
-            Err(ClinicalError::NoClinicalsFound)
+            Ok(HttpResponse::NotFound().json(ClinicalUuid {
+                uuid: format!("{}", ClinicalError::NoClinicalsFound),
+            }))
         }
     }
 }
@@ -31,24 +37,23 @@ async fn find_all(db: Data<Database>) -> Result<Json<Vec<Clinical>>, ClinicalErr
 async fn find_one(
     db: Data<Database>,
     uuid: Path<ClinicalUuid>,
-) -> Result<Json<Clinical>, ClinicalError> {
+) -> Result<HttpResponse, ClinicalError> {
     let clinical_uuid = uuid.into_inner().uuid;
     let clinical_result = Database::find_one(&db, clinical_uuid.clone()).await;
 
     match clinical_result {
-        Some(result) => Ok(Json(result)),
+        Some(result) => Ok(HttpResponse::Ok().status(StatusCode::OK).json(result)),
         None => {
             error!("No items found for UUID:: {:?}", &clinical_uuid);
-            Err(ClinicalError::NoClinicalsFound)
+            Ok(HttpResponse::NotFound().json(ClinicalUuid {
+                uuid: format!("{}", ClinicalError::NoClinicalsFound),
+            }))
         }
     }
 }
 
 #[post("/clinical")]
-async fn create(
-    db: Data<Database>,
-    body: Json<Clinical>,
-) -> Result<Json<ClinicalUuid>, ClinicalError> {
+async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<HttpResponse, ClinicalError> {
     let is_valid = body.validate();
     let date_created = Local::now();
     let mut new_clinical = body.into_inner();
@@ -63,21 +68,28 @@ async fn create(
                 Database::add_one(&db, Clinical::new(String::from(new_uuid), new_clinical)).await;
 
             match my_clinical {
-                Some(clinical_result) => Ok(Json(ClinicalUuid {
-                    uuid: match clinical_result.uuid {
-                        Some(this_uuid) => shuffle_id(this_uuid),
-                        None => "".to_string(),
-                    },
-                })),
+                Some(clinical_result) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "clinic_create"))
+                    .status(StatusCode::CREATED)
+                    .json(ClinicalUuid {
+                        uuid: match clinical_result.uuid {
+                            Some(this_uuid) => shuffle_id(this_uuid),
+                            None => "".to_string(),
+                        },
+                    })),
                 None => {
                     error!("Error [POST] /clinical");
-                    Err(ClinicalError::ClinicalCreationFailure)
+                    Ok(HttpResponse::InternalServerError().json(ClinicalUuid {
+                        uuid: format!("{}", ClinicalError::ClinicalCreationFailure),
+                    }))
                 }
             }
         }
         Err(e) => {
             error!("Error clinical.create {:?}", e);
-            Err(ClinicalError::ClinicalCreationFailure)
+            Ok(HttpResponse::InternalServerError().json(ClinicalUuid {
+                uuid: format!("{}", ClinicalError::ClinicalCreationFailure),
+            }))
         }
     }
 }
@@ -86,7 +98,7 @@ async fn create(
 async fn update_one(
     db: Data<Database>,
     body: Json<Clinical>,
-) -> Result<Json<ClinicalUuid>, ClinicalError> {
+) -> Result<HttpResponse, ClinicalError> {
     let is_valid = body.validate();
 
     match is_valid {
@@ -171,33 +183,45 @@ async fn update_one(
             let updated_clinical = Database::update_one(&db, my_clinical).await;
 
             match updated_clinical {
-                Some(clinical) => Ok(Json(ClinicalUuid {
-                    uuid: match clinical.uuid {
-                        Some(this_uuid) => shuffle_id(this_uuid),
-                        None => "".to_string(),
-                    },
-                })),
+                Some(clinical) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "clinic_update"))
+                    .status(StatusCode::OK)
+                    .json(ClinicalUuid {
+                        uuid: match clinical.uuid {
+                            Some(this_uuid) => shuffle_id(this_uuid),
+                            None => "".to_string(),
+                        },
+                    })),
                 None => {
                     error!("Error in clinical.update_one");
-                    Err(ClinicalError::NoClinicalsFound)
+                    Ok(HttpResponse::InternalServerError().json(ClinicalUuid {
+                        uuid: format!("{}", ClinicalError::NoClinicalsFound),
+                    }))
                 }
             }
         }
         Err(e) => {
             error!("Error in clinical.update_one: {:?}", e);
-            Err(ClinicalError::NoClinicalsFound)
+            Ok(HttpResponse::NotFound().json(ClinicalUuid {
+                uuid: format!("{}", ClinicalError::NoClinicalsFound),
+            }))
         }
     }
 }
 
 #[get("/clinical/deleted")]
-async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<Clinical>>, ClinicalError> {
+async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, ClinicalError> {
     let clinics = Database::find_all_deleted(&db).await;
     match clinics {
-        Some(found_clinics) => Ok(Json(found_clinics)),
+        Some(found_clinics) => Ok(HttpResponse::Ok()
+            .insert_header(("HX-Trigger", "clinic_fad"))
+            .status(StatusCode::OK)
+            .json(found_clinics)),
         None => {
             error!("Didn't find any deleted clinics");
-            Err(ClinicalError::NoClinicalsFound)
+            Ok(HttpResponse::NotFound().json(ClinicalUuid {
+                uuid: format!("{}", ClinicalError::NoClinicalsFound),
+            }))
         }
     }
 }
@@ -206,7 +230,7 @@ async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<Clinical>>, Cli
 async fn delete_one(
     db: Data<Database>,
     uuid: Path<ClinicalUuid>,
-) -> Result<Json<ClinicalUuid>, ClinicalError> {
+) -> Result<HttpResponse, ClinicalError> {
     let clinic_uuid = uuid.into_inner().uuid;
     let clinic_from_db: Option<Clinical> = Database::delete_one(&db, clinic_uuid.clone()).await;
 
@@ -214,20 +238,25 @@ async fn delete_one(
         Some(mut clinic) => {
             clinic.deleted = true;
             match Database::update_one(&db, clinic).await {
-                Some(_) => Ok(Json(ClinicalUuid {
-                    uuid: clinic_uuid.to_string(),
-                })),
+                Some(_) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "clinic_delete"))
+                    .status(StatusCode::OK)
+                    .json(ClinicalUuid {
+                        uuid: shuffle_id(clinic_uuid.to_string()),
+                    })),
                 None => {
                     error!("Unable to update clinic :: {:?}", &clinic_uuid);
-                    Ok(Json(ClinicalUuid {
-                        uuid: "".to_string(),
+                    Ok(HttpResponse::InternalServerError().json(ClinicalUuid {
+                        uuid: format!("{}", ClinicalError::ClinicalCreationFailure),
                     }))
                 }
             }
         }
         None => {
             error!("Error [POST] /enterprise");
-            Err(ClinicalError::ClinicalCreationFailure)
+            Ok(HttpResponse::NotFound().json(ClinicalUuid {
+                uuid: format!("{}", ClinicalError::NoClinicalsFound),
+            }))
         }
     }
 }
