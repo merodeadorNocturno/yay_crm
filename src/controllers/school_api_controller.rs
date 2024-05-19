@@ -1,6 +1,9 @@
 use actix_web::{
-    delete, get, patch, post,
+    delete, get,
+    http::StatusCode,
+    patch, post,
     web::{Data, Json, Path, ServiceConfig},
+    HttpResponse,
 };
 use chrono::Local;
 use log::error;
@@ -14,11 +17,13 @@ use crate::{
 };
 
 #[get("/schools")]
-async fn find_all(db: Data<Database>) -> Result<Json<Vec<School>>, SchoolError> {
+async fn find_all(db: Data<Database>) -> Result<HttpResponse, SchoolError> {
     let school = Database::find_all_active(&db).await;
 
     match school {
-        Some(schools_found) => Ok(Json(schools_found)),
+        Some(schools_found) => Ok(HttpResponse::Ok()
+            .status(StatusCode::OK)
+            .json(schools_found)),
         None => {
             error!("Didn't find any School data");
             Err(SchoolError::NoSchoolsFound)
@@ -27,12 +32,12 @@ async fn find_all(db: Data<Database>) -> Result<Json<Vec<School>>, SchoolError> 
 }
 
 #[get("/schools/{uuid}")]
-async fn find_one(db: Data<Database>, uuid: Path<SchoolUuid>) -> Result<Json<School>, SchoolError> {
+async fn find_one(db: Data<Database>, uuid: Path<SchoolUuid>) -> Result<HttpResponse, SchoolError> {
     let school_uuid = uuid.into_inner().uuid;
     let school_result = Database::find_one(&db, school_uuid.clone()).await;
 
     match school_result {
-        Some(result) => Ok(Json(result)),
+        Some(result) => Ok(HttpResponse::Ok().status(StatusCode::OK).json(result)),
         None => {
             error!("No schools found for id:: {:?}", &school_uuid);
             Err(SchoolError::NoSchoolsFound)
@@ -41,7 +46,7 @@ async fn find_one(db: Data<Database>, uuid: Path<SchoolUuid>) -> Result<Json<Sch
 }
 
 #[post("/schools")]
-async fn create(db: Data<Database>, body: Json<School>) -> Result<Json<SchoolUuid>, SchoolError> {
+async fn create(db: Data<Database>, body: Json<School>) -> Result<HttpResponse, SchoolError> {
     let is_valid = body.validate();
     let date_created = Local::now();
 
@@ -58,30 +63,34 @@ async fn create(db: Data<Database>, body: Json<School>) -> Result<Json<SchoolUui
                 Database::add_one(&db, School::new(String::from(new_uuid), new_school)).await;
 
             match my_school {
-                Some(school_result) => Ok(Json(SchoolUuid {
-                    uuid: match school_result.uuid {
-                        Some(school_uuid) => school_uuid,
-                        None => "".to_string(),
-                    },
-                })),
+                Some(school_result) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "school_create"))
+                    .status(StatusCode::CREATED)
+                    .json(SchoolUuid {
+                        uuid: match school_result.uuid {
+                            Some(school_uuid) => school_uuid,
+                            None => "".to_string(),
+                        },
+                    })),
                 None => {
                     error!("Error [POST] /school");
-                    Err(SchoolError::SchoolCreationFailure)
+                    Ok(HttpResponse::InternalServerError().json(SchoolUuid {
+                        uuid: "Error".to_string(),
+                    }))
                 }
             }
         }
         Err(e) => {
             error!("Error School.create {:?}", e);
-            Err(SchoolError::SchoolCreationFailure)
+            Ok(HttpResponse::InternalServerError().json(SchoolUuid {
+                uuid: format!("{}", SchoolError::SchoolCreationFailure),
+            }))
         }
     }
 }
 
 #[patch("/schools")]
-async fn update_one(
-    db: Data<Database>,
-    body: Json<School>,
-) -> Result<Json<SchoolUuid>, SchoolError> {
+async fn update_one(db: Data<Database>, body: Json<School>) -> Result<HttpResponse, SchoolError> {
     let is_valid = body.validate();
 
     match is_valid {
@@ -159,34 +168,46 @@ async fn update_one(
             let updated_school = Database::update_one(&db, my_school).await;
 
             match updated_school {
-                Some(school) => Ok(Json(SchoolUuid {
-                    uuid: match school.uuid {
-                        Some(this_uuid) => shuffle_id(this_uuid),
-                        None => "".to_string(),
-                    },
-                })),
+                Some(school) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "school_update"))
+                    .status(StatusCode::OK)
+                    .json(SchoolUuid {
+                        uuid: match school.uuid {
+                            Some(this_uuid) => shuffle_id(this_uuid),
+                            None => "".to_string(),
+                        },
+                    })),
                 None => {
                     error!("Error updating school");
-                    Err(SchoolError::NoSchoolsFound)
+                    Ok(HttpResponse::InternalServerError().json(SchoolUuid {
+                        uuid: "Error".to_string(),
+                    }))
                 }
             }
         }
         Err(e) => {
             error!("Error in school.update_one: {:?}", e);
-            Err(SchoolError::NoSchoolsFound)
+            Ok(HttpResponse::NotFound().json(SchoolUuid {
+                uuid: "Error".to_string(),
+            }))
         }
     }
 }
 
 #[get("/schools/deleted")]
-async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<School>>, SchoolError> {
+async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, SchoolError> {
     let schools = Database::find_all_deleted(&db).await;
 
     match schools {
-        Some(deleted_schools) => Ok(Json(deleted_schools)),
+        Some(deleted_schools) => Ok(HttpResponse::Ok()
+            .insert_header(("HX-Trigger", "school_fad"))
+            .status(StatusCode::OK)
+            .json(deleted_schools)),
         None => {
             error!("Didn't find any deleted schools");
-            Err(SchoolError::NoSchoolsFound)
+            Ok(HttpResponse::NotFound().json(SchoolUuid {
+                uuid: "Error".to_string(),
+            }))
         }
     }
 }
@@ -195,7 +216,7 @@ async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<School>>, Schoo
 async fn delete_one(
     db: Data<Database>,
     uuid: Path<SchoolUuid>,
-) -> Result<Json<SchoolUuid>, SchoolError> {
+) -> Result<HttpResponse, SchoolError> {
     let school_uuid = uuid.into_inner().uuid;
     let school_from_db: Option<School> = Database::delete_one(&db, school_uuid.clone()).await;
 
@@ -203,21 +224,24 @@ async fn delete_one(
         Some(mut school) => {
             school.deleted = true;
             match Database::update_one(&db, school).await {
-                Some(_) => Ok(Json(SchoolUuid {
-                    uuid: school_uuid.to_string(),
-                })),
+                Some(_) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "school_delete"))
+                    .status(StatusCode::OK)
+                    .json(SchoolUuid {
+                        uuid: school_uuid.to_string(),
+                    })),
                 None => {
                     error!("unable to delete school:: {:?}", &school_uuid);
-                    Ok(Json(SchoolUuid {
-                        uuid: "".to_string(),
+                    Ok(HttpResponse::InternalServerError().json(SchoolUuid {
+                        uuid: "Error".to_string(),
                     }))
                 }
             }
         }
         None => {
             error!("Unable to update school :: {:?}", &school_uuid);
-            Ok(Json(SchoolUuid {
-                uuid: "".to_string(),
+            Ok(HttpResponse::NotFound().json(SchoolUuid {
+                uuid: "Error".to_string(),
             }))
         }
     }

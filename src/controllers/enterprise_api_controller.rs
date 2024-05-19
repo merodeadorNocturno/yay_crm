@@ -1,8 +1,10 @@
 use actix_web::{
-    delete, get, patch, post,
+    delete, get,
+    http::StatusCode,
+    patch, post,
     web::{Data, Json, Path, ServiceConfig},
+    HttpResponse,
 };
-
 use chrono::Local;
 use log::error;
 use validator::Validate;
@@ -11,18 +13,22 @@ use crate::{
     db::{config::Database, enterprise_db::EnterpriseDB},
     error::enterprise_error::EnterpriseError,
     models::enterprise_model::{Enterprise, EnterpriseUuid},
-    utils::general_utils::get_uuid,
+    utils::general_utils::{get_uuid, shuffle_id},
 };
 
 #[get("/enterprises")]
-async fn find_all(db: Data<Database>) -> Result<Json<Vec<Enterprise>>, EnterpriseError> {
+async fn find_all(db: Data<Database>) -> Result<HttpResponse, EnterpriseError> {
     let enterprise = Database::find_all_active(&db).await;
 
     match enterprise {
-        Some(found_enterprise) => Ok(Json(found_enterprise)),
+        Some(found_enterprise) => Ok(HttpResponse::Ok()
+            .status(StatusCode::OK)
+            .json(found_enterprise)),
         None => {
             error!("Unable to find any enterprise data");
-            Err(EnterpriseError::NoEnterprisesFound)
+            Ok(HttpResponse::NotFound().json(EnterpriseUuid {
+                uuid: format!("{}", EnterpriseError::NoEnterprisesFound),
+            }))
         }
     }
 }
@@ -31,15 +37,17 @@ async fn find_all(db: Data<Database>) -> Result<Json<Vec<Enterprise>>, Enterpris
 async fn find_one(
     db: Data<Database>,
     uuid: Path<EnterpriseUuid>,
-) -> Result<Json<Enterprise>, EnterpriseError> {
+) -> Result<HttpResponse, EnterpriseError> {
     let enterprise_uuid = uuid.into_inner().uuid;
     let enterprise_result = Database::find_one(&db, enterprise_uuid.clone()).await;
 
     match enterprise_result {
-        Some(result) => Ok(Json(result)),
+        Some(result) => Ok(HttpResponse::Ok().status(StatusCode::OK).json(result)),
         None => {
             error!("No enterprise found for UUID:: {:?}", &enterprise_uuid);
-            Err(EnterpriseError::NoEnterprisesFound)
+            Ok(HttpResponse::NotFound().json(EnterpriseUuid {
+                uuid: format!("{}", EnterpriseError::NoEnterprisesFound),
+            }))
         }
     }
 }
@@ -48,7 +56,7 @@ async fn find_one(
 async fn create(
     db: Data<Database>,
     body: Json<Enterprise>,
-) -> Result<Json<EnterpriseUuid>, EnterpriseError> {
+) -> Result<HttpResponse, EnterpriseError> {
     let is_valid = body.validate();
     let date_created = Local::now();
     let mut new_enterprise = body.into_inner();
@@ -64,25 +72,28 @@ async fn create(
                     .await;
 
             match my_enterprise {
-                Some(enterprise_result) => {
-                    let my_uuid = match enterprise_result.uuid {
-                        Some(this_uuid) => EnterpriseUuid { uuid: this_uuid },
-                        None => EnterpriseUuid {
-                            uuid: "".to_string(),
+                Some(enterprise_result) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "enterprise_create"))
+                    .status(StatusCode::OK)
+                    .json(EnterpriseUuid {
+                        uuid: match enterprise_result.uuid {
+                            Some(this_uuid) => this_uuid,
+                            None => "".to_string(),
                         },
-                    };
-
-                    Ok(Json(my_uuid))
-                }
+                    })),
                 None => {
                     error!("Error [POST] /enterprise");
-                    Err(EnterpriseError::EnterpriseCreationFailure)
+                    Ok(HttpResponse::InternalServerError().json(EnterpriseUuid {
+                        uuid: "Error".to_string(),
+                    }))
                 }
             }
         }
         Err(e) => {
             error!("Error enterprise.create {:?}", e);
-            Err(EnterpriseError::EnterpriseCreationFailure)
+            Ok(HttpResponse::InternalServerError().json(EnterpriseUuid {
+                uuid: format!("{}", EnterpriseError::EnterpriseCreationFailure),
+            }))
         }
     }
 }
@@ -91,7 +102,7 @@ async fn create(
 async fn update_one(
     db: Data<Database>,
     body: Json<Enterprise>,
-) -> Result<Json<Enterprise>, EnterpriseError> {
+) -> Result<HttpResponse, EnterpriseError> {
     let is_valid = body.validate();
 
     match is_valid {
@@ -149,29 +160,46 @@ async fn update_one(
             let updated_enterprise = Database::update_one(&db, my_enterprise).await;
 
             match updated_enterprise {
-                Some(enterprise) => Ok(Json(enterprise)),
+                Some(enterprise) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "enterprise_update"))
+                    .status(StatusCode::OK)
+                    .json(EnterpriseUuid {
+                        uuid: match enterprise.uuid {
+                            Some(this_uuid) => shuffle_id(this_uuid),
+                            None => "".to_string(),
+                        },
+                    })),
                 None => {
                     error!("Error in enterprise.update_one");
-                    Err(EnterpriseError::NoEnterprisesFound)
+                    Ok(HttpResponse::InternalServerError().json(EnterpriseUuid {
+                        uuid: "Error".to_string(),
+                    }))
                 }
             }
         }
         Err(e) => {
             error!("Error in enterprise.update_one: {:?}", e);
-            Err(EnterpriseError::NoEnterprisesFound)
+            Ok(HttpResponse::InternalServerError().json(EnterpriseUuid {
+                uuid: format!("{}", EnterpriseError::NoEnterprisesFound),
+            }))
         }
     }
 }
 
 #[get("/enterprises/deleted")]
-async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<Enterprise>>, EnterpriseError> {
+async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, EnterpriseError> {
     let enterprises = Database::find_all_deleted(&db).await;
 
     match enterprises {
-        Some(deleted_enterprises) => Ok(Json(deleted_enterprises)),
+        Some(deleted_enterprises) => Ok(HttpResponse::Ok()
+            .insert_header(("HX-Trigger", "enterprise_fad"))
+            .status(StatusCode::OK)
+            .json(deleted_enterprises)),
         None => {
             error!("Didnt' find any deleted enterprises");
-            Err(EnterpriseError::NoEnterprisesFound)
+            Ok(HttpResponse::NotFound().json(EnterpriseUuid {
+                uuid: format!("{}", EnterpriseError::NoEnterprisesFound),
+            }))
         }
     }
 }
@@ -180,7 +208,7 @@ async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<Enterprise>>, E
 async fn delete_one(
     db: Data<Database>,
     uuid: Path<EnterpriseUuid>,
-) -> Result<Json<EnterpriseUuid>, EnterpriseError> {
+) -> Result<HttpResponse, EnterpriseError> {
     let enterprise_uuid = uuid.into_inner().uuid;
     let enterprise_from_db: Option<Enterprise> =
         Database::delete_one(&db, enterprise_uuid.clone()).await;
@@ -189,12 +217,15 @@ async fn delete_one(
         Some(mut enterprise) => {
             enterprise.deleted = true;
             match Database::update_one(&db, enterprise).await {
-                Some(_) => Ok(Json(EnterpriseUuid {
-                    uuid: enterprise_uuid.to_string(),
-                })),
+                Some(_) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "enterprise_delete"))
+                    .status(StatusCode::OK)
+                    .json(EnterpriseUuid {
+                        uuid: enterprise_uuid.to_string(),
+                    })),
                 None => {
                     error!("Unable to delete enterprise:: {:?}", &enterprise_uuid);
-                    Ok(Json(EnterpriseUuid {
+                    Ok(HttpResponse::InternalServerError().json(EnterpriseUuid {
                         uuid: "".to_string(),
                     }))
                 }
@@ -202,7 +233,7 @@ async fn delete_one(
         }
         None => {
             error!("Unable to update school :: {:?}", &enterprise_uuid);
-            Ok(Json(EnterpriseUuid {
+            Ok(HttpResponse::NotFound().json(EnterpriseUuid {
                 uuid: "".to_string(),
             }))
         }
