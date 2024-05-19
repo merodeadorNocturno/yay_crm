@@ -68,7 +68,7 @@ async fn create(db: Data<Database>, body: Json<School>) -> Result<HttpResponse, 
 
             match my_school {
                 Some(school_result) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "school_create"))
+                    .insert_header(("HX-Trigger", "school_reload_page"))
                     .status(StatusCode::CREATED)
                     .json(SchoolUuid {
                         uuid: match school_result.uuid {
@@ -173,7 +173,7 @@ async fn update_one(db: Data<Database>, body: Json<School>) -> Result<HttpRespon
 
             match updated_school {
                 Some(school) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "school_update"))
+                    .insert_header(("HX-Trigger", "school_reload_page"))
                     .status(StatusCode::OK)
                     .json(SchoolUuid {
                         uuid: match school.uuid {

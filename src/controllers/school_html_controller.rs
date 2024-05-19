@@ -134,7 +134,6 @@ async fn school_table(db: Data<Database>) -> Result<String, RenderError> {
         }
         None => {
             let data = json!({"conf": my_cf, "error": "Unable to fetch schools"});
-            debug!("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ {}", &data);
             let render_error = handlebars.render_template(&template_contents, &data)?;
             Ok(render_error)
         }
