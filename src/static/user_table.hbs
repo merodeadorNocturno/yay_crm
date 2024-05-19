@@ -68,7 +68,7 @@
 </div>
 
 <div
-  hx-trigger="user_delete from:body"
+  hx-trigger="user_reload_page from:body"
   hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/htmx/user"
   hx-swap="innerHTML"
   hx-target="#dynamic-content"

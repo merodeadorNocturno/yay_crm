@@ -107,7 +107,7 @@ async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<HttpResp
 
             match my_user {
                 Some(user_result) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "user_create"))
+                    .insert_header(("HX-Trigger", "user_reload_page"))
                     .status(StatusCode::CREATED)
                     .json(UserUuid {
                         uuid: shuffle_id(user_result.uuid),
@@ -195,7 +195,7 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<HttpResponse
 
             match updated_user {
                 Some(user_result) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "user_update"))
+                    .insert_header(("HX-Trigger", "user_reload_page"))
                     .status(StatusCode::OK)
                     .json(UserUuid {
                         uuid: shuffle_id(user_result.uuid),
@@ -230,7 +230,7 @@ async fn delete_user(
             user.deleted = true;
             match Database::update_one(&db, user).await {
                 Some(deleted_user) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "user_delete"))
+                    .insert_header(("HX-Trigger", "user_reload_page"))
                     .status(StatusCode::OK)
                     .json(deleted_user)),
                 None => {
