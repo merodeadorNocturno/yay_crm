@@ -1,8 +1,10 @@
 use actix_web::{
-    delete, get, patch, post,
+    delete, get,
+    http::StatusCode,
+    patch, post,
     web::{Data, Json, Path, ServiceConfig},
+    HttpResponse,
 };
-
 use chrono::Local;
 use log::{error, info};
 use validator::Validate;
@@ -18,48 +20,54 @@ use crate::{
 };
 
 #[get("/users")]
-async fn find_all(db: Data<Database>) -> Result<Json<Vec<User>>, UserError> {
+async fn find_all(db: Data<Database>) -> Result<HttpResponse, UserError> {
     // let user = Database::find_all(&db).await;
     let user = Database::find_all_non_deleted(&db).await;
 
     match user {
-        Some(found_users) => Ok(Json(found_users)),
+        Some(found_users) => Ok(HttpResponse::Ok().status(StatusCode::OK).json(found_users)),
         None => {
             error!("Didn't find any User data");
-            Err(UserError::NoUsersFound)
+            Ok(HttpResponse::InternalServerError().json(UserUuid {
+                uuid: format!("{}", UserError::NoUsersFound),
+            }))
         }
     }
 }
 
 #[get("/users/deleted")]
-async fn find_all_deleted(db: Data<Database>) -> Result<Json<Vec<User>>, UserError> {
+async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, UserError> {
     let user = Database::find_all_deleted(&db).await;
 
     match user {
-        Some(found_users) => Ok(Json(found_users)),
+        Some(found_users) => Ok(HttpResponse::Ok().status(StatusCode::OK).json(found_users)),
         None => {
             error!("Didn't find any User data");
-            Err(UserError::NoUsersFound)
+            Ok(HttpResponse::NotFound().json(UserUuid {
+                uuid: format!("{}", UserError::NoUsersFound),
+            }))
         }
     }
 }
 
 #[get("/users/{uuid}")]
-async fn find_one(db: Data<Database>, user_id: Path<UserUuid>) -> Result<Json<User>, UserError> {
+async fn find_one(db: Data<Database>, user_id: Path<UserUuid>) -> Result<HttpResponse, UserError> {
     let user_uuid = user_id.into_inner().uuid;
     let user_result = Database::find_one(&db, user_uuid.clone()).await;
 
     match user_result {
-        Some(result) => Ok(Json(result)),
+        Some(result) => Ok(HttpResponse::Ok().status(StatusCode::OK).json(result)),
         None => {
             error!("No users found for UUID:: {:?}", &user_uuid);
-            Err(UserError::NoUsersFound)
+            Ok(HttpResponse::NotFound().json(UserUuid {
+                uuid: format!("{}", UserError::NoUsersFound),
+            }))
         }
     }
 }
 
 #[post("/users")]
-async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<Json<UserUuid>, UserError> {
+async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<HttpResponse, UserError> {
     let is_valid = user.validate();
     let new_user = user.into_inner();
 
@@ -99,24 +107,31 @@ async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<Json<Use
                 Database::add_one(&db, User::new(String::from(new_uuid), user_from_json)).await;
 
             match my_user {
-                Some(user_result) => Ok(Json(UserUuid {
-                    uuid: shuffle_id(user_result.uuid),
-                })),
+                Some(user_result) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "user_create"))
+                    .status(StatusCode::CREATED)
+                    .json(UserUuid {
+                        uuid: shuffle_id(user_result.uuid),
+                    })),
                 None => {
                     error!("Error [POST] /users");
-                    Err(UserError::UserCreationFailure)
+                    Ok(HttpResponse::InternalServerError().json(UserUuid {
+                        uuid: format!("{}", UserError::UserCreationFailure),
+                    }))
                 }
             }
         }
         Err(e) => {
             error!("Error users.create {:?}", e);
-            Err(UserError::UserCreationFailure)
+            Ok(HttpResponse::InternalServerError().json(UserUuid {
+                uuid: format!("{}", UserError::UserCreationFailure),
+            }))
         }
     }
 }
 
 #[patch("/users")]
-async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, UserError> {
+async fn update_one(db: Data<Database>, user: Json<User>) -> Result<HttpResponse, UserError> {
     let is_valid = user.validate();
 
     match is_valid {
@@ -180,16 +195,25 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, 
             let updated_user = Database::update_one(&db, my_user).await;
 
             match updated_user {
-                Some(user_result) => Ok(Json(user_result)),
+                Some(user_result) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "school_update"))
+                    .status(StatusCode::OK)
+                    .json(UserUuid {
+                        uuid: shuffle_id(user_result.uuid),
+                    })),
                 None => {
                     error!("Error in users.update_one");
-                    Err(UserError::NoUsersFound)
+                    Ok(HttpResponse::InternalServerError().json(UserUuid {
+                        uuid: format!("{}", UserError::NoUsersFound),
+                    }))
                 }
             }
         }
         Err(e) => {
             error!("Error in users.update_one {:?}", e);
-            Err(UserError::NoUsersFound)
+            Ok(HttpResponse::InternalServerError().json(UserUuid {
+                uuid: format!("{}", UserError::UserCreationFailure),
+            }))
         }
     }
 }
@@ -198,7 +222,7 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<Json<User>, 
 async fn delete_user(
     db: Data<Database>,
     user_uuid: Path<UserUuid>,
-) -> Result<Json<User>, UserError> {
+) -> Result<HttpResponse, UserError> {
     let uuid = user_uuid.into_inner().uuid;
     let user_from_db = Database::delete_one(&db, uuid.clone()).await;
 
@@ -206,16 +230,23 @@ async fn delete_user(
         Some(mut user) => {
             user.deleted = true;
             match Database::update_one(&db, user).await {
-                Some(deleted_user) => Ok(Json(deleted_user)),
+                Some(deleted_user) => Ok(HttpResponse::Ok()
+                    .insert_header(("HX-Trigger", "school_delete"))
+                    .status(StatusCode::OK)
+                    .json(deleted_user)),
                 None => {
                     error!("Unable to update user:: {:?}", &uuid);
-                    Err(UserError::UserCreationFailure)
+                    Ok(HttpResponse::InternalServerError().json(UserUuid {
+                        uuid: format!("{}", UserError::NoUsersFound),
+                    }))
                 }
             }
         }
         None => {
             error!("No user found for id:: {:?}", &uuid);
-            Err(UserError::NoUsersFound)
+            Ok(HttpResponse::NotFound().json(UserUuid {
+                uuid: format!("{}", UserError::NoUsersFound),
+            }))
         }
     }
 }

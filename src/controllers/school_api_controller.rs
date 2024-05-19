@@ -237,7 +237,7 @@ async fn delete_one(
                 None => {
                     error!("unable to delete school:: {:?}", &school_uuid);
                     Ok(HttpResponse::InternalServerError().json(SchoolUuid {
-                        uuid: "Error".to_string(),
+                        uuid: format!("{}", SchoolError::NoSchoolsFound),
                     }))
                 }
             }
@@ -245,7 +245,7 @@ async fn delete_one(
         None => {
             error!("Unable to update school :: {:?}", &school_uuid);
             Ok(HttpResponse::NotFound().json(SchoolUuid {
-                uuid: "Error".to_string(),
+                uuid: format!("{}", SchoolError::NoSchoolsFound),
             }))
         }
     }
