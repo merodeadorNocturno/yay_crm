@@ -67,4 +67,10 @@
   <div class="column" id="edit-user-dynamic-content"></div>
 </div>
 
+<div
+  hx-trigger="user_delete from:body"
+  hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/htmx/user"
+  hx-swap="innerHTML"
+  hx-target="#dynamic-content"
+></div>
 <script src="/static/scripts/fsm.js" defer></script>

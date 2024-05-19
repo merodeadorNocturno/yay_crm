@@ -21,7 +21,6 @@ use crate::{
 
 #[get("/users")]
 async fn find_all(db: Data<Database>) -> Result<HttpResponse, UserError> {
-    // let user = Database::find_all(&db).await;
     let user = Database::find_all_non_deleted(&db).await;
 
     match user {
