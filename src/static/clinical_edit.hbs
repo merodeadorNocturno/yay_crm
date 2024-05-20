@@ -362,6 +362,13 @@
 </div>
 
 
+<div
+  hx-trigger="clinic_reload_page from:body"
+  hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/htmx/clinics/table"
+  hx-swap="innerHTML"
+  hx-target="#dynamic-content"
+></div>
+
 <script>
 function is_company_bool(my_form) {
   const { checked: is_company } = document.getElementById("is_company");

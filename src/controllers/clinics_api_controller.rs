@@ -69,7 +69,7 @@ async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<HttpResponse
 
             match my_clinical {
                 Some(clinical_result) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "clinic_create"))
+                    .insert_header(("HX-Trigger", "clinic_reload_page"))
                     .status(StatusCode::CREATED)
                     .json(ClinicalUuid {
                         uuid: match clinical_result.uuid {
@@ -184,7 +184,7 @@ async fn update_one(
 
             match updated_clinical {
                 Some(clinical) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "clinic_update"))
+                    .insert_header(("HX-Trigger", "clinic_reload_page"))
                     .status(StatusCode::OK)
                     .json(ClinicalUuid {
                         uuid: match clinical.uuid {
@@ -239,7 +239,7 @@ async fn delete_one(
             clinic.deleted = true;
             match Database::update_one(&db, clinic).await {
                 Some(_) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "clinic_delete"))
+                    .insert_header(("HX-Trigger", "clinic_reload_page"))
                     .status(StatusCode::OK)
                     .json(ClinicalUuid {
                         uuid: shuffle_id(clinic_uuid.to_string()),
