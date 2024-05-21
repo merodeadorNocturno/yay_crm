@@ -15,6 +15,7 @@ use crate::{
     models::users_model::{User, UserFromJson, UserUuid},
     utils::{
         general_utils::{get_uuid, shuffle_id},
+        message_utils::get_validation_errors,
         pwd::pwd_hasher,
     },
 };
@@ -114,17 +115,29 @@ async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<HttpResp
                     })),
                 None => {
                     error!("Error [POST] /users");
-                    Ok(HttpResponse::InternalServerError().json(UserUuid {
-                        uuid: format!("{}", UserError::UserCreationFailure),
-                    }))
+                    Ok(HttpResponse::InternalServerError()
+                        .insert_header((
+                            "HX-Trigger",
+                            format!("{{ \"page_error\": \"Internal server error\" }}"),
+                        ))
+                        .json(UserUuid {
+                            uuid: format!("{}", UserError::UserCreationFailure),
+                        }))
                 }
             }
         }
         Err(e) => {
             error!("Error users.create {:?}", e);
-            Ok(HttpResponse::InternalServerError().json(UserUuid {
-                uuid: format!("{}", UserError::UserCreationFailure),
-            }))
+            let key_errors_vec: Vec<String> = get_validation_errors(&e);
+
+            Ok(HttpResponse::InternalServerError()
+                .insert_header((
+                    "HX-Trigger",
+                    format!("{{ \"page_error\": {:?} }}", key_errors_vec),
+                ))
+                .json(UserUuid {
+                    uuid: format!("{}", UserError::UserCreationFailure),
+                }))
         }
     }
 }
@@ -202,17 +215,32 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<HttpResponse
                     })),
                 None => {
                     error!("Error in users.update_one");
-                    Ok(HttpResponse::InternalServerError().json(UserUuid {
-                        uuid: format!("{}", UserError::NoUsersFound),
-                    }))
+                    Ok(HttpResponse::InternalServerError()
+                        .insert_header((
+                            "HX-Trigger",
+                            format!(
+                                "{{ \"page_error\": {:?} }}",
+                                "Couldn't find school".to_string()
+                            ),
+                        ))
+                        .json(UserUuid {
+                            uuid: format!("{}", UserError::NoUsersFound),
+                        }))
                 }
             }
         }
         Err(e) => {
             error!("Error in users.update_one {:?}", e);
-            Ok(HttpResponse::InternalServerError().json(UserUuid {
-                uuid: format!("{}", UserError::UserCreationFailure),
-            }))
+            let key_errors_vec: Vec<String> = get_validation_errors(&e);
+
+            Ok(HttpResponse::InternalServerError()
+                .insert_header((
+                    "HX-Trigger",
+                    format!("{{ \"page_error\": {:?} }}", key_errors_vec),
+                ))
+                .json(UserUuid {
+                    uuid: format!("{}", UserError::UserCreationFailure),
+                }))
         }
     }
 }
@@ -235,17 +263,35 @@ async fn delete_user(
                     .json(deleted_user)),
                 None => {
                     error!("Unable to update user:: {:?}", &uuid);
-                    Ok(HttpResponse::InternalServerError().json(UserUuid {
-                        uuid: format!("{}", UserError::NoUsersFound),
-                    }))
+
+                    Ok(HttpResponse::InternalServerError()
+                        .insert_header((
+                            "HX-Trigger",
+                            format!(
+                                "{{ \"page_error\": {:?} }}",
+                                "Couldn't find school".to_string()
+                            ),
+                        ))
+                        .json(UserUuid {
+                            uuid: format!("{}", UserError::NoUsersFound),
+                        }))
                 }
             }
         }
         None => {
             error!("No user found for id:: {:?}", &uuid);
-            Ok(HttpResponse::NotFound().json(UserUuid {
-                uuid: format!("{}", UserError::NoUsersFound),
-            }))
+
+            Ok(HttpResponse::NotFound()
+                .insert_header((
+                    "HX-Trigger",
+                    format!(
+                        "{{ \"page_error\": {:?} }}",
+                        "Couldn't find school".to_string()
+                    ),
+                ))
+                .json(UserUuid {
+                    uuid: format!("{}", UserError::NoUsersFound),
+                }))
         }
     }
 }
