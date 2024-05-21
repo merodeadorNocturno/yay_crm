@@ -13,7 +13,10 @@ use crate::{
     db::{config::Database, enterprise_db::EnterpriseDB},
     error::enterprise_error::EnterpriseError,
     models::enterprise_model::{Enterprise, EnterpriseUuid},
-    utils::general_utils::{get_uuid, shuffle_id},
+    utils::{
+        general_utils::{get_uuid, shuffle_id},
+        message_utils::get_validation_errors,
+    },
 };
 
 #[get("/enterprises")]
@@ -73,7 +76,7 @@ async fn create(
 
             match my_enterprise {
                 Some(enterprise_result) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "enterprise_create"))
+                    .insert_header(("HX-Trigger", "enterprise_reload_page"))
                     .status(StatusCode::OK)
                     .json(EnterpriseUuid {
                         uuid: match enterprise_result.uuid {
@@ -83,17 +86,28 @@ async fn create(
                     })),
                 None => {
                     error!("Error [POST] /enterprise");
-                    Ok(HttpResponse::InternalServerError().json(EnterpriseUuid {
-                        uuid: "Error".to_string(),
-                    }))
+                    Ok(HttpResponse::InternalServerError()
+                        .insert_header((
+                            "HX-Trigger",
+                            format!("{{ \"page_error\": \"Internal server error\" }}"),
+                        ))
+                        .json(EnterpriseUuid {
+                            uuid: format!("{}", EnterpriseError::EnterpriseCreationFailure),
+                        }))
                 }
             }
         }
         Err(e) => {
             error!("Error enterprise.create {:?}", e);
-            Ok(HttpResponse::InternalServerError().json(EnterpriseUuid {
-                uuid: format!("{}", EnterpriseError::EnterpriseCreationFailure),
-            }))
+            let key_errors_vec: Vec<String> = get_validation_errors(&e);
+            Ok(HttpResponse::InternalServerError()
+                .insert_header((
+                    "HX-Trigger",
+                    format!("{{ \"page_error\": {:?} }}", key_errors_vec),
+                ))
+                .json(EnterpriseUuid {
+                    uuid: format!("{}", EnterpriseError::EnterpriseCreationFailure),
+                }))
         }
     }
 }
@@ -161,7 +175,7 @@ async fn update_one(
 
             match updated_enterprise {
                 Some(enterprise) => Ok(HttpResponse::Ok()
-                    .insert_header(("HX-Trigger", "enterprise_update"))
+                    .insert_header(("HX-Trigger", "enterprise_reload_page"))
                     .status(StatusCode::OK)
                     .json(EnterpriseUuid {
                         uuid: match enterprise.uuid {
@@ -171,17 +185,31 @@ async fn update_one(
                     })),
                 None => {
                     error!("Error in enterprise.update_one");
-                    Ok(HttpResponse::InternalServerError().json(EnterpriseUuid {
-                        uuid: "Error".to_string(),
-                    }))
+                    Ok(HttpResponse::InternalServerError()
+                        .insert_header((
+                            "HX-Trigger",
+                            format!(
+                                "{{ \"page_error\": {:?} }}",
+                                "Couldn't find enterprise".to_string()
+                            ),
+                        ))
+                        .json(EnterpriseUuid {
+                            uuid: format!("{}", EnterpriseError::NoEnterprisesFound),
+                        }))
                 }
             }
         }
         Err(e) => {
             error!("Error in enterprise.update_one: {:?}", e);
-            Ok(HttpResponse::InternalServerError().json(EnterpriseUuid {
-                uuid: format!("{}", EnterpriseError::NoEnterprisesFound),
-            }))
+            let key_errors_vec: Vec<String> = get_validation_errors(&e);
+            Ok(HttpResponse::InternalServerError()
+                .insert_header((
+                    "HX-Trigger",
+                    format!("{{ \"page_error\": {:?} }}", key_errors_vec),
+                ))
+                .json(EnterpriseUuid {
+                    uuid: format!("{}", EnterpriseError::NoEnterprisesFound),
+                }))
         }
     }
 }

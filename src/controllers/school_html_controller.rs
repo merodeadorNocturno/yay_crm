@@ -4,7 +4,7 @@ use actix_web::{
 };
 use chrono::Local;
 use handlebars::{Handlebars, RenderError};
-use log::{debug, error, info};
+use log::{error, info};
 use serde_json::json;
 
 use crate::{

@@ -2,11 +2,11 @@
   <form
     class="box"
     id="edit-enterprise"
-    hx-patch="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/enterprise"
+    hx-patch="{{conf.server_protocol}}://{{conf.hbs_target_address}}{{conf.hbs_target_port}}/enterprises"
     hx-swap="innerHTML"
     hx-headers='{"Content-Type": "application/json"}'
     hx-ext="json-enc"
-    hx-vals='{"is_company": false, "deleted": false, "company_name": null}'
+    hx-vals='js:{...is_enterprise_bool()}'
   >
     <div class="field is-horizontal">
       <!-- name last name 1-->
@@ -320,8 +320,16 @@
 </div>
 
 
+<div
+  hx-trigger="enterprise_reload_page from:body"
+  hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/htmx/enterprise/table"
+  hx-swap="innerHTML"
+  hx-target="#dynamic-content"
+></div>
+
+
 <script>
-  function is_company_bool() {
+  function is_enterprise_bool() {
     const { checked } = document.getElementById("is_company");
     const my_form = document.getElementById("edit-enterprise");
 
@@ -331,11 +339,11 @@
     line_of_business = line_of_business ? `"${line_of_business}"` : null;
     company_name = company_name ? `"${company_name}"` : null;
 
-    my_form.setAttribute(
-      "hx-vals",
-      `js:{deleted: false, is_company: ${checked}, line_of_business: ${line_of_business}, company_name: ${company_name}}`,
-    );
+    return {
+      deleted: false,
+      is_company: checked,
+      line_of_business,
+      company_name,
+    }
   }
-
-  (() => is_company_bool())();
 </script>

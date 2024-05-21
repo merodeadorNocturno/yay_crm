@@ -13,7 +13,10 @@ use crate::db::{clinical_db::ClinicalDB, config::Database};
 use crate::error::clinical_error::ClinicalError;
 use crate::{
     models::clinical_model::{Clinical, ClinicalUuid},
-    utils::general_utils::{get_uuid, shuffle_id},
+    utils::{
+        general_utils::{get_uuid, shuffle_id},
+        message_utils::get_validation_errors,
+    },
 };
 
 #[get("/clinical")]
@@ -79,17 +82,29 @@ async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<HttpResponse
                     })),
                 None => {
                     error!("Error [POST] /clinical");
-                    Ok(HttpResponse::InternalServerError().json(ClinicalUuid {
-                        uuid: format!("{}", ClinicalError::ClinicalCreationFailure),
-                    }))
+                    Ok(HttpResponse::InternalServerError()
+                        .insert_header((
+                            "HX-Trigger",
+                            format!("{{ \"page_error\": \"Internal server error\" }}"),
+                        ))
+                        .json(ClinicalUuid {
+                            uuid: format!("{}", ClinicalError::ClinicalCreationFailure),
+                        }))
                 }
             }
         }
         Err(e) => {
             error!("Error clinical.create {:?}", e);
-            Ok(HttpResponse::InternalServerError().json(ClinicalUuid {
-                uuid: format!("{}", ClinicalError::ClinicalCreationFailure),
-            }))
+            let key_errors_vec: Vec<String> = get_validation_errors(&e);
+
+            Ok(HttpResponse::InternalServerError()
+                .insert_header((
+                    "HX-Trigger",
+                    format!("{{ \"page_error\": {:?} }}", key_errors_vec),
+                ))
+                .json(ClinicalUuid {
+                    uuid: format!("{}", ClinicalError::ClinicalCreationFailure),
+                }))
         }
     }
 }
@@ -194,17 +209,32 @@ async fn update_one(
                     })),
                 None => {
                     error!("Error in clinical.update_one");
-                    Ok(HttpResponse::InternalServerError().json(ClinicalUuid {
-                        uuid: format!("{}", ClinicalError::NoClinicalsFound),
-                    }))
+                    Ok(HttpResponse::InternalServerError()
+                        .insert_header((
+                            "HX-Trigger",
+                            format!(
+                                "{{ \"page_error\": {:?} }}",
+                                "Couldn't find school".to_string()
+                            ),
+                        ))
+                        .json(ClinicalUuid {
+                            uuid: format!("{}", ClinicalError::NoClinicalsFound),
+                        }))
                 }
             }
         }
         Err(e) => {
             error!("Error in clinical.update_one: {:?}", e);
-            Ok(HttpResponse::NotFound().json(ClinicalUuid {
-                uuid: format!("{}", ClinicalError::NoClinicalsFound),
-            }))
+            let key_errors_vec: Vec<String> = get_validation_errors(&e);
+
+            Ok(HttpResponse::NotFound()
+                .insert_header((
+                    "HX-Trigger",
+                    format!("{{ \"page_error\": {:?} }}", key_errors_vec),
+                ))
+                .json(ClinicalUuid {
+                    uuid: format!("{}", ClinicalError::NoClinicalsFound),
+                }))
         }
     }
 }

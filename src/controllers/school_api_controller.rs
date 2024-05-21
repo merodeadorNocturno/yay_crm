@@ -13,7 +13,10 @@ use crate::{
     db::{config::Database, school_db::SchoolDB},
     error::school_error::SchoolError,
     models::school_model::{School, SchoolUuid},
-    utils::general_utils::{get_uuid, shuffle_id},
+    utils::{
+        general_utils::{get_uuid, shuffle_id},
+        message_utils::get_validation_errors,
+    },
 };
 
 #[get("/schools")]
@@ -78,17 +81,29 @@ async fn create(db: Data<Database>, body: Json<School>) -> Result<HttpResponse, 
                     })),
                 None => {
                     error!("Error [POST] /school");
-                    Ok(HttpResponse::InternalServerError().json(SchoolUuid {
-                        uuid: "Error".to_string(),
-                    }))
+                    Ok(HttpResponse::InternalServerError()
+                        .insert_header((
+                            "HX-Trigger",
+                            format!("{{ \"page_error\": \"Internal server error\" }}"),
+                        ))
+                        .json(SchoolUuid {
+                            uuid: "Error".to_string(),
+                        }))
                 }
             }
         }
         Err(e) => {
-            error!("Error School.create {:?}", e);
-            Ok(HttpResponse::InternalServerError().json(SchoolUuid {
-                uuid: format!("{}", SchoolError::SchoolCreationFailure),
-            }))
+            error!("Error School.create {:?}", &e);
+            let key_errors_vec: Vec<String> = get_validation_errors(&e);
+
+            Ok(HttpResponse::InternalServerError()
+                .insert_header((
+                    "HX-Trigger",
+                    format!("{{ \"page_error\": {:?} }}", key_errors_vec),
+                ))
+                .json(SchoolUuid {
+                    uuid: format!("{}", SchoolError::SchoolCreationFailure),
+                }))
         }
     }
 }
@@ -183,17 +198,33 @@ async fn update_one(db: Data<Database>, body: Json<School>) -> Result<HttpRespon
                     })),
                 None => {
                     error!("Error updating school");
-                    Ok(HttpResponse::InternalServerError().json(SchoolUuid {
-                        uuid: "Error".to_string(),
-                    }))
+
+                    Ok(HttpResponse::InternalServerError()
+                        .insert_header((
+                            "HX-Trigger",
+                            format!(
+                                "{{ \"page_error\": {:?} }}",
+                                "Couldn't find school".to_string()
+                            ),
+                        ))
+                        .json(SchoolUuid {
+                            uuid: format!("{}", SchoolError::NoSchoolsFound),
+                        }))
                 }
             }
         }
         Err(e) => {
-            error!("Error in school.update_one: {:?}", e);
-            Ok(HttpResponse::NotFound().json(SchoolUuid {
-                uuid: "Error".to_string(),
-            }))
+            error!("Error School.update_one {:?}", &e);
+            let key_errors_vec: Vec<String> = get_validation_errors(&e);
+
+            Ok(HttpResponse::InternalServerError()
+                .insert_header((
+                    "HX-Trigger",
+                    format!("{{ \"page_error\": {:?} }}", key_errors_vec),
+                ))
+                .json(SchoolUuid {
+                    uuid: format!("{}", SchoolError::SchoolCreationFailure),
+                }))
         }
     }
 }

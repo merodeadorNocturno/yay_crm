@@ -319,6 +319,14 @@
 </div>
 
 
+<div
+  hx-trigger="enterprise_reload_page from:body"
+  hx-post="{{../conf.server_protocol}}://{{../conf.hbs_target_address}}{{../conf.hbs_target_port}}/htmx/enterprise/table"
+  hx-swap="innerHTML"
+  hx-target="#dynamic-content"
+></div>
+
+
 <script>
   function is_company_bool() {
     const { checked } = document.getElementById("is_company");
