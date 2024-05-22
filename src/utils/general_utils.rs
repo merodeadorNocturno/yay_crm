@@ -1,3 +1,4 @@
+// use chrono::{DateTime, Local};
 use rand::{thread_rng, Rng};
 use uuid::Uuid;
 
@@ -247,3 +248,11 @@ pub fn shuffle_id(uuid: String) -> String {
 
     vec_of_chars.iter().collect()
 }
+
+// pub fn format_date(date: &DateTime<Local>) -> String {
+//     date.to_rfc2822()
+// }
+
+// mismatched types
+// expected reference `&str`
+//    found reference `&chrono::DateTime<chrono::Local>`

@@ -109,7 +109,7 @@ async fn clinical_table(db: Data<Database>) -> Result<String, RenderError> {
         Ok(contents) => contents,
         Err(e) => {
             error!(
-          "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load user: {}</span>",
+          "<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load clinic: {}</span>",
           e.to_string()
         );
 
@@ -184,7 +184,8 @@ pub fn clinical_html_controllers(cfg: &mut ServiceConfig) {
             .body(et),
           Err(e) => HttpResponse::Ok()
             .content_type("text/html")
-            .append_header(("HX-Trigger", "error_enterprise_table"))
+            .append_header(("HX-Trigger", format!("<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load Enterprise: {}</span>",
+            e.to_string())))
             .body(
               format!("<span class=\"icon is-small is-left\"><i class=\"fas fa-ban\"></i>Failed to load Enterprise: {}</span>",
               e.to_string())
