@@ -1,12 +1,5 @@
 use actix_cors::Cors;
-use actix_web::{dev::ServiceRequest, middleware, web::Data, App, HttpServer};
-use actix_web_httpauth::{
-    extractors::{
-        bearer::{BearerAuth, Config},
-        AuthenticationError,
-    },
-    middleware::HttpAuthentication,
-};
+use actix_web::{middleware, web::Data, App, HttpServer};
 use env_logger::{Builder, WriteStyle};
 use log::{info, warn};
 
@@ -17,6 +10,7 @@ mod constants;
 mod controllers;
 mod db;
 mod error;
+mod extractors;
 mod models;
 mod utils;
 
@@ -33,27 +27,6 @@ use crate::{
     },
     utils::env::{get_cwd, get_log_level, set_env_vars, ConfVars},
 };
-
-async fn validator<T>(
-    req: ServiceRequest,
-    credentials: BearerAuth,
-) -> Result<ServiceRequest, AuthenticationError<T>> {
-    let config = req
-        .app_data::<Config>()
-        .map(|data| data.get_ref().clone())
-        .unwrap_or_else(Default::default);
-
-    match auth::validate_token(credentials.token()) {
-        Ok(res) => {
-            if res {
-                Ok(req)
-            } else {
-                Err(AuthenticationError::from(config).into())
-            }
-        }
-        Err(_) => Err(AuthenticationError::from(config).into()),
-    }
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

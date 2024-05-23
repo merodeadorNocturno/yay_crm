@@ -274,5 +274,5 @@ pub fn enterprise_api_controllers(cfg: &mut ServiceConfig) {
     cfg.service(find_all);
     cfg.service(find_all_deleted);
     cfg.service(find_one);
-    cfg.service(update_one);
+    // cfg.service(update_one);
 }
