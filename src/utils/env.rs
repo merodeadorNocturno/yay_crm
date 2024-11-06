@@ -18,6 +18,8 @@ pub struct ConfVars {
     pub server_protocol: String,
     pub hbs_target_address: String,
     pub hbs_target_port: String,
+    pub callback_url: String,
+    pub client_id: String,
 }
 
 pub fn set_env_vars() -> ConfVars {
@@ -26,6 +28,8 @@ pub fn set_env_vars() -> ConfVars {
     let server_protocol = set_environment_variable("SERVER_PROTOCOL", "http");
     let hbs_target_address = set_environment_variable("HBS_TARGET_ADDRESS", "0.0.0.0");
     let mut hbs_target_port = set_environment_variable("HBS_TARGET_PORT", "8080");
+    let callback_url = set_environment_variable("CALLBACK_URL", "https://yay.local/callback");
+    let client_id = set_environment_variable("CLIENT_ID", "iGrVG2EzdK3W4J6CUT5N8fnqYhdrRrmt");
 
     if hbs_target_port == "80".to_string() {
         hbs_target_port = "".to_string();
@@ -39,6 +43,8 @@ pub fn set_env_vars() -> ConfVars {
         server_protocol,
         hbs_target_address,
         hbs_target_port,
+        callback_url,
+        client_id,
     }
 }
 

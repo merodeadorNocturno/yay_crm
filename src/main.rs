@@ -11,6 +11,7 @@ mod controllers;
 mod db;
 mod error;
 mod extractors;
+mod middlewares;
 mod models;
 mod utils;
 
@@ -30,7 +31,6 @@ use crate::{
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // let auth_0 = HttpAuthentication::bearer(authenticator);
     let mut builder = Builder::new();
 
     builder

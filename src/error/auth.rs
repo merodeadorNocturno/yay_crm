@@ -2,7 +2,7 @@ use actix_web::{error::ResponseError, HttpResponse};
 use derive_more::Display;
 
 #[derive(Debug, Display)]
-pub enum ServiceError {
+pub enum ServiceErrorLocal {
     #[display(fmt = "Internal Server Error")]
     InternalServerError,
 
@@ -13,14 +13,14 @@ pub enum ServiceError {
     JWKSFetchError,
 }
 
-impl ResponseError for ServiceError {
+impl ResponseError for ServiceErrorLocal {
     fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
         match self {
-            ServiceError::InternalServerError => {
+            ServiceErrorLocal::InternalServerError => {
                 HttpResponse::InternalServerError().json("Internal Server Error, Please try later")
             }
-            ServiceError::BadRequest(ref message) => HttpResponse::BadRequest().json(message),
-            ServiceError::JWKSFetchError => {
+            ServiceErrorLocal::BadRequest(ref message) => HttpResponse::BadRequest().json(message),
+            ServiceErrorLocal::JWKSFetchError => {
                 HttpResponse::InternalServerError().json("Could not fetch JWKS")
             }
         }
