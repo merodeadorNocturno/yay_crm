@@ -6,12 +6,16 @@ use handlebars::{Handlebars, RenderError};
 use log::{error, info};
 use serde_json::json;
 
-use crate::db::{config::Database, enterprise_db::EnterpriseDB};
 use crate::models::enterprise_model::*;
 use crate::utils::{
     env::{set_env_vars, ConfVars},
     fs_utils::read_hbs_template,
     general_utils::{create_option_tags_info_for_services_and_funnel, get_options_and_services},
+    time::format_date_in_language,
+};
+use crate::{
+    db::{config::Database, enterprise_db::EnterpriseDB},
+    models::sales_model::GeneralTags,
 };
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
@@ -117,8 +121,29 @@ async fn enterprise_table(db: Data<Database>) -> Result<String, RenderError> {
 
     match enterprises_from_db {
         Some(enterprises) => {
+            let mut enterprise_tags_vector: Vec<GeneralTags<Enterprise>> = Vec::new();
+
+            for enterprise in enterprises {
+                let (services_tag, funnel_tag) = create_option_tags_info_for_services_and_funnel(
+                    enterprise.services_offered.clone(),
+                    enterprise.sales_funnel.clone(),
+                );
+
+                let first_contact = match enterprise.first_contact_date {
+                    Some(this_date) => format_date_in_language(&this_date, "es"),
+                    None => "".to_string(),
+                };
+
+                enterprise_tags_vector.push(GeneralTags::<Enterprise> {
+                    section: enterprise.clone(),
+                    funnel_tag,
+                    services_tag,
+                    first_contact,
+                });
+            }
+
             let cf: ConfVars = set_env_vars();
-            let data = json!({ "conf": cf, "enterprises": enterprises });
+            let data = json!({ "conf": cf, "enterprises": enterprise_tags_vector });
 
             let render = handlebars.render_template(&template_contents, &data)?;
             Ok(render)

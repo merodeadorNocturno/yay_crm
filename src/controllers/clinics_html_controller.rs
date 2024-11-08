@@ -12,6 +12,7 @@ use crate::utils::{
     env::{set_env_vars, ConfVars},
     fs_utils::read_hbs_template,
     general_utils::{create_option_tags_info_for_services_and_funnel, get_options_and_services},
+    time::format_date_in_language,
 };
 
 handlebars_helper!(str_equal: |s1: String, s2: String| s1 == s2);
@@ -127,11 +128,17 @@ async fn clinical_table(db: Data<Database>) -> Result<String, RenderError> {
                     clinic.sales_funnel.clone(),
                 );
 
+                let first_contact = match clinic.first_contact_date {
+                    Some(this_date) => format_date_in_language(&this_date, "es"),
+                    None => "".to_string(),
+                };
+
                 clinical_tags_vector.push(GeneralTags::<Clinical> {
-                    section: clinic,
+                    section: clinic.clone(),
                     funnel_tag,
                     services_tag,
-                })
+                    first_contact,
+                });
             }
 
             let cf: ConfVars = set_env_vars();

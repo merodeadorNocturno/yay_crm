@@ -27,7 +27,7 @@ pub fn set_env_vars() -> ConfVars {
     let hbs_target_address = set_environment_variable("HBS_TARGET_ADDRESS", "0.0.0.0");
     let mut hbs_target_port = set_environment_variable("HBS_TARGET_PORT", "8080");
 
-    if hbs_target_port == "80".to_string() {
+    if hbs_target_port == "80".to_string() || hbs_target_port != "".to_string() {
         hbs_target_port = "".to_string();
     } else {
         hbs_target_port = format!(":{}", &hbs_target_port);

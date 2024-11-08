@@ -6,8 +6,6 @@ use surrealdb::Error;
 
 use crate::db::config::Database;
 
-// use super::general_utils::create_select_query;
-
 pub async fn util_find_all<T: DeserializeOwned>(
     db: &Data<Database>,
     table_name: &str,
@@ -39,12 +37,10 @@ pub async fn util_find_one<T: DeserializeOwned>(
     }
 }
 
-pub async fn util_add_one<T: DeserializeOwned + Serialize>(
-    db: &Data<Database>,
-    t: T,
-    uuid: String,
-    table_name: &str,
-) -> Option<T> {
+pub async fn util_add_one<T>(db: &Data<Database>, t: T, uuid: String, table_name: &str) -> Option<T>
+where
+    T: DeserializeOwned + Serialize + Send + Sync + 'static,
+{
     let created_t = db.client.create((table_name, uuid)).content(t).await;
 
     match created_t {
@@ -61,7 +57,10 @@ pub async fn util_update_one<T: DeserializeOwned + Serialize>(
     t: T,
     uuid: String,
     table_name: &str,
-) -> Option<T> {
+) -> Option<T>
+where
+    T: DeserializeOwned + Serialize + Send + Sync + 'static,
+{
     let t_id = uuid.clone();
     let t_to_update: Result<Option<T>, Error> = db.client.select((table_name, &t_id)).await;
 

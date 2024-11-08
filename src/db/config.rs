@@ -1,7 +1,7 @@
 use surrealdb::{
     engine::remote::ws::{Client, Ws},
     opt::auth::Root,
-    Error, Surreal,
+    sql, Error, Surreal, Value,
 };
 
 use crate::constants::connection::set_environment_variable;
@@ -36,4 +36,29 @@ impl Database {
             db_name: String::from(&db_name),
         })
     }
+
+    // pub async fn check_and_create_db(client: &Surreal) -> surrealdb::Result<()> {
+    //     let result: surrealdb::Result<Value> = client.query("SHOW TABLES").await;
+    //     match result {
+    //         Ok(tables) => {
+    //             if let Value::Array(arr) = tables {
+    //                 if arr.is_empty() {
+    //                     println!("No tables found. Creating DB structure");
+    //                     // Table structure
+    //                     client.query("CREATE TABLE users;").await?;
+    //                 } else {
+    //                     println!("Database already exists with tables: {:?}", tables);
+    //                 }
+    //             } else {
+    //             }
+    //         }
+    //         Err(err) => {
+    //             println!("Error querying tables: {:?}", err);
+    //             println!("Creating the database structure.");
+    //             client.query("CREATE TABLE users;").await?;
+    //         }
+    //     }
+
+    //     Ok(())
+    // }
 }

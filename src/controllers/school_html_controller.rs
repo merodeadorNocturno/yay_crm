@@ -20,6 +20,7 @@ use crate::{
             create_option_tags_info_for_services_and_funnel, create_school_level_tags,
             get_options_and_services, get_school_level_tags,
         },
+        time::format_date_in_language,
     },
 };
 
@@ -120,10 +121,16 @@ async fn school_table(db: Data<Database>) -> Result<String, RenderError> {
                     school.sales_funnel.clone(),
                 );
 
+                let first_contact = match school.first_contact_date {
+                    Some(this_date) => format_date_in_language(&this_date, "es"),
+                    None => "".to_string(),
+                };
+
                 tag_vectors.push(GeneralTags::<School> {
                     section: school,
                     funnel_tag,
                     services_tag,
+                    first_contact,
                 });
             }
 

@@ -62,7 +62,7 @@
       <p class="notification has-text-centered">
         <span class="icon is-small is-left tooltip">
           <i
-            class="fas {{#if is_company}}fa-industry{{else}}fa-user-md{{/if}}"
+            class="fas {{#if section.is_company}}fa-industry{{else}}fa-user-md{{/if}}"
           ></i>
           <span class="tooltiptext">{{section.specialty}}</span>
         </span>
@@ -75,7 +75,7 @@
       <p class="notification has-text-centered">
         {{#if section.email}}
         <span class="icon is-small is-left tooltip">
-          <a href="mailto:{{email}}" title="email {{name}} {{last_name}}"
+          <a href="mailto:{{section.email}}" title="{{section.email}}"
             ><i class="fas fa-envelope"></i
           ></a>
           <span class="tooltiptext">email: {{section.email}}</span>
@@ -83,9 +83,9 @@
         {{/if}} {{#if section.instagram}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{instagram}}"
+            href="{{section.instagram}}"
             target="_blank"
-            title="Instagram {{name}} {{last_name}}"
+            title="Instagram {{section.instagram}}"
             ><i class="fab fa-instagram"></i
           ></a>
           <span class="tooltiptext">instagram: {{section.instagram}}</span>
@@ -93,19 +93,19 @@
         {{/if}} {{#if section.fb}}
         <span class="icon is-small is-left tooltip">
           <a
-            href="{{fb}}"
             target="_blank"
-            title="facebook {{name}} {{last_name}}"
+            title="facebook {{section.fb}}"
+            href="{{section.fb}}"
             ><i class="fab fa-facebook"></i
           ></a>
-          <span class="tooltiptext">facebook: {{section.fb}}</span>
+          <span class="tooltiptext">{{section.fb}}</span>
         </span>
         {{/if}} {{#if section.phone}}
         <span class="icon is-small is-left tooltip">
           <a
             href="tel:{{section.phone}}"
             target="_blank"
-            title="Phone {{name}} {{last_name}}"
+            title="Phone {{section.phone}}"
             ><i class="fas fa-phone"></i
           ></a>
           <span class="tooltiptext"
@@ -130,7 +130,7 @@
       <p class="notification is-small has-text-centered">
         <span class="icon is-small is-left tooltip">
           <i class="fas fa-calendar-alt"></i>
-          <span class="tooltiptext">{{section.first_contact_date}}</span>
+          <span class="tooltiptext">{{first_contact}}</span>
         </span>
       </p>
     </div>

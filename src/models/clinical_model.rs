@@ -1,5 +1,6 @@
-use chrono::{DateTime, Local};
+use chrono::{prelude::*, DateTime, Local};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use validator::Validate;
 
 use crate::models::sales_model::{SalesFunnel, ServicesOffered};
@@ -17,7 +18,7 @@ pub struct Clinical {
     #[validate(length(min = 2, message = "Lastname does not match valid length"))]
     pub last_name: String,
     pub is_company: bool,
-    #[validate(length(min = 2, message = "Clinic/Hospital name does not match valid length"))]
+    // #[validate(length(min = 2, message = "Clinic/Hospital name does not match valid length"))]
     pub clinic_name: Option<String>,
     pub clinic_web: Option<String>,
     #[validate(email)]

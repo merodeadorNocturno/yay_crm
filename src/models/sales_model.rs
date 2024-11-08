@@ -106,4 +106,5 @@ pub struct GeneralTags<T> {
     pub section: T,
     pub funnel_tag: Vec<SalesFunnelTag>,
     pub services_tag: Vec<ServicesOfferedTag>,
+    pub first_contact: String,
 }
