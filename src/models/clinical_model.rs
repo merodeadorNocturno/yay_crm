@@ -1,6 +1,5 @@
-use chrono::{prelude::*, DateTime, Local};
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use validator::Validate;
 
 use crate::models::sales_model::{SalesFunnel, ServicesOffered};
