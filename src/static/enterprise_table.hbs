@@ -78,7 +78,7 @@
           <a href="mailto:{{section.email}}" title="email {{section.name}} {{section.last_name}}"
             ><i class="fas fa-envelope"></i
           ></a>
-          <span class="tooltiptext">email: {{section.email}}</span>
+          <span class="tooltiptext">{{section.email}}</span>
         </span>
         {{/if}} {{#if section.instagram}}
         <span class="icon is-small is-left tooltip">
@@ -88,11 +88,12 @@
             title="Instagram {{section.name}} {{section.last_name}}"
             ><i class="fab fa-instagram"></i
           ></a>
-          <span class="tooltiptext">instagram: {{section.instagram}}</span>
+          <span class="tooltiptext">{{section.instagram}}</span>
         </span>
         {{/if}} {{#if section.fb}}
         <span class="icon is-small is-left tooltip">
           <a
+            href="{{section.fb}}"
             target="_blank"
             title="facebook {{section.name}} {{section.last_name}}"
             ><i class="fab fa-facebook"></i
