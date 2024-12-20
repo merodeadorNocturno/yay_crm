@@ -20,6 +20,7 @@ use crate::{
 };
 
 #[get("/schools")]
+#[tracing::instrument(name = "Find all schools", skip(db))]
 async fn find_all(db: Data<Database>) -> Result<HttpResponse, SchoolError> {
     let school = Database::find_all_active(&db).await;
 
@@ -37,6 +38,7 @@ async fn find_all(db: Data<Database>) -> Result<HttpResponse, SchoolError> {
 }
 
 #[get("/schools/{uuid}")]
+#[tracing::instrument(name = "Find one school", skip(db), fields(uuid = %uuid.uuid))]
 async fn find_one(db: Data<Database>, uuid: Path<SchoolUuid>) -> Result<HttpResponse, SchoolError> {
     let school_uuid = uuid.into_inner().uuid;
     let school_result = Database::find_one(&db, school_uuid.clone()).await;
@@ -53,6 +55,15 @@ async fn find_one(db: Data<Database>, uuid: Path<SchoolUuid>) -> Result<HttpResp
 }
 
 #[post("/schools")]
+#[tracing::instrument(
+    name = "Find one school",
+    skip(db),
+    fields(
+        name = %body.name,
+        last_name = %body.last_name,
+        school_name = %body.school_name,
+    )
+)]
 async fn create(db: Data<Database>, body: Json<School>) -> Result<HttpResponse, SchoolError> {
     let is_valid = body.validate();
     let date_created = Local::now();
@@ -109,6 +120,11 @@ async fn create(db: Data<Database>, body: Json<School>) -> Result<HttpResponse, 
 }
 
 #[patch("/schools")]
+#[tracing::instrument(name = "Patch School", skip(db), fields(
+    name = %body.name,
+    last_name = %body.last_name,
+    school_name = %body.school_name,
+))]
 async fn update_one(db: Data<Database>, body: Json<School>) -> Result<HttpResponse, SchoolError> {
     let is_valid = body.validate();
 
@@ -230,6 +246,7 @@ async fn update_one(db: Data<Database>, body: Json<School>) -> Result<HttpRespon
 }
 
 #[get("/schools/deleted")]
+#[tracing::instrument(name = "Show Deleted Schools", skip(db))]
 async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, SchoolError> {
     let schools = Database::find_all_deleted(&db).await;
 
@@ -248,6 +265,7 @@ async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, SchoolErro
 }
 
 #[delete("/schools/{uuid}")]
+#[tracing::instrument(name = "Delete School", skip(db), fields(uuid = %uuid.uuid))]
 async fn delete_one(
     db: Data<Database>,
     uuid: Path<SchoolUuid>,

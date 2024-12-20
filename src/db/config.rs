@@ -1,7 +1,7 @@
 use surrealdb::{
     engine::remote::ws::{Client, Ws},
     opt::auth::Root,
-    sql, Error, Surreal, Value,
+    Error, Surreal,
 };
 
 use crate::constants::connection::set_environment_variable;

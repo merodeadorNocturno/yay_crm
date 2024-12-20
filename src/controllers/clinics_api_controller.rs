@@ -20,6 +20,7 @@ use crate::{
 };
 
 #[get("/clinical")]
+#[tracing::instrument(name = "Show Clinical", skip(db))]
 async fn find_all(db: Data<Database>) -> Result<HttpResponse, ClinicalError> {
     let clinical = Database::find_all_non_deleted(&db).await;
 
@@ -37,6 +38,7 @@ async fn find_all(db: Data<Database>) -> Result<HttpResponse, ClinicalError> {
 }
 
 #[get("/clinical/{uuid}")]
+#[tracing::instrument(name = "Get One Clinic", skip(db), fields(uuid = %uuid.uuid))]
 async fn find_one(
     db: Data<Database>,
     uuid: Path<ClinicalUuid>,
@@ -56,6 +58,14 @@ async fn find_one(
 }
 
 #[post("/clinical")]
+#[tracing::instrument(
+    name = "Post Clinic", skip(db), fields(
+        uuid = body.uuid,
+        name = %body.name,
+        last_name = %body.last_name,
+        clinic_name = body.clinic_name,
+    )
+)]
 async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<HttpResponse, ClinicalError> {
     let is_valid = body.validate();
     let date_created = Local::now();
@@ -110,6 +120,14 @@ async fn create(db: Data<Database>, body: Json<Clinical>) -> Result<HttpResponse
 }
 
 #[patch("/clinical")]
+#[tracing::instrument(
+    name = "Patch Clinic", skip(db), fields(
+        uuid = body.uuid,
+        name = %body.name,
+        last_name = %body.last_name,
+        clinic_name = body.clinic_name,
+    )
+)]
 async fn update_one(
     db: Data<Database>,
     body: Json<Clinical>,
@@ -240,6 +258,7 @@ async fn update_one(
 }
 
 #[get("/clinical/deleted")]
+#[tracing::instrument(name = "Get Deleted Clinics", skip(db))]
 async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, ClinicalError> {
     let clinics = Database::find_all_deleted(&db).await;
     match clinics {
@@ -257,6 +276,7 @@ async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, ClinicalEr
 }
 
 #[delete("/clinical/{uuid}")]
+#[tracing::instrument(name = "Post Clinic", skip(db), fields(uuid = %uuid.uuid))]
 async fn delete_one(
     db: Data<Database>,
     uuid: Path<ClinicalUuid>,

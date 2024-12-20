@@ -21,6 +21,7 @@ use crate::{
 };
 
 #[get("/users")]
+#[tracing::instrument(name = "Retrieve all users", skip(db))]
 async fn find_all(db: Data<Database>) -> Result<HttpResponse, UserError> {
     let user = Database::find_all_non_deleted(&db).await;
 
@@ -36,6 +37,7 @@ async fn find_all(db: Data<Database>) -> Result<HttpResponse, UserError> {
 }
 
 #[get("/users/deleted")]
+#[tracing::instrument(name = "Find All Deleted Users", skip(db))]
 async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, UserError> {
     let user = Database::find_all_deleted(&db).await;
 
@@ -51,6 +53,7 @@ async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, UserError>
 }
 
 #[get("/users/{uuid}")]
+#[tracing::instrument(name = "Find one user", skip(db), fields(uuid = %user_id.uuid))]
 async fn find_one(db: Data<Database>, user_id: Path<UserUuid>) -> Result<HttpResponse, UserError> {
     let user_uuid = user_id.into_inner().uuid;
     let user_result = Database::find_one(&db, user_uuid.clone()).await;
@@ -67,6 +70,16 @@ async fn find_one(db: Data<Database>, user_id: Path<UserUuid>) -> Result<HttpRes
 }
 
 #[post("/users")]
+#[tracing::instrument(
+    name = "Find one user",
+    skip(db),
+    fields(
+        name = %user.name,
+        last_name = %user.last_name,
+        email = %user.email,
+        role = %user.role
+    )
+)]
 async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<HttpResponse, UserError> {
     let is_valid = user.validate();
     let new_user = user.into_inner();
@@ -143,6 +156,16 @@ async fn create(db: Data<Database>, user: Json<UserFromJson>) -> Result<HttpResp
 }
 
 #[patch("/users")]
+#[tracing::instrument(
+    name = "Find one user",
+    skip(db),
+    fields(
+        name = %user.name,
+        last_name = %user.last_name,
+        email = %user.email,
+        role = %user.role
+    )
+)]
 async fn update_one(db: Data<Database>, user: Json<User>) -> Result<HttpResponse, UserError> {
     let is_valid = user.validate();
 
@@ -246,6 +269,7 @@ async fn update_one(db: Data<Database>, user: Json<User>) -> Result<HttpResponse
 }
 
 #[delete("/users/{uuid}")]
+#[tracing::instrument(name = "Delete User", skip(db), fields(user_uuid = %user_uuid.uuid))]
 async fn delete_user(
     db: Data<Database>,
     user_uuid: Path<UserUuid>,

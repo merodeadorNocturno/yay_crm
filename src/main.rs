@@ -1,13 +1,5 @@
 use actix_cors::Cors;
 use actix_web::{middleware, web::Data, App, HttpServer};
-// use actix_web_httpauth::{
-//     extractors::{
-//         bearer::{BearerAuth, Config},
-//         AuthenticationError,
-//     },
-//     middleware::HttpAuthentication,
-// };
-use env_logger::{Builder, WriteStyle};
 use log::{info, warn};
 
 #[macro_use]
@@ -18,6 +10,7 @@ mod controllers;
 mod db;
 mod error;
 mod models;
+mod reporting;
 mod utils;
 
 use crate::db::config::Database;
@@ -31,18 +24,20 @@ use crate::{
         school_html_controller::school_html_controller,
         users_api_controller::users_api_controllers, users_html_controller::user_html_controllers,
     },
-    utils::env::{get_cwd, get_log_level, set_env_vars, ConfVars},
+    reporting::telemetry::{get_subscriber, init_subscriber},
+    utils::env::{get_cwd, set_env_vars, ConfVars},
 };
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // let auth_0 = HttpAuthentication::bearer(authenticator);
-    let mut builder = Builder::new();
+    // let mut builder = Builder::new();
+    let subscriber = get_subscriber("yay".into(), "info".into(), std::io::stdout);
+    init_subscriber(subscriber);
 
-    builder
-        .filter(None, get_log_level())
-        .write_style(WriteStyle::Always)
-        .init();
+    // builder
+    //     .filter(None, get_log_level())
+    //     .write_style(WriteStyle::Always)
+    //     .init();
 
     match get_cwd() {
         Ok(_) => info!("Successfully retrieved current directory"),
