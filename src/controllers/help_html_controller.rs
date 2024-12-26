@@ -9,7 +9,7 @@ use crate::utils::{
     fs_utils::read_hbs_template,
 };
 use handlebars::{Handlebars, RenderError};
-use log::{debug, error};
+use log::error;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -114,7 +114,6 @@ async fn enterprise_services_panel() -> Result<String, RenderError> {
     let handlebars = Handlebars::new();
 
     let template_path = "enterprise_help_services_html";
-    debug!("template path: {}", template_path);
     let help_data = HelpData {
         help: "".to_string(),
     };
