@@ -3,3 +3,4 @@
 .env
 src/auth
 YT_gracie_concurrency.md
+config.toml
