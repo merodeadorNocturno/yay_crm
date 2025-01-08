@@ -20,6 +20,7 @@ use crate::{
 };
 
 #[get("/enterprises")]
+#[tracing::instrument(name = "Show Enterprises", skip(db))]
 async fn find_all(db: Data<Database>) -> Result<HttpResponse, EnterpriseError> {
     let enterprise = Database::find_all_active(&db).await;
 
@@ -37,6 +38,7 @@ async fn find_all(db: Data<Database>) -> Result<HttpResponse, EnterpriseError> {
 }
 
 #[get("/enterprises/{uuid}")]
+#[tracing::instrument(name = "Get One Enterprise", skip(db), fields(uuid = %uuid.uuid))]
 async fn find_one(
     db: Data<Database>,
     uuid: Path<EnterpriseUuid>,
@@ -56,6 +58,16 @@ async fn find_one(
 }
 
 #[post("/enterprises")]
+#[tracing::instrument(
+    name = "Post Enterprise",
+    skip(db),
+    fields(
+        uuid = body.uuid,
+        name = %body.name,
+        last_name = %body.last_name,
+        company_name = body.company_name
+    )
+)]
 async fn create(
     db: Data<Database>,
     body: Json<Enterprise>,
@@ -113,6 +125,16 @@ async fn create(
 }
 
 #[patch("/enterprises")]
+#[tracing::instrument(
+    name = "Patch Enterprise",
+    skip(db),
+    fields(
+        uuid = body.uuid,
+        name = %body.name,
+        last_name = %body.last_name,
+        company_name = body.company_name,
+    )
+)]
 async fn update_one(
     db: Data<Database>,
     body: Json<Enterprise>,
@@ -233,6 +255,7 @@ async fn find_all_deleted(db: Data<Database>) -> Result<HttpResponse, Enterprise
 }
 
 #[delete("/enterprises/{uuid}")]
+#[tracing::instrument(name = "Delete Enterprise", skip(db), fields(uuid = %uuid.uuid))]
 async fn delete_one(
     db: Data<Database>,
     uuid: Path<EnterpriseUuid>,
