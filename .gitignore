@@ -4,3 +4,4 @@
 src/auth
 YT_gracie_concurrency.md
 config.toml
+.cargo/config.toml
